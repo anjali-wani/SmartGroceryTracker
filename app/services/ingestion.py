@@ -229,6 +229,14 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
         if "unit_price" in col_map and pd.notna(row[col_map["unit_price"]]):
             raw_unit_price_val = clean_currency_val(row[col_map["unit_price"]])
 
+        if raw_unit_price_val is None:
+            rate_m = re.search(r"@\s*\$?(\d+(?:\.\d+)?)(?:\s*/\s*[a-zA-Z]+)?", raw_item_str)
+            if rate_m:
+                try:
+                    raw_unit_price_val = float(rate_m.group(1))
+                except ValueError:
+                    pass
+
         if price_val is None and raw_unit_price_val is not None and extracted_qty > 0:
             price_val = round(extracted_qty * raw_unit_price_val, 2)
 

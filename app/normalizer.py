@@ -69,7 +69,7 @@ NOISE_PATTERNS = [
     r"^(\d{4,14})\s+",              # Leading UPC / SKU barcodes
     r"#\d+\b",                       # #1234
     r"\b(?=[A-Za-z0-9]*\d)(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{8,16}\b",           # Store transaction/tax hashes
-    r"\$?\d+\.\d{2}\b",              # Leftover prices like $4.99
+    r"\$\d+(?:\.\d{2})?\b",          # Leftover prices like $4.99 with dollar sign
     r"[*@%]",                        # Asterisks or tax symbols
     r"\b(tax|subtotal|total|f)\b",   # Receipt metadata words
 ]
@@ -94,6 +94,8 @@ def extract_quantity_and_unit(text: str) -> Tuple[str, float, str]:
         'KIRKLAND EGGS 24 CT' -> ('KIRKLAND EGGS', 24.0, 'count')
         'BANANAS 2.5 LB' -> ('BANANAS', 2.5, 'lb')
         'CHEDDAR CHEESE 16OZ' -> ('CHEDDAR CHEESE', 16.0, 'oz')
+        'BEETROOT 0.89 LB' -> ('BEETROOT', 0.89, 'lb')
+        'Beetroot per lb' -> ('Beetroot', 1.0, 'lb')
     """
     cleaned = clean_raw_string(text)
     match = UNIT_REGEX.search(cleaned)
@@ -130,6 +132,8 @@ def extract_quantity_and_unit(text: str) -> Tuple[str, float, str]:
     else:
         product_name = cleaned
 
+    # Clean up leftover 'per' preposition or rate notations
+    product_name = re.sub(r"\bper\b", " ", product_name, flags=re.IGNORECASE)
     product_name = re.sub(r"\s+", " ", product_name).strip()
     return product_name, extracted_qty, extracted_unit
 
