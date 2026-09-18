@@ -1,12 +1,22 @@
 from datetime import date, datetime, timedelta
 from typing import List, Optional, Dict
-import pandas as pd
-import numpy as np
+from collections import Counter
 from sqlalchemy.orm import Session
 
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, Household
 from app.schemas import ItemVelocityOut, HouseholdVelocityReport
 from app.services.guest_engine import calculate_guest_discount_factor
+
+
+def calculate_modal_quantity(quantities: List[float]) -> float:
+    """Calculate most frequent purchase quantity with larger quantity tie-breaker."""
+    if not quantities:
+        return 1.0
+    counts = Counter(quantities)
+    max_freq = max(counts.values())
+    candidates = [qty for qty, freq in counts.items() if freq == max_freq]
+    # If frequencies are same, pick bigger quantity
+    return max(candidates)
 
 
 def compute_item_velocity(
@@ -15,28 +25,21 @@ def compute_item_velocity(
     household_id: int = 1,
     as_of_date: Optional[date] = None
 ) -> ItemVelocityOut:
-    """Compute consumption velocity for an item using dual sliding windows and guest discounts.
-    
-    - Standard perishables (is_bulk=False): 30-day lookback window
-    - Bulk goods (is_bulk=True): 180-day lookback window
+    """Calculates consumption velocity and runouts purely from purchase cycles.
+    No expiration dates used.
     """
     if as_of_date is None:
         as_of_date = date.today()
 
-    # Determine sliding window
-    window_days = 180 if item.is_bulk else 30
-    start_date = as_of_date - timedelta(days=window_days)
-
     household = db.query(Household).filter(Household.id == household_id).first()
     members = household.member_count if household else 2
 
-    # Query purchases for this item within the window
+    # Query purchases ordered by date
     purchases: List[PurchaseLog] = (
         db.query(PurchaseLog)
         .filter(
             PurchaseLog.household_id == household_id,
             PurchaseLog.canonical_item_id == item.id,
-            PurchaseLog.purchase_date >= start_date,
             PurchaseLog.purchase_date <= as_of_date
         )
         .order_by(PurchaseLog.purchase_date.asc())
@@ -57,86 +60,86 @@ def compute_item_velocity(
     unit = item.standard_unit
 
     if not purchases:
-        # Check if there is any older purchase outside window
-        older = (
-            db.query(PurchaseLog)
-            .filter(
-                PurchaseLog.household_id == household_id,
-                PurchaseLog.canonical_item_id == item.id
-            )
-            .order_by(PurchaseLog.purchase_date.desc())
-            .first()
-        )
-        last_date = older.purchase_date if older else None
-
-        # Cold start heuristic based on shelf life
-        default_days = max(3, item.default_shelf_life_days)
-        estimated_daily = 1.0 / default_days
         return ItemVelocityOut(
             canonical_item_id=item.id,
             item_name=item.canonical_name,
             category=item.category,
             is_bulk=item.is_bulk,
-            daily_velocity=round(estimated_daily, 3),
-            per_capita_velocity=round(estimated_daily / members, 3),
+            daily_velocity=0.0,
+            per_capita_velocity=0.0,
             current_stock=round(current_stock, 2),
             unit=unit,
-            estimated_days_remaining=round(current_stock / estimated_daily, 1) if estimated_daily > 0 else None,
-            lookback_days=window_days,
+            estimated_days_remaining=None,
+            lookback_days=(180 if item.is_bulk else 30),
             purchase_count=0,
             confidence="cold_start",
-            last_purchased=last_date
+            last_purchased=None,
+            days_per_unit=None,
+            modal_quantity=1.0,
+            projected_runout_date=None,
+            needs_availability_check=False,
+            prompt_message=None
         )
 
-    # Calculate total purchased in window
-    total_purchased = sum(p.quantity for p in purchases)
-    last_purchased_date = purchases[-1].purchase_date
+    all_quantities = [p.quantity for p in purchases if p.quantity > 0]
+    modal_qty = calculate_modal_quantity(all_quantities)
+    last_p = purchases[-1]
+    last_date = last_p.purchase_date
+    last_qty = last_p.quantity
 
-    # Spoiled items during this window should NOT count as consumed
-    spoiled_inv: List[Inventory] = (
-        db.query(Inventory)
-        .filter(
-            Inventory.household_id == household_id,
-            Inventory.canonical_item_id == item.id,
-            Inventory.status == InventoryStatus.SPOILED,
-            Inventory.purchase_date >= start_date
+    # --- CASE 1: Only 1 purchase (Cold start - no arbitrary guesses, no user prompts) ---
+    if len(purchases) == 1:
+        elapsed = max(1, (as_of_date - last_date).days)
+        # Never prompt user for availability; single purchase does not trigger auto-reorders
+        return ItemVelocityOut(
+            canonical_item_id=item.id,
+            item_name=item.canonical_name,
+            category=item.category,
+            is_bulk=item.is_bulk,
+            daily_velocity=0.0,
+            per_capita_velocity=0.0,
+            current_stock=round(current_stock, 2),
+            unit=unit,
+            estimated_days_remaining=None,
+            lookback_days=max(180 if item.is_bulk else 30, elapsed),
+            purchase_count=1,
+            confidence="cold_start",
+            last_purchased=last_date,
+            days_per_unit=None,
+            modal_quantity=modal_qty,
+            projected_runout_date=None,
+            needs_availability_check=False,
+            prompt_message=None
         )
-        .all()
-    )
-    total_spoiled = sum(inv.current_quantity for inv in spoiled_inv)
 
-    # Effective consumed = Total purchased - current active stock - spoiled waste
-    gross_consumed = max(0.0, total_purchased - current_stock - total_spoiled)
+    # --- CASE 2: 2 or more purchases (Empirical Repurchase Rate) ---
+    unit_durations: List[float] = []
+    purchase_intervals: List[int] = []
 
-    # Apply guest meal discount
-    guest_factor = calculate_guest_discount_factor(db, household_id, start_date, as_of_date)
-    net_consumed = max(0.0, gross_consumed * (1.0 - guest_factor))
+    for i in range(1, len(purchases)):
+        prev_p = purchases[i - 1]
+        curr_p = purchases[i]
+        interval_days = (curr_p.purchase_date - prev_p.purchase_date).days
+        if interval_days > 0:
+            purchase_intervals.append(interval_days)
+            if prev_p.quantity > 0:
+                # E.g. 1 lb lasted 14 days -> 14 days per 1 lb
+                unit_durations.append(interval_days / prev_p.quantity)
 
-    # Calculate time span
-    if len(purchases) > 1:
-        first_date = purchases[0].purchase_date
-        elapsed_days = max(1, (as_of_date - first_date).days)
-        confidence = "high" if len(purchases) >= 3 else "moderate"
-    else:
-        elapsed_days = max(1, (as_of_date - purchases[0].purchase_date).days)
-        confidence = "moderate" if elapsed_days >= 7 else "cold_start"
+    avg_days_per_unit = sum(unit_durations) / len(unit_durations) if unit_durations else 14.0
+    avg_interval = sum(purchase_intervals) / len(purchase_intervals) if purchase_intervals else 14.0
 
-    # Daily consumption velocity
-    if net_consumed > 0 and elapsed_days > 0:
-        daily_velocity = net_consumed / elapsed_days
-    else:
-        # Fallback to total purchased divided by window or package shelf-life
-        shelf_life = max(3, item.default_shelf_life_days)
-        daily_velocity = total_purchased / max(elapsed_days, shelf_life)
+    daily_velocity = round(1.0 / avg_days_per_unit, 4) if avg_days_per_unit > 0 else 0.05
+    per_capita = round(daily_velocity / members, 4)
 
-    daily_velocity = round(daily_velocity, 3)
-    per_capita = round(daily_velocity / members, 3)
+    # Duration the last purchase goes:
+    # E.g. 2 lb * 14 days/lb = 28 days
+    projected_duration_days = round(last_qty * avg_days_per_unit, 1)
+    projected_runout = last_date + timedelta(days=round(projected_duration_days))
 
-    # Estimated days remaining before stock reaches zero
-    if daily_velocity > 0:
-        days_remaining = round(current_stock / daily_velocity, 1)
-    else:
-        days_remaining = None
+    # Estimated days remaining from as_of_date
+    days_remaining = (projected_runout - as_of_date).days
+    total_window_span = (as_of_date - purchases[0].purchase_date).days
 
     return ItemVelocityOut(
         canonical_item_id=item.id,
@@ -147,11 +150,17 @@ def compute_item_velocity(
         per_capita_velocity=per_capita,
         current_stock=round(current_stock, 2),
         unit=unit,
-        estimated_days_remaining=days_remaining,
-        lookback_days=window_days,
+        estimated_days_remaining=float(days_remaining),
+        lookback_days=max(30, total_window_span),
         purchase_count=len(purchases),
-        confidence=confidence,
-        last_purchased=last_purchased_date
+        confidence="high" if len(purchases) >= 3 else "moderate",
+        last_purchased=last_date,
+        days_per_unit=round(avg_days_per_unit, 2),
+        modal_quantity=modal_qty,
+        projected_runout_date=projected_runout,
+        needs_availability_check=False,
+        prompt_message=None,
+        avg_purchase_interval_days=round(avg_interval, 1)
     )
 
 
@@ -160,14 +169,13 @@ def generate_household_velocity_report(
     household_id: int = 1,
     as_of_date: Optional[date] = None
 ) -> HouseholdVelocityReport:
-    """Generate complete consumption velocity report for all items tracked by household."""
+    """Generate complete consumption velocity report for all tracked items."""
     if as_of_date is None:
         as_of_date = date.today()
 
     household = db.query(Household).filter(Household.id == household_id).first()
     members = household.member_count if household else 2
 
-    # Query all items that have either purchases or active inventory
     item_ids_with_purchases = db.query(PurchaseLog.canonical_item_id).filter(
         PurchaseLog.household_id == household_id,
         PurchaseLog.canonical_item_id.isnot(None)
@@ -178,7 +186,6 @@ def generate_household_velocity_report(
     ).distinct()
 
     active_item_ids = {r[0] for r in item_ids_with_purchases}.union({r[0] for r in item_ids_with_inv})
-
     items = db.query(Item).filter(Item.id.in_(active_item_ids)).order_by(Item.category, Item.canonical_name).all()
 
     reports: List[ItemVelocityOut] = []

@@ -11,7 +11,7 @@ from sqlalchemy import (
     Enum as SQLEnum,
     Text
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 import enum
 
 from app.database import Base
@@ -37,6 +37,8 @@ class Item(Base):
     
     # Phase 3 Fields
     is_active = Column(Boolean, default=True, index=True)  # Soft-archiving
+    is_grocery = Column(Boolean, default=True, index=True)  # False for non-grocery (shoes, apparel, electronics, etc.)
+    default_unit_price = Column(Float, nullable=True)       # Benchmark unit price for cost estimation
     reorder_cadence_days = Column(Integer, nullable=True)   # Periodic modulo scheduler (e.g. 7, 14, 30)
     preferred_store = Column(String(100), nullable=True)     # Store routing
     
@@ -81,6 +83,24 @@ class Household(Base):
     grocery_list_entries = relationship("GroceryListEntry", back_populates="household")
 
 
+class ReceiptUpload(Base):
+    """Record of an uploaded receipt/bill file."""
+    __tablename__ = "receipt_uploads"
+
+    id = Column(Integer, primary_key=True, index=True)
+    household_id = Column(Integer, ForeignKey("household.id"), nullable=False, default=1)
+    filename = Column(String(255), nullable=False)
+    store_name = Column(String(100), default="Grocery Store")
+    bill_date = Column(Date, nullable=False)
+    total_items = Column(Integer, default=0)
+    total_amount = Column(Float, default=0.0)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    household = relationship("Household", backref="receipt_uploads")
+    purchases = relationship("PurchaseLog", back_populates="bill", cascade="all, delete-orphan")
+
+
 class PurchaseLog(Base):
     """Historical transaction line items parsed from receipts/bills."""
     __tablename__ = "purchase_logs"
@@ -94,13 +114,16 @@ class PurchaseLog(Base):
     quantity = Column(Float, default=1.0)
     unit = Column(String(50), default="count")
     price = Column(Float, nullable=True)
+    unit_price = Column(Float, nullable=True)
     matched_via = Column(String(50), default="exact")
     confidence = Column(Float, default=1.0)
+    bill_id = Column(Integer, ForeignKey("receipt_uploads.id", ondelete="CASCADE"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     household = relationship("Household", back_populates="purchases")
     item = relationship("Item", back_populates="purchases")
+    bill = relationship("ReceiptUpload", back_populates="purchases")
 
 
 class Inventory(Base):
@@ -116,7 +139,17 @@ class Inventory(Base):
     purchase_date = Column(Date, nullable=False)
     expiration_date = Column(Date, nullable=True)
     status = Column(SQLEnum(InventoryStatus), default=InventoryStatus.ACTIVE, index=True)
+    is_confirmed = Column(Boolean, default=False, nullable=True)
+    store_name = Column(String(200), nullable=True)
+    price = Column(Float, nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    @validates("current_quantity")
+    def validate_quantity(self, key, value):
+        if value is not None and value <= 0:
+            self.status = InventoryStatus.CONSUMED
+            return 0.0
+        return value
 
     # Relationships
     household = relationship("Household", back_populates="inventory_items")
@@ -151,8 +184,9 @@ class GroceryListEntry(Base):
     recommended_quantity = Column(Float, default=1.0)
     unit = Column(String(50), default="count")
     estimated_cost = Column(Float, nullable=True)
-    priority_reason = Column(String(50), default="RUNNING_LOW")  # CRITICAL_DEPLETION, RUNNING_LOW, EXPIRING_SOON, SCHEDULED_CADENCE, MANUAL
+    priority_reason = Column(String(50), default="RUNNING_LOW")  # CRITICAL_DEPLETION, RUNNING_LOW, SCHEDULED_PERIODIC, MANUAL, CONFIRMED_DEPLETED
     is_checked = Column(Boolean, default=False)
+    is_dismissed = Column(Boolean, default=False, nullable=True)
     estimated_runout_date = Column(Date, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

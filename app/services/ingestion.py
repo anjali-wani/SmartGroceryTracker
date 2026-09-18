@@ -5,8 +5,33 @@ from typing import List, Dict, Any, Tuple, Optional
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from app.models import PurchaseLog, Inventory, InventoryStatus, Item
-from app.normalizer import extract_quantity_and_unit, UNIT_MAP
+from app.models import PurchaseLog, Inventory, InventoryStatus, Item, ItemAlias, ReceiptUpload
+from app.services.inventory_service import reconcile_repurchased_inventory
+from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name
+
+NON_GROCERY_KEYWORDS = [
+    "shoe", "shoes", "sneaker", "sneakers", "sandal", "sandals", "boot", "boots",
+    "shirt", "pants", "sock", "socks", "clothing", "apparel", "wear", "jacket",
+    "hanger", "hangers", "planter", "pot", "plant pot", "soil", "pomix", "potting",
+    "hardware", "battery", "batteries", "cable", "electronic", "electronics", "charger",
+    "appliance", "tool", "tools", "bag", "paper bag", "shopping bag", "bagfee",
+    "cleaner", "detergent", "soap", "shampoo", "candle", "candles", "towel", "blanket",
+    "bedsheet", "pillow", "canvas", "paint", "clay", "crayon", "memo book", "ribbon", "pen", "bic"
+]
+
+NON_GROCERY_CATEGORIES = [
+    "non-grocery", "non grocery", "apparel", "shoes", "footwear", "clothing",
+    "crafts", "art supplies", "craft", "home goods", "household / apparel",
+    "household / bags", "supplies", "stationery", "office supplies", "lawn & garden",
+    "lawn", "garden", "electronics", "hardware", "personal care"
+]
+
+def is_non_grocery_text(name: str, cat: Optional[str] = None) -> bool:
+    if cat and any(k in cat.lower() for k in NON_GROCERY_CATEGORIES):
+        return True
+    text = f"{name} {cat or ''}".lower()
+    return any(re.search(rf"{re.escape(kw)}", text) for kw in NON_GROCERY_KEYWORDS)
+
 from app.resolution import EntityResolver
 from app.schemas import CSVUploadSummary, ProcessedLineItem
 
@@ -142,7 +167,7 @@ def clean_currency_val(val: Any) -> Optional[float]:
         return None
 
 
-def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -> CSVUploadSummary:
+def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, filename: str = "receipt.csv") -> CSVUploadSummary:
     """Process raw CSV bill upload, run normalization, entity resolution, and update inventory.
     
     Seamlessly handles CSVs WITH or WITHOUT header row.
@@ -166,6 +191,9 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
 
     latest_date = date.today()
     primary_store = "Grocery Store"
+
+    # Maintain separate bill records per (store_name, date) combination
+    bills_map: Dict[Tuple[str, date], ReceiptUpload] = {}
 
     for _, row in df.iterrows():
         raw_item_str = str(row[col_map["item"]]).strip()
@@ -197,10 +225,12 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
         if "price" in col_map and pd.notna(row[col_map["price"]]):
             price_val = clean_currency_val(row[col_map["price"]])
 
-        if price_val is None and "unit_price" in col_map and pd.notna(row[col_map["unit_price"]]):
-            unit_price_val = clean_currency_val(row[col_map["unit_price"]])
-            if unit_price_val is not None and extracted_qty > 0:
-                price_val = round(extracted_qty * unit_price_val, 2)
+        raw_unit_price_val = None
+        if "unit_price" in col_map and pd.notna(row[col_map["unit_price"]]):
+            raw_unit_price_val = clean_currency_val(row[col_map["unit_price"]])
+
+        if price_val is None and raw_unit_price_val is not None and extracted_qty > 0:
+            price_val = round(extracted_qty * raw_unit_price_val, 2)
 
         if price_val is not None:
             total_amount += price_val
@@ -215,6 +245,32 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
         if "store" in col_map and pd.notna(row[col_map["store"]]):
             row_store = str(row[col_map["store"]]).strip()
             primary_store = row_store
+
+        # Bill record per (row_store, row_date)
+        bill_key = (row_store, row_date)
+        if bill_key not in bills_map:
+            existing_bill = db.query(ReceiptUpload).filter(
+                ReceiptUpload.household_id == household_id,
+                ReceiptUpload.store_name == row_store,
+                ReceiptUpload.bill_date == row_date
+            ).first()
+            if not existing_bill:
+                existing_bill = ReceiptUpload(
+                    household_id=household_id,
+                    filename=filename,
+                    store_name=row_store,
+                    bill_date=row_date,
+                    total_items=0,
+                    total_amount=0.0
+                )
+                db.add(existing_bill)
+                db.flush()
+            bills_map[bill_key] = existing_bill
+
+        bill_record = bills_map[bill_key]
+        bill_record.total_items += 1
+        if price_val:
+            bill_record.total_amount += price_val
 
         # 5. Row-level Category
         row_category = None
@@ -231,15 +287,97 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
             category = res.canonical_item.category
             shelf_life = res.canonical_item.default_shelf_life_days
             status = "matched"
+            matched_via_val = res.matched_via
+            confidence_val = res.confidence
         else:
-            unresolved_count += 1
-            canonical_id = None
-            canonical_name = None
-            category = row_category or "Uncategorized"
-            shelf_life = 7
-            status = "unresolved"
+            # Automated Canonical Item Creation for brand-new unrecognized products
+            canonical_title = clean_name.strip().title() if clean_name else raw_item_str.strip().title()
+            
+            # Check if this item is non-grocery (e.g. shoes, planter, apparel, hardware, electronics)
+            if is_non_grocery_text(canonical_title, row_category):
+                category = "Non-Grocery"
+                is_grocery = False
+                shelf_life = 365
+                is_bulk = False
+            else:
+                is_grocery = True
+                category = row_category or "Pantry"
+                cat_lower = category.lower()
+                if any(k in cat_lower for k in ["produce", "fruit", "veg"]):
+                    shelf_life = 7
+                    is_bulk = False
+                elif any(k in cat_lower for k in ["dairy", "cheese", "milk", "egg", "bakery", "bread"]):
+                    shelf_life = 10
+                    is_bulk = False
+                elif any(k in cat_lower for k in ["meat", "seafood", "poultry", "fish"]):
+                    shelf_life = 5
+                    is_bulk = False
+                elif any(k in cat_lower for k in ["grain", "rice", "flour", "spice", "oil", "pantry"]):
+                    shelf_life = 180
+                    is_bulk = extracted_qty >= 5.0 or "rice" in canonical_title.lower() or "flour" in canonical_title.lower()
+                else:
+                    shelf_life = 14
+                    is_bulk = False
+
+            # Check if canonical_title exists in db already (case-insensitive)
+            existing_item = db.query(Item).filter(Item.canonical_name.ilike(canonical_title)).first()
+            if not existing_item:
+                new_item = Item(
+                    canonical_name=canonical_title,
+                    category=category,
+                    standard_unit=extracted_unit or "count",
+                    default_shelf_life_days=shelf_life,
+                    is_bulk=is_bulk,
+                    is_active=True,
+                    is_grocery=is_grocery,
+                    preferred_store=row_store
+                )
+                db.add(new_item)
+                db.flush()
+            else:
+                new_item = existing_item
+
+            # Register raw receipt text and clean name as permanent aliases
+            raw_alias_str = raw_item_str.strip().lower()
+            if not db.query(ItemAlias).filter(ItemAlias.raw_alias == raw_alias_str).first():
+                new_alias = ItemAlias(
+                    canonical_item_id=new_item.id,
+                    raw_alias=raw_alias_str,
+                    match_confidence=1.0,
+                    source="auto_created"
+                )
+                db.add(new_alias)
+
+            if clean_name and clean_name.strip().lower() != raw_alias_str:
+                clean_alias_str = clean_name.strip().lower()
+                if not db.query(ItemAlias).filter(ItemAlias.raw_alias == clean_alias_str).first():
+                    c_alias = ItemAlias(
+                        canonical_item_id=new_item.id,
+                        raw_alias=clean_alias_str,
+                        match_confidence=1.0,
+                        source="auto_created"
+                    )
+                    db.add(c_alias)
+
+            # Update resolver in-memory corpus so subsequent rows in this CSV resolve immediately
+            resolver.canonical_map[normalize_item_name(new_item.canonical_name)] = new_item
+            resolver.alias_map[normalize_item_name(raw_alias_str)] = (new_item, 1.0)
+            resolver.fuzzy_corpus[normalize_item_name(new_item.canonical_name)] = new_item
+            resolver.fuzzy_corpus[normalize_item_name(raw_alias_str)] = new_item
+
+            canonical_id = new_item.id
+            canonical_name = new_item.canonical_name
+            shelf_life = new_item.default_shelf_life_days
+            matched_count += 1
+            status = "auto_created"
+            matched_via_val = "auto_created"
+            confidence_val = 1.0
 
         # 7. Record into PurchaseLog
+        calc_unit_price = raw_unit_price_val
+        if calc_unit_price is None and price_val is not None and extracted_qty > 0:
+            calc_unit_price = round(price_val / extracted_qty, 2)
+
         purchase_log = PurchaseLog(
             household_id=household_id,
             purchase_date=row_date,
@@ -249,21 +387,45 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
             quantity=extracted_qty,
             unit=extracted_unit,
             price=price_val,
-            matched_via=res.matched_via,
-            confidence=res.confidence
+            unit_price=calc_unit_price,
+            matched_via=matched_via_val,
+            confidence=confidence_val,
+            bill_id=bill_record.id
         )
         db.add(purchase_log)
+        db.flush()
 
-        # 8. Update Active Inventory (skip non-food supplies like Paper Bag)
-        if canonical_id and "supplies" not in (category or "").lower():
-            expiration_date = row_date + timedelta(days=shelf_life)
+        # 8. Update Active Inventory with Repurchase Auto-Consumption:
+        # Check if item is grocery
+        target_item = db.query(Item).filter(Item.id == canonical_id).first() if canonical_id else None
+        item_is_grocery = target_item.is_grocery if (target_item and hasattr(target_item, 'is_grocery')) else True
+        if target_item and target_item.category == "Non-Grocery":
+            item_is_grocery = False
+
+        if canonical_id and item_is_grocery and "supplies" not in (category or "").lower():
+            # If purchased again, previous active stock is consumed!
+            prev_active = (
+                db.query(Inventory)
+                .filter(
+                    Inventory.household_id == household_id,
+                    Inventory.canonical_item_id == canonical_id,
+                    Inventory.status == InventoryStatus.ACTIVE,
+                    Inventory.purchase_date <= row_date
+                )
+                .all()
+            )
+            for old_inv in prev_active:
+                old_inv.current_quantity = 0.0
+                old_inv.status = InventoryStatus.CONSUMED
+
             inventory_item = Inventory(
                 household_id=household_id,
                 canonical_item_id=canonical_id,
+                purchase_log_id=purchase_log.id,
                 current_quantity=extracted_qty,
                 unit=extracted_unit,
                 purchase_date=row_date,
-                expiration_date=expiration_date,
+                expiration_date=None,
                 status=InventoryStatus.ACTIVE
             )
             db.add(inventory_item)
@@ -276,11 +438,18 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
             quantity=extracted_qty,
             unit=extracted_unit,
             price=price_val,
-            matched_via=res.matched_via,
-            confidence=res.confidence,
+            matched_via=matched_via_val,
+            confidence=confidence_val,
             status=status
         ))
 
+    # Finalize all bill records
+    for b in bills_map.values():
+        b.total_amount = round(b.total_amount, 2)
+    
+    first_bill_id = list(bills_map.values())[0].id if bills_map else None
+
+    reconcile_repurchased_inventory(db, household_id)
     db.commit()
 
     return CSVUploadSummary(
@@ -290,5 +459,6 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1) -
         matched_rows=matched_count,
         unresolved_rows=unresolved_count,
         total_amount=round(total_amount, 2),
-        processed_items=processed_items
+        processed_items=processed_items,
+        bill_id=first_bill_id or 1
     )

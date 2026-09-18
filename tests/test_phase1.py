@@ -105,7 +105,7 @@ def test_entity_resolution_exact_and_fuzzy(db_session):
     # Unresolved edge case
     res = resolver.resolve("UNKNOWN RANDOM WIDGET XYZ123")
     assert res.canonical_item is None
-    assert res.matched_via == "unresolved"
+    assert res.matched_via in ["unresolved", "gemini_llm"]
 
 
 # --- Test API Endpoints ---
@@ -172,3 +172,35 @@ LARGE GRADE A EGGS 24 CT,6.49,24,count,2026-09-08,Costco Wholesale
     assert "Whole Milk" in inv_names
     assert "Bananas" in inv_names
     assert "Large Grade A Eggs" in inv_names
+
+
+def test_auto_create_new_item_on_csv_upload(client, db_session):
+    # Upload an item that definitely does not exist in seed data
+    novel_csv = b"""Date,Store Name,Item Description,Category,Total Price,Quantity,Unit,Unit Price,Pricing Type
+2026-09-14,Farmer Market,EXOTIC PURPLE DRAGON FRUIT,Produce,7.99,2,count,3.99,Fixed
+"""
+    files = {"file": ("dragon_fruit.csv", novel_csv, "text/csv")}
+    res = client.post("/bills/upload-csv", files=files)
+    assert res.status_code == 201
+    summary = res.json()
+    assert summary["total_rows"] == 1
+    assert summary["matched_rows"] == 1
+    assert summary["unresolved_rows"] == 0
+    assert summary["processed_items"][0]["status"] == "auto_created"
+
+    # Verify that Item was created in database
+    dragon_fruit = db_session.query(Item).filter(Item.canonical_name.ilike("%Dragon Fruit%")).first()
+    assert dragon_fruit is not None
+    assert dragon_fruit.category == "Produce"
+    assert dragon_fruit.standard_unit == "count"
+
+    # Verify alias was registered
+    aliases = db_session.query(ItemAlias).filter(ItemAlias.canonical_item_id == dragon_fruit.id).all()
+    raw_aliases = [a.raw_alias for a in aliases]
+    assert any("dragon fruit" in a for a in raw_aliases)
+
+    # Verify active inventory was created
+    inv = db_session.query(Inventory).filter(Inventory.canonical_item_id == dragon_fruit.id).first()
+    assert inv is not None
+    assert inv.current_quantity == 2.0
+    assert inv.unit == "count"

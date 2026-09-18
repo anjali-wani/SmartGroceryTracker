@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import GroceryListEntry
+from app.models import GroceryListEntry, Item
 from app.schemas import GroceryListResponse, GroceryListItemOut, ManualListItemCreate
 from app.services.list_generator import generate_smart_grocery_list
 
@@ -27,17 +27,34 @@ def add_custom_grocery_item(
     household_id: int = Query(1, description="Household ID"),
     db: Session = Depends(get_db)
 ):
-    """Add a manual item to the shopping list (e.g. Party napkins, birthday candles)."""
+    """Add a manual item to the shopping list with canonical linking and price estimation."""
+    clean_name = payload.item_name.strip()
+    matched_item = db.query(Item).filter(Item.canonical_name.ilike(clean_name)).first()
+    canonical_id = matched_item.id if matched_item else None
+
+    if canonical_id:
+        db.query(GroceryListEntry).filter(
+            GroceryListEntry.household_id == household_id,
+            GroceryListEntry.canonical_item_id == canonical_id
+        ).update({"is_dismissed": False})
+
+    bench = 3.49
+    if matched_item and matched_item.default_unit_price:
+        bench = matched_item.default_unit_price
+    est_cost = round((payload.quantity or 1.0) * bench, 2)
+
     entry = GroceryListEntry(
         household_id=household_id,
-        canonical_item_id=None,
-        custom_item_name=payload.item_name.strip(),
-        category=payload.category or "General",
-        target_store=payload.target_store or "Any Store",
+        canonical_item_id=canonical_id,
+        custom_item_name=clean_name,
+        category=payload.category or (matched_item.category if matched_item else "General"),
+        target_store=payload.target_store or (matched_item.preferred_store if matched_item and matched_item.preferred_store else "Any Store"),
         recommended_quantity=payload.quantity,
         unit=payload.unit,
+        estimated_cost=est_cost,
         priority_reason="MANUAL",
-        is_checked=False
+        is_checked=False,
+        is_dismissed=False
     )
     db.add(entry)
     db.commit()
@@ -45,30 +62,36 @@ def add_custom_grocery_item(
 
     return GroceryListItemOut(
         id=entry.id,
-        canonical_item_id=None,
-        item_name=entry.custom_item_name,
+        canonical_item_id=entry.canonical_item_id,
+        item_name=clean_name,
         category=entry.category,
         target_store=entry.target_store,
         recommended_quantity=entry.recommended_quantity,
         unit=entry.unit,
-        estimated_cost=None,
+        estimated_cost=entry.estimated_cost,
         priority_reason=entry.priority_reason,
         is_checked=entry.is_checked,
         estimated_runout_date=None
     )
 
 
+@router.post("/items/{item_id}/toggle", response_model=GroceryListItemOut)
 @router.patch("/items/{item_id}/check", response_model=GroceryListItemOut)
 def toggle_check_grocery_item(
     item_id: int,
+    is_checked: Optional[bool] = Query(None, description="Optional target checked state"),
     db: Session = Depends(get_db)
 ):
-    """Toggle item bought/checked state on the active grocery list."""
+    """Toggle or set item checked state on the active grocery list."""
     entry = db.query(GroceryListEntry).filter(GroceryListEntry.id == item_id).first()
     if not entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grocery list entry not found.")
 
-    entry.is_checked = not entry.is_checked
+    if is_checked is not None:
+        entry.is_checked = is_checked
+    else:
+        entry.is_checked = not entry.is_checked
+
     db.commit()
     db.refresh(entry)
 
@@ -97,7 +120,17 @@ def delete_grocery_item(
     entry = db.query(GroceryListEntry).filter(GroceryListEntry.id == item_id).first()
     if not entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grocery list entry not found.")
-    db.delete(entry)
+    if entry.priority_reason == "MANUAL":
+        db.delete(entry)
+    else:
+        if entry.canonical_item_id:
+            db.query(GroceryListEntry).filter(
+                GroceryListEntry.household_id == entry.household_id,
+                GroceryListEntry.canonical_item_id == entry.canonical_item_id
+            ).update({"is_dismissed": True, "is_checked": True}, synchronize_session=False)
+        else:
+            entry.is_dismissed = True
+            entry.is_checked = True
     db.commit()
     return None
 

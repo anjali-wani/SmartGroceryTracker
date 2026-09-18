@@ -1,11 +1,10 @@
-import math
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Optional
 from sqlalchemy.orm import Session
 
-from app.models import Item, Inventory, InventoryStatus, PurchaseLog, GroceryListEntry, Household
+from app.models import GroceryListEntry, Item, PurchaseLog, Inventory, InventoryStatus
+from app.schemas import GroceryListResponse, GroceryListItemOut, AvailabilityPrompt
 from app.services.analytics import compute_item_velocity
-from app.schemas import GroceryListItemOut, GroceryListResponse
 
 
 def generate_smart_grocery_list(
@@ -15,41 +14,78 @@ def generate_smart_grocery_list(
     target_store: Optional[str] = None,
     as_of_date: Optional[date] = None
 ) -> GroceryListResponse:
-    """Evaluates inventory, daily velocity, and periodic schedules to generate a smart shopping list."""
+    """Evaluates purchase intervals, runout projections, and periodic schedules.
+    Completely decoupled from expiration dates.
+    """
     if as_of_date is None:
         as_of_date = date.today()
 
-    # Clear previously generated unchecked auto-items for this household to refresh draft
+    # Clear previously generated unchecked auto-items, preserving manual, dismissed, and confirmed depleted items
     db.query(GroceryListEntry).filter(
         GroceryListEntry.household_id == household_id,
         GroceryListEntry.is_checked == False,
-        GroceryListEntry.priority_reason != "MANUAL"
+        (GroceryListEntry.is_dismissed == False) | (GroceryListEntry.is_dismissed == None),
+        GroceryListEntry.priority_reason.notin_(["MANUAL", "CONFIRMED_DEPLETED"])
     ).delete(synchronize_session=False)
     db.commit()
 
-    # Query active canonical items (ignore soft-archived is_active=False)
+    # Track items already queued on the list
+    existing_queued_ids = set(
+        x[0] for x in db.query(GroceryListEntry.canonical_item_id).filter(
+            GroceryListEntry.household_id == household_id,
+            GroceryListEntry.is_checked == False,
+            GroceryListEntry.canonical_item_id.isnot(None)
+        ).all()
+    )
+    dismissed_canonical_ids = set(
+        x[0] for x in db.query(GroceryListEntry.canonical_item_id).filter(
+            GroceryListEntry.household_id == household_id,
+            GroceryListEntry.is_dismissed == True,
+            GroceryListEntry.canonical_item_id.isnot(None)
+        ).all()
+    )
+
+    # Find items relevant to this household (purchased or in inventory)
+    household_item_ids = set(
+        x[0] for x in db.query(PurchaseLog.canonical_item_id)
+        .filter(PurchaseLog.household_id == household_id, PurchaseLog.canonical_item_id.isnot(None))
+        .distinct()
+        .all()
+    ) | set(
+        x[0] for x in db.query(Inventory.canonical_item_id)
+        .filter(Inventory.household_id == household_id)
+        .distinct()
+        .all()
+    )
+
     active_items: List[Item] = (
         db.query(Item)
-        .filter(Item.is_active == True)
+        .filter(
+            Item.is_active == True,
+            Item.is_grocery == True,
+            Item.category != "Non-Grocery",
+            Item.id.in_(household_item_ids)
+        )
         .order_by(Item.category, Item.canonical_name)
         .all()
     )
 
+    availability_prompts: List[AvailabilityPrompt] = []
+
     for item in active_items:
-        # Check store filter if specified
         if target_store and item.preferred_store and item.preferred_store.lower() != target_store.lower():
             continue
 
+        if item.id in existing_queued_ids or item.id in dismissed_canonical_ids:
+            continue
+
         velocity_data = compute_item_velocity(item, db, household_id=household_id, as_of_date=as_of_date)
-        stock = velocity_data.current_stock
-        daily_v = velocity_data.daily_velocity
-        unit = item.standard_unit
 
         should_reorder = False
         priority = "RUNNING_LOW"
         est_runout_date = None
 
-        # 1. Periodic Purchase Scheduler (Date-Modulo Trigger) takes priority for recurring staples
+        # 1. Periodic Purchase Scheduler takes priority if configured
         if item.reorder_cadence_days and item.reorder_cadence_days > 0:
             last_purchase = velocity_data.last_purchased
             if last_purchase:
@@ -59,63 +95,79 @@ def generate_smart_grocery_list(
                     priority = "SCHEDULED_PERIODIC"
                     est_runout_date = as_of_date
             else:
-                # Never bought before but cadence is set
                 should_reorder = True
                 priority = "SCHEDULED_PERIODIC"
                 est_runout_date = as_of_date
 
-        # 2. Expiration Trigger: Active inventory will expire within forecast_days
-        if not should_reorder:
-            expiring_stock = (
-                db.query(Inventory)
-                .filter(
-                    Inventory.household_id == household_id,
-                    Inventory.canonical_item_id == item.id,
-                    Inventory.status == InventoryStatus.ACTIVE,
-                    Inventory.expiration_date <= as_of_date + timedelta(days=forecast_days)
-                )
-                .all()
-            )
-            if expiring_stock:
-                should_reorder = True
-                priority = "EXPIRING_SOON"
-                min_exp = min(inv.expiration_date for inv in expiring_stock)
-                est_runout_date = min_exp
+        # 2. Single-purchase items without periodic cadence: do not auto-reorder
+        elif velocity_data.purchase_count <= 1:
+            continue
 
-        # 3. Depletion Trigger: For items household actually consumes, stock is depleted or will run out
-        if not should_reorder and (velocity_data.last_purchased is not None or stock > 0):
-            if stock <= 0:
+        # 3. Purchase-Interval Runout Trigger:
+        # Trigger reorder if projected runout date is reached or within forecast_days
+        if not should_reorder and velocity_data.projected_runout_date:
+            days_until_runout = (velocity_data.projected_runout_date - as_of_date).days
+            if days_until_runout <= forecast_days:
                 should_reorder = True
-                priority = "CRITICAL_DEPLETION"
-                est_runout_date = as_of_date
-            elif daily_v > 0:
-                days_left = stock / daily_v
-                if days_left <= forecast_days:
-                    should_reorder = True
-                    priority = "CRITICAL_DEPLETION" if days_left <= 2.0 else "RUNNING_LOW"
-                    est_runout_date = as_of_date + timedelta(days=math.floor(days_left))
+                priority = "CRITICAL_DEPLETION" if days_until_runout <= 0 else "RUNNING_LOW"
+                est_runout_date = velocity_data.projected_runout_date
 
         if should_reorder:
-            # Calculate Recommended Reorder Quantity (7-day buffer or typical package quantity)
-            if item.is_bulk:
-                reorder_qty = 1.0  # e.g., 1 bulk unit (20lb rice, 1 liter oil)
-            elif daily_v > 0:
-                # 7-day supply buffer minus any remaining stock
-                needed = (daily_v * 7) - max(0.0, stock)
-                reorder_qty = max(1.0, math.ceil(needed))
-            else:
-                reorder_qty = 1.0
+            # Recommended quantity is the modal purchase quantity (with larger tie-breaker)
+            reorder_qty = velocity_data.modal_quantity if velocity_data.modal_quantity else 1.0
 
-            # Estimate cost based on last purchase price
+            CATEGORY_BENCHMARKS = {
+                "Produce": 2.49,
+                "Dairy": 4.29,
+                "Bakery": 3.99,
+                "Meat & Seafood": 8.99,
+                "Grains & Pasta": 4.49,
+                "Snacks": 3.29,
+                "Beverages": 3.99,
+                "Pantry": 3.99,
+                "General": 3.49
+            }
             last_p = (
                 db.query(PurchaseLog)
-                .filter(PurchaseLog.canonical_item_id == item.id, PurchaseLog.price.isnot(None))
+                .filter(
+                    PurchaseLog.household_id == household_id,
+                    PurchaseLog.canonical_item_id == item.id,
+                    PurchaseLog.price.isnot(None),
+                    PurchaseLog.price > 0
+                )
                 .order_by(PurchaseLog.purchase_date.desc())
                 .first()
             )
-            est_cost = round(last_p.price * (reorder_qty / max(1.0, last_p.quantity)), 2) if last_p and last_p.price else None
-
-            store = item.preferred_store or (last_p.store_name if last_p else "Any Store")
+            if last_p and last_p.price and last_p.price > 0:
+                est_cost = round(last_p.price * (reorder_qty / max(0.1, last_p.quantity)), 2)
+            elif item.default_unit_price and item.default_unit_price > 0:
+                est_cost = round(item.default_unit_price * reorder_qty, 2)
+            else:
+                benchmark = CATEGORY_BENCHMARKS.get(item.category, 3.49)
+                est_cost = round(benchmark * reorder_qty, 2)
+            # Check store ambiguity
+            if item.preferred_store:
+                store = item.preferred_store
+            else:
+                past_stores = [
+                    p.store_name for p in db.query(PurchaseLog.store_name)
+                    .filter(
+                        PurchaseLog.household_id == household_id,
+                        PurchaseLog.canonical_item_id == item.id,
+                        PurchaseLog.store_name.isnot(None)
+                    ).all()
+                    if p.store_name and p.store_name.strip()
+                ]
+                if past_stores:
+                    from collections import Counter
+                    counts = Counter(past_stores)
+                    most_common_store, count = counts.most_common(1)[0]
+                    if len(counts) == 1 or (count / len(past_stores) >= 0.60):
+                        store = most_common_store
+                    else:
+                        store = "Any Store"
+                else:
+                    store = last_p.store_name if last_p and last_p.store_name else "Any Store" 
 
             entry = GroceryListEntry(
                 household_id=household_id,
@@ -124,7 +176,7 @@ def generate_smart_grocery_list(
                 category=item.category,
                 target_store=store,
                 recommended_quantity=float(reorder_qty),
-                unit=unit,
+                unit=item.standard_unit,
                 estimated_cost=est_cost,
                 priority_reason=priority,
                 is_checked=False,
@@ -134,13 +186,28 @@ def generate_smart_grocery_list(
 
     db.commit()
 
-    # Query all entries (including manual ones)
-    all_entries = (
-        db.query(GroceryListEntry)
-        .filter(GroceryListEntry.household_id == household_id)
-        .order_by(GroceryListEntry.is_checked.asc(), GroceryListEntry.priority_reason.asc())
-        .all()
+    dismissed_canonical_ids = set(
+        x[0] for x in db.query(GroceryListEntry.canonical_item_id).filter(
+            GroceryListEntry.household_id == household_id,
+            GroceryListEntry.is_dismissed == True,
+            GroceryListEntry.canonical_item_id.isnot(None)
+        ).all()
     )
+
+    query = (
+        db.query(GroceryListEntry)
+        .outerjoin(Item, GroceryListEntry.canonical_item_id == Item.id)
+        .filter(
+            GroceryListEntry.household_id == household_id,
+            (GroceryListEntry.is_dismissed == False) | (GroceryListEntry.is_dismissed == None),
+            (Item.id == None) | ((Item.is_grocery == True) & (Item.category != "Non-Grocery"))
+        )
+    )
+    if dismissed_canonical_ids:
+        query = query.filter(
+            (GroceryListEntry.canonical_item_id.notin_(dismissed_canonical_ids)) | (GroceryListEntry.canonical_item_id == None)
+        )
+    all_entries = query.order_by(GroceryListEntry.is_checked.asc(), GroceryListEntry.priority_reason.asc()).all()
 
     items_out: List[GroceryListItemOut] = []
     items_by_store: Dict[str, List[dict]] = {}
@@ -149,9 +216,20 @@ def generate_smart_grocery_list(
 
     for e in all_entries:
         name = e.item.canonical_name if e.item else (e.custom_item_name or "Item")
-        cost = e.estimated_cost or 0.0
+        cost = e.estimated_cost
+        if cost is None or cost <= 0:
+            cat_lower = (e.category or (e.item.category if e.item else "") or "").lower()
+            bench = 3.49
+            for k, val in CATEGORY_BENCHMARKS.items():
+                if k in cat_lower:
+                    bench = val
+                    break
+            cost = round((e.recommended_quantity or 1.0) * bench, 2)
+            e.estimated_cost = cost
+            db.add(e)
+            
         if not e.is_checked:
-            total_cost += cost
+            total_cost += (cost or 0.0)
 
         item_dict = {
             "id": e.id,
@@ -168,14 +246,12 @@ def generate_smart_grocery_list(
         }
 
         items_out.append(GroceryListItemOut(**item_dict))
-
-        # Grouping
         store_key = e.target_store or "Any Store"
         items_by_store.setdefault(store_key, []).append(item_dict)
-
         cat_key = e.category or "General"
         items_by_cat.setdefault(cat_key, []).append(item_dict)
 
+    db.commit()
     return GroceryListResponse(
         household_id=household_id,
         forecast_days=forecast_days,
@@ -184,5 +260,6 @@ def generate_smart_grocery_list(
         total_estimated_cost=round(total_cost, 2),
         items=items_out,
         items_by_store=items_by_store,
-        items_by_category=items_by_cat
+        items_by_category=items_by_cat,
+        availability_prompts=availability_prompts
     )

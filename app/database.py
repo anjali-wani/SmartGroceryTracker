@@ -44,3 +44,49 @@ def get_db():
 def init_db():
     import app.models
     Base.metadata.create_all(bind=engine)
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE inventory ADD COLUMN is_confirmed BOOLEAN DEFAULT 0"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE purchase_logs ADD COLUMN bill_id INTEGER"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE items ADD COLUMN is_grocery BOOLEAN DEFAULT 1"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE items ADD COLUMN default_unit_price FLOAT"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE grocery_list_entries ADD COLUMN is_dismissed BOOLEAN DEFAULT 0"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE inventory ADD COLUMN store_name VARCHAR(200)"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE inventory ADD COLUMN price FLOAT"))
+            conn.commit()
+        except Exception:
+            pass
+
+
+    session = SessionLocal()
+    try:
+        reconcile_repurchased_inventory(session, 1)
+    except Exception:
+        pass
+    finally:
+        session.close()

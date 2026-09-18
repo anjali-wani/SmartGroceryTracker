@@ -58,10 +58,11 @@ def test_7_day_depletion_prediction(client, db_session):
     milk = db_session.query(Item).filter(Item.canonical_name == "Whole Milk").first()
     assert milk is not None
 
-    # Simulate purchases & low inventory (0.1 gallon remaining, runs out in 1 day)
-    p = PurchaseLog(household_id=1, purchase_date=today - timedelta(days=10), raw_text="WHOLE MILK 1 GAL", canonical_item_id=milk.id, quantity=1.0, unit="gallon", price=4.99)
-    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=0.1, unit="gallon", purchase_date=today - timedelta(days=10), expiration_date=today + timedelta(days=2), status=InventoryStatus.ACTIVE)
-    db_session.add_all([p, inv])
+    # Simulate multi-purchase history (Day -20 and Day -10) -> established frequency
+    p1 = PurchaseLog(household_id=1, purchase_date=today - timedelta(days=20), raw_text="WHOLE MILK 1 GAL", canonical_item_id=milk.id, quantity=1.0, unit="gallon", price=4.99)
+    p2 = PurchaseLog(household_id=1, purchase_date=today - timedelta(days=10), raw_text="WHOLE MILK 1 GAL", canonical_item_id=milk.id, quantity=1.0, unit="gallon", price=4.99)
+    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=0.1, unit="gallon", purchase_date=today - timedelta(days=10), status=InventoryStatus.ACTIVE)
+    db_session.add_all([p1, p2, inv])
     db_session.commit()
 
     res = client.get("/grocery-list/generate?days_ahead=7")
@@ -73,7 +74,7 @@ def test_7_day_depletion_prediction(client, db_session):
     item_names = [it["item_name"] for it in data["items"]]
     assert "Whole Milk" in item_names
     milk_entry = next(it for it in data["items"] if it["item_name"] == "Whole Milk")
-    assert milk_entry["priority_reason"] in ["CRITICAL_DEPLETION", "EXPIRING_SOON", "RUNNING_LOW"]
+    assert milk_entry["priority_reason"] in ["CRITICAL_DEPLETION", "RUNNING_LOW"]
 
 
 # --- 2. Test Periodic Purchase Scheduler (Cadence Modulo Trigger) ---
@@ -157,7 +158,7 @@ def test_purchase_deletion_and_rollback(client, db_session):
     eggs = db_session.query(Item).filter(Item.canonical_name == "Large Grade A Eggs").first()
 
     p = PurchaseLog(household_id=1, purchase_date=today, raw_text="MISTAKE EGGS", canonical_item_id=eggs.id, quantity=12.0, unit="count", price=4.00)
-    inv = Inventory(household_id=1, canonical_item_id=eggs.id, current_quantity=12.0, unit="count", purchase_date=today, expiration_date=today + timedelta(days=28), status=InventoryStatus.ACTIVE)
+    inv = Inventory(household_id=1, canonical_item_id=eggs.id, current_quantity=12.0, unit="count", purchase_date=today, status=InventoryStatus.ACTIVE)
     db_session.add_all([p, inv])
     db_session.commit()
     db_session.refresh(p)

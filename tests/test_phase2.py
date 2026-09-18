@@ -68,7 +68,7 @@ def test_consumption_velocity_calculation(db_session):
     db_session.add_all([p1, p2, p3])
 
     # Current active stock: 1 gallon remaining
-    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=1.0, unit="gallon", purchase_date=today, expiration_date=today + timedelta(days=10), status=InventoryStatus.ACTIVE)
+    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=1.0, unit="gallon", purchase_date=today, status=InventoryStatus.ACTIVE)
     db_session.add(inv)
     db_session.commit()
 
@@ -115,7 +115,7 @@ def test_guest_event_deduction(db_session):
 def test_inventory_adjust_endpoint(client, db_session):
     today = date.today()
     milk = db_session.query(Item).filter(Item.canonical_name == "Whole Milk").first()
-    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=2.0, unit="gallon", purchase_date=today, expiration_date=today + timedelta(days=5), status=InventoryStatus.ACTIVE)
+    inv = Inventory(household_id=1, canonical_item_id=milk.id, current_quantity=2.0, unit="gallon", purchase_date=today, status=InventoryStatus.ACTIVE)
     db_session.add(inv)
     db_session.commit()
     db_session.refresh(inv)
@@ -136,21 +136,32 @@ def test_inventory_adjust_endpoint(client, db_session):
     assert data["status"] == "SPOILED"
 
 
-# --- 5. Test Expiring Soon Endpoint ---
-def test_expiring_soon_endpoint(client, db_session):
+# --- 5. Test Household Active Stock & Consumed on Zero Quantity ---
+def test_household_active_stock_and_consumed_on_zero_quantity(client, db_session):
     today = date.today()
     spinach = db_session.query(Item).filter(Item.canonical_name == "Baby Spinach").first()
-    # Create inventory expiring tomorrow (+1 day)
-    inv = Inventory(household_id=1, canonical_item_id=spinach.id, current_quantity=1.0, unit="oz", purchase_date=today - timedelta(days=5), expiration_date=today + timedelta(days=1), status=InventoryStatus.ACTIVE)
-    db_session.add(inv)
+
+    # Household 1 item
+    inv1 = Inventory(household_id=1, canonical_item_id=spinach.id, current_quantity=2.0, unit="oz", purchase_date=today - timedelta(days=5), status=InventoryStatus.ACTIVE)
+    # Household 2 item
+    inv2 = Inventory(household_id=2, canonical_item_id=spinach.id, current_quantity=5.0, unit="oz", purchase_date=today - timedelta(days=2), status=InventoryStatus.ACTIVE)
+    db_session.add_all([inv1, inv2])
     db_session.commit()
 
-    res = client.get("/inventory/expiring-soon?days=3")
-    assert res.status_code == 200
-    items = res.json()
-    assert len(items) >= 1
-    exp_names = [it["item_name"] for it in items]
-    assert "Baby Spinach" in exp_names
+    # Verify Household 1 sees only inv1
+    res1 = client.get("/inventory/active?household_id=1")
+    assert res1.status_code == 200
+    h1_items = res1.json()
+    assert all(it["household_id"] == 1 for it in h1_items)
+    # Verify no expiration fields
+    assert all("expiration_date" not in it and "days_until_expiration" not in it for it in h1_items)
+
+    # Adjust inv1 quantity to 0 -> status MUST become CONSUMED
+    adj_res = client.post("/inventory/adjust", json={"inventory_id": inv1.id, "new_quantity": 0.0})
+    assert adj_res.status_code == 200
+    adj_data = adj_res.json()
+    assert adj_data["current_quantity"] == 0.0
+    assert adj_data["status"] == "CONSUMED" 
 
 
 # --- 6. Test Velocity API Endpoint ---
@@ -165,3 +176,40 @@ def test_velocity_report_endpoint(client):
     assert "daily_velocity" in first_item
     assert "per_capita_velocity" in first_item
     assert "lookback_days" in first_item
+
+
+# --- 7. Test Item Details Purchase History Actual Weight and Price ---
+def test_item_details_purchase_history_actual_weight_and_price(client, db_session):
+    tomato = db_session.query(Item).filter(Item.canonical_name == "Roma Tomatoes").first()
+    assert tomato is not None
+
+    log = PurchaseLog(
+        household_id=1,
+        canonical_item_id=tomato.id,
+        purchase_date=date(2026, 8, 30),
+        store_name="New India Bazar",
+        raw_text="TOMATO ROUND",
+        quantity=1.45,
+        unit="lb",
+        price=1.87,
+        unit_price=1.29,
+        matched_via="fuzzy",
+        confidence=0.95
+    )
+    db_session.add(log)
+    db_session.commit()
+
+    res = client.get(f"/items/{tomato.id}/details?household_id=1")
+    assert res.status_code == 200
+    data = res.json()
+    assert "purchase_history" in data
+    assert len(data["purchase_history"]) >= 1
+
+    entry = next((p for p in data["purchase_history"] if p["id"] == log.id), None)
+    assert entry is not None
+    assert entry["quantity"] == 1.45
+    assert entry["unit"] == "lb"
+    assert entry["price"] == 1.87
+    assert entry["unit_price"] == 1.29
+    assert entry["store_name"] == "New India Bazar"
+

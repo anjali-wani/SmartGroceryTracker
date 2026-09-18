@@ -72,3 +72,44 @@ def root_status():
 @app.get("/health", tags=["System"])
 def health_check():
     return {"status": "healthy"}
+
+from typing import Optional
+from fastapi import Depends, Query
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import GroceryListEntry, Inventory, PurchaseLog, GuestEvent
+
+
+@app.post("/system/reset", tags=["System"])
+def reset_database(
+    household_id: Optional[int] = Query(None, description="Reset only a specific household. If omitted, resets all test data."),
+    reseed: bool = Query(True, description="Re-seed default catalog"),
+    db: Session = Depends(get_db)
+):
+    """Reset transactional data (inventory, purchases, grocery lists, guest events) for testing."""
+    if household_id is not None:
+        db.query(GroceryListEntry).filter(GroceryListEntry.household_id == household_id).delete(synchronize_session=False)
+        db.query(Inventory).filter(Inventory.household_id == household_id).delete(synchronize_session=False)
+        db.query(PurchaseLog).filter(PurchaseLog.household_id == household_id).delete(synchronize_session=False)
+        db.query(GuestEvent).filter(GuestEvent.household_id == household_id).delete(synchronize_session=False)
+        db.commit()
+        return {
+            "status": "reset",
+            "household_id": household_id,
+            "message": f"All data for Household {household_id} has been reset."
+        }
+    else:
+        db.query(GroceryListEntry).delete(synchronize_session=False)
+        db.query(Inventory).delete(synchronize_session=False)
+        db.query(PurchaseLog).delete(synchronize_session=False)
+        db.query(GuestEvent).delete(synchronize_session=False)
+        db.commit()
+
+        if reseed:
+            seed_database(db)
+
+        return {
+            "status": "reset",
+            "all_households": True,
+            "message": "All test transactional data cleared and catalog ready."
+        }

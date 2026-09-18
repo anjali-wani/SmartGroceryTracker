@@ -7,6 +7,7 @@ from rapidfuzz import fuzz, process
 
 from app.models import Item, ItemAlias
 from app.normalizer import normalize_item_name
+from app.services.llm_resolver import resolve_with_gemini
 
 logger = logging.getLogger("entity_resolution")
 
@@ -117,6 +118,26 @@ class EntityResolver:
                     matched_via="heuristic_fallback",
                     matched_term=norm_term
                 )
+
+        # Tier 4: Gemini LLM Fallback
+        existing_names = [it.canonical_name for it in self.items]
+        llm_out = resolve_with_gemini(raw_product_name, existing_items=existing_names)
+        if llm_out:
+            if llm_out.matched_existing_canonical_name:
+                matched_item = next((it for it in self.items if it.canonical_name.lower() == llm_out.matched_existing_canonical_name.lower()), None)
+                if matched_item:
+                    return ResolutionResult(
+                        canonical_item=matched_item,
+                        confidence=0.92,
+                        matched_via="gemini_llm",
+                        matched_term=llm_out.matched_existing_canonical_name
+                    )
+            return ResolutionResult(
+                canonical_item=None,
+                confidence=0.85,
+                matched_via="gemini_llm",
+                matched_term=llm_out.canonical_name
+            )
 
         # Unresolved
         return ResolutionResult(
