@@ -213,3 +213,58 @@ def test_item_details_purchase_history_actual_weight_and_price(client, db_sessio
     assert entry["unit_price"] == 1.29
     assert entry["store_name"] == "New India Bazar"
 
+
+# --- 8. Test Beetroot Normalization & Weight/Price Calculation ---
+def test_beetroot_weight_and_price_resolution(client, db_session):
+    from app.normalizer import extract_quantity_and_unit
+
+    # Verify normalizer does not erase decimal weight like 0.89 lb as noise
+    prod, qty, unit = extract_quantity_and_unit("Beetroot 0.89 lb")
+    assert prod == "Beetroot"
+    assert qty == 0.89
+    assert unit == "lb"
+
+    prod2, qty2, unit2 = extract_quantity_and_unit("Beetroot per lb")
+    assert prod2 == "Beetroot"
+    assert unit2 == "lb"
+
+    beet = Item(
+        canonical_name="Beetroot",
+        category="Produce",
+        standard_unit="lb",
+        default_shelf_life_days=7,
+        default_unit_price=0.94
+    )
+    db_session.add(beet)
+    db_session.commit()
+
+    log = PurchaseLog(
+        household_id=1,
+        canonical_item_id=beet.id,
+        purchase_date=date(2026, 8, 1),
+        store_name="Grocery Store",
+        raw_text="Beetroot 0.89 lb @ 0.94/lb",
+        quantity=0.89,
+        unit="lb",
+        price=0.84,
+        unit_price=0.94,
+        matched_via="exact",
+        confidence=1.0
+    )
+    db_session.add(log)
+    db_session.commit()
+
+    res = client.get(f"/items/{beet.id}/details?household_id=1")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["item"]["canonical_name"] == "Beetroot"
+    assert data["item"]["default_unit_price"] == 0.94
+
+    entry = next((p for p in data["purchase_history"] if p["id"] == log.id), None)
+    assert entry is not None
+    assert entry["quantity"] == 0.89
+    assert entry["unit"] == "lb"
+    assert entry["unit_price"] == 0.94
+    assert entry["price"] == 0.84
+
+

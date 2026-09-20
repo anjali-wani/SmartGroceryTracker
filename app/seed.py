@@ -281,7 +281,7 @@ SEED_ITEMS = [
         "standard_unit": "g",
         "shelf_life": 180,
         "is_bulk": False,
-        "aliases": ["ramen masala noodles", "maggi noodles", "masala noodles", "ramen noodles", "ramen masala one sachet"]
+        "aliases": ["ramen masala noodles", "maggi noodles", "masala noodles", "ramen noodles"]
     },
     {
         "name": "Jasmine Rice",

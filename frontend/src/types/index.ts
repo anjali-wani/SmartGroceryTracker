@@ -12,6 +12,7 @@ export interface InventoryItem {
   status: InventoryStatus;
   store_name?: string;
   price?: number;
+  unit_price?: number;
 }
 
 export interface AvailabilityPrompt {

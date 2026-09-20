@@ -12,12 +12,24 @@ ENV/
 # Environment variables & secrets
 .env
 *.env
+.env.*
 !.env.example
 
-# Databases & runtime data
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+
+# Databases & runtime SQLite files
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
 *.sqlite3
+*.sqlite
 grocery_tracker.db
+grocery_tracker_test.db
 
 # Testing and coverage
 .pytest_cache/
@@ -26,6 +38,8 @@ htmlcov/
 
 # Operating System files
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
 
 # IDE & Editor files
@@ -34,6 +48,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Node / Frontend builds (in case run from root)
+# Node / Frontend builds & dependencies
 node_modules/
 dist/
+dist-ssr/
+frontend/node_modules/
+frontend/dist/
+*.local
+

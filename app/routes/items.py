@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Item, ItemAlias, Inventory, InventoryStatus, PurchaseLog
 from app.schemas import ItemOut, ItemCreate, ItemAliasOut, InventoryOut, ItemArchiveResponse, ItemScheduleUpdate, ItemDetailsOut, ItemPurchaseHistoryEntry, ItemConsumptionRhythm
+from app.normalizer import format_store_name
 
 router = APIRouter(prefix="/items", tags=["Items & Inventory"])
 
@@ -56,7 +57,7 @@ def create_canonical_item(item_in: ItemCreate, db: Session = Depends(get_db)):
         is_bulk=item_in.is_bulk,
         is_grocery=item_in.is_grocery,
         default_unit_price=item_in.default_unit_price,
-        preferred_store=item_in.preferred_store
+        preferred_store=format_store_name(item_in.preferred_store) if item_in.preferred_store else None
     )
     db.add(item)
     db.flush()
@@ -130,35 +131,45 @@ def get_current_inventory(
     for inv in inventory_items:
         store = inv.store_name
         price = inv.price
-        if not store or not price:
-            log = None
-            if inv.purchase_log_id:
-                log = db.query(PurchaseLog).filter(PurchaseLog.id == inv.purchase_log_id).first()
-            if not log:
-                log = (
-                    db.query(PurchaseLog)
-                    .filter(
-                        PurchaseLog.household_id == inv.household_id,
-                        PurchaseLog.canonical_item_id == inv.canonical_item_id,
-                        PurchaseLog.purchase_date == inv.purchase_date
-                    )
-                    .order_by(PurchaseLog.id.desc())
-                    .first()
+        unit_price = None
+
+        log = None
+        if inv.purchase_log_id:
+            log = db.query(PurchaseLog).filter(PurchaseLog.id == inv.purchase_log_id).first()
+        if not log:
+            log = (
+                db.query(PurchaseLog)
+                .filter(
+                    PurchaseLog.household_id == inv.household_id,
+                    PurchaseLog.canonical_item_id == inv.canonical_item_id,
+                    PurchaseLog.purchase_date == inv.purchase_date
                 )
-            if not log:
-                log = (
-                    db.query(PurchaseLog)
-                    .filter(
-                        PurchaseLog.household_id == inv.household_id,
-                        PurchaseLog.canonical_item_id == inv.canonical_item_id
-                    )
-                    .order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc())
-                    .first()
+                .order_by(PurchaseLog.id.desc())
+                .first()
+            )
+        if not log:
+            log = (
+                db.query(PurchaseLog)
+                .filter(
+                    PurchaseLog.household_id == inv.household_id,
+                    PurchaseLog.canonical_item_id == inv.canonical_item_id
                 )
-            if not store:
-                store = log.store_name if log and log.store_name else (inv.item.preferred_store if inv.item else "Grocery Store")
-            if not price:
-                price = log.price if log and log.price and log.price > 0 else (inv.item.default_unit_price if inv.item and inv.item.default_unit_price else 2.99)
+                .order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc())
+                .first()
+            )
+
+        if not store:
+            store = log.store_name if log and log.store_name else (inv.item.preferred_store if inv.item else "Grocery Store")
+        if not price:
+            price = log.price if log and log.price and log.price > 0 else (inv.item.default_unit_price if inv.item and inv.item.default_unit_price else 2.99)
+        
+        unit_price = (
+            log.unit_price if log and log.unit_price and log.unit_price > 0 else (
+                inv.item.default_unit_price if inv.item and inv.item.default_unit_price else (
+                    round(price / inv.current_quantity, 4) if price and inv.current_quantity > 0 else None
+                )
+            )
+        )
 
         out.append(InventoryOut(
             id=inv.id,
@@ -170,8 +181,9 @@ def get_current_inventory(
             unit=inv.unit,
             purchase_date=inv.purchase_date,
             status=inv.status,
-            store_name=store or "Grocery Store",
-            price=round(price, 2) if price else 2.99
+            store_name=store,
+            price=round(price, 2) if price else None,
+            unit_price=round(unit_price, 4) if unit_price else None
         ))
     return out
 
@@ -218,7 +230,7 @@ def update_item_schedule(
     if payload.reorder_cadence_days is not None:
         item.reorder_cadence_days = payload.reorder_cadence_days
     if payload.preferred_store is not None:
-        item.preferred_store = payload.preferred_store
+        item.preferred_store = format_store_name(payload.preferred_store) if payload.preferred_store else None
     if payload.default_unit_price is not None:
         item.default_unit_price = payload.default_unit_price
 
@@ -251,15 +263,26 @@ def get_item_full_details(
     if inv:
         store = inv.store_name
         price = inv.price
-        if not store or not price:
-            last_log = db.query(PurchaseLog).filter(
-                PurchaseLog.household_id == household_id,
-                PurchaseLog.canonical_item_id == item_id
-            ).order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc()).first()
-            if not store:
-                store = last_log.store_name if last_log and last_log.store_name else (item.preferred_store or "Grocery Store")
-            if not price:
-                price = last_log.price if last_log and last_log.price and last_log.price > 0 else (item.default_unit_price or 2.99)
+        unit_price = None
+
+        last_log = db.query(PurchaseLog).filter(
+            PurchaseLog.household_id == household_id,
+            PurchaseLog.canonical_item_id == item_id
+        ).order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc()).first()
+
+        if not store:
+            store = last_log.store_name if last_log and last_log.store_name else (item.preferred_store or "Grocery Store")
+        if not price:
+            price = last_log.price if last_log and last_log.price and last_log.price > 0 else (item.default_unit_price or 2.99)
+        
+        unit_price = (
+            last_log.unit_price if last_log and last_log.unit_price and last_log.unit_price > 0 else (
+                item.default_unit_price if item.default_unit_price and item.default_unit_price > 0 else (
+                    round(price / inv.current_quantity, 4) if price and inv.current_quantity > 0 else None
+                )
+            )
+        )
+
         active_inv_out = InventoryOut(
             id=inv.id,
             household_id=inv.household_id,
@@ -271,7 +294,8 @@ def get_item_full_details(
             purchase_date=inv.purchase_date,
             status=inv.status,
             store_name=store or "Grocery Store",
-            price=round(price, 2) if price else 2.99
+            price=round(price, 2) if price else 2.99,
+            unit_price=round(unit_price, 4) if unit_price else None
         )
 
     # 2. Consumption rhythm calculation
@@ -299,11 +323,16 @@ def get_item_full_details(
 
     item_out = ItemOut.model_validate(item)
     if item_out.default_unit_price is None:
-        recent_price = next((p.price for p in purchase_logs if p.price is not None and p.price > 0), None)
-        if not recent_price and active_inv_out and active_inv_out.price:
-            recent_price = active_inv_out.price
-        if recent_price:
-            item_out.default_unit_price = round(recent_price, 2)
+        recent_unit_rate = next((p.unit_price for p in purchase_logs if p.unit_price is not None and p.unit_price > 0), None)
+        if not recent_unit_rate:
+            for p in purchase_logs:
+                if p.price is not None and p.price > 0 and p.quantity and p.quantity > 0:
+                    recent_unit_rate = round(p.price / p.quantity, 2)
+                    break
+        if not recent_unit_rate and active_inv_out and active_inv_out.unit_price:
+            recent_unit_rate = active_inv_out.unit_price
+        if recent_unit_rate:
+            item_out.default_unit_price = round(recent_unit_rate, 2)
 
     history_out = []
     for p in purchase_logs:

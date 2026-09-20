@@ -7,7 +7,10 @@ import {
   fetchCurrentInventory,
   fetchGroceryList,
   checkBackendHealth,
-  resetDatabase
+  resetDatabase,
+  getDatabaseMode,
+  setDatabaseMode,
+  type DatabaseMode
 } from "./api/client";
 import type { InventoryItem, GroceryListResponse } from "./types";
 
@@ -18,6 +21,9 @@ export function App() {
     const saved = localStorage.getItem("sgt_household_id");
     return saved ? Number(saved) : 1;
   });
+
+  const [dbMode, setDbMode] = useState<DatabaseMode>(() => getDatabaseMode());
+  const [modeNotice, setModeNotice] = useState<string | null>(null);
 
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [groceryData, setGroceryData] = useState<GroceryListResponse | null>(null);
@@ -41,20 +47,31 @@ export function App() {
     }
   };
 
+  const handleDbModeChange = (newMode: DatabaseMode) => {
+    setDatabaseMode(newMode);
+    setDbMode(newMode);
+    setModeNotice(
+      newMode === "production"
+        ? "🟢 Active Database: Production (grocery_tracker.db) — Live user data mode."
+        : "🟡 Active Database: Test (grocery_tracker_test.db) — Sandbox data mode."
+    );
+    setTimeout(() => setModeNotice(null), 4000);
+  };
+
   useEffect(() => {
     localStorage.setItem("sgt_household_id", String(householdId));
     loadData();
-  }, [householdId]);
+  }, [householdId, dbMode]);
 
   const handleResetData = async () => {
     const confirmReset = window.confirm(
-      `⚠️ Reset Database in Test Mode?\n\nThis will clear all active/consumed inventory, purchase logs, and grocery lists for Household ${householdId} from the database.\n\nProceed?`
+      `⚠️ Reset Test Database?\n\nThis will clear test inventory, purchase logs, and test grocery lists for Household ${householdId} in the test database.\n\nProceed?`
     );
     if (!confirmReset) return;
 
     try {
       const res = await resetDatabase(householdId);
-      setResetMessage(res.message || "Database reset successfully!");
+      setResetMessage(res.message || "Test database reset successfully!");
       setTimeout(() => setResetMessage(null), 4000);
       await loadData();
     } catch (err: any) {
@@ -73,7 +90,40 @@ export function App() {
         inventoryCount={inventory.filter((i) => i.status === "ACTIVE" && i.current_quantity > 0).length}
         backendOnline={backendOnline}
         onResetData={handleResetData}
+        dbMode={dbMode}
+        onDbModeChange={handleDbModeChange}
       />
+
+      {modeNotice && (
+        <div
+          style={{
+            margin: "0 24px 16px",
+            padding: "10px 18px",
+            background: dbMode === "production"
+              ? "linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(18, 24, 38, 0.8))"
+              : "linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(18, 24, 38, 0.8))",
+            border: dbMode === "production"
+              ? "1px solid rgba(16, 185, 129, 0.4)"
+              : "1px solid rgba(245, 158, 11, 0.4)",
+            borderRadius: "12px",
+            color: dbMode === "production" ? "#34D399" : "#FBBF24",
+            fontWeight: 600,
+            fontSize: "0.82rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            animation: "fadeIn 0.2s ease-in-out"
+          }}
+        >
+          <span>{modeNotice}</span>
+          <button
+            onClick={() => setModeNotice(null)}
+            style={{ background: "transparent", border: "none", color: "#9CA3AF", cursor: "pointer", fontSize: "0.85rem" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {resetMessage && (
         <div
@@ -103,11 +153,12 @@ export function App() {
 
       <main style={{ padding: "0 24px" }}>
         {currentTab === "items" && (
-          <ItemsTab householdId={householdId} />
+          <ItemsTab key={`items-${dbMode}-${householdId}`} householdId={householdId} />
         )}
 
         {currentTab === "grocery" && (
           <GroceryListTab
+            key={`grocery-${dbMode}-${householdId}`}
             groceryData={groceryData}
             householdId={householdId}
             onRefresh={loadData}
@@ -116,6 +167,7 @@ export function App() {
 
         {currentTab === "bills" && (
           <IngestionTab
+            key={`bills-${dbMode}-${householdId}`}
             householdId={householdId}
             onRefresh={loadData}
           />

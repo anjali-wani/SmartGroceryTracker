@@ -3,9 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import init_db, SessionLocal
-from app.seed import seed_database
-from app.routes import bills, items, inventory, events, analytics, grocery_list
+from app.database import init_db
+from app.routes import bills, items, inventory, events, analytics, grocery_list, system
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,15 +16,11 @@ logger = logging.getLogger("grocery_engine")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan context manager: initializes tables and seeds database on startup."""
-    logger.info("Initializing database tables...")
-    init_db()
-    db = SessionLocal()
-    try:
-        logger.info("Seeding canonical grocery items & aliases...")
-        seed_database(db)
-    finally:
-        db.close()
+    """Lifespan context manager: initializes tables on startup.
+    Production is never seeded. Test database is initialized with test seed.
+    """
+    logger.info("Initializing database schemas...")
+    init_db(mode="both")
     logger.info("Smart Grocery Tracker & Nutrition Engine ready.")
     yield
 
@@ -56,6 +51,7 @@ app.include_router(inventory.router)
 app.include_router(events.router)
 app.include_router(analytics.router)
 app.include_router(grocery_list.router)
+app.include_router(system.router)
 
 
 @app.get("/", tags=["System"])

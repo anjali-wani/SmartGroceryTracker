@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, ItemAlias, ReceiptUpload
 from app.services.inventory_service import reconcile_repurchased_inventory
-from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name
+from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name, format_store_name
+from app.services.mapping_service import save_product_mapping
 
 NON_GROCERY_KEYWORDS = [
     "shoe", "shoes", "sneaker", "sneakers", "sandal", "sandals", "boot", "boots",
@@ -64,14 +65,14 @@ def load_dataframe_safely(file_bytes: bytes) -> Tuple[pd.DataFrame, Dict[str, st
         is_headerless = True
 
     if is_headerless and len(first_tokens) == 9:
-        df = pd.read_csv(io.BytesIO(file_bytes), header=None, names=DEFAULT_9_COLUMNS)
+        df = pd.read_csv(io.BytesIO(file_bytes), header=None, names=DEFAULT_9_COLUMNS, skipinitialspace=True)
     elif is_headerless:
         # Fallback headerless with generic N columns
-        df = pd.read_csv(io.BytesIO(file_bytes), header=None)
+        df = pd.read_csv(io.BytesIO(file_bytes), header=None, skipinitialspace=True)
         if df.shape[1] == 9:
             df.columns = DEFAULT_9_COLUMNS
     else:
-        df = pd.read_csv(io.BytesIO(file_bytes))
+        df = pd.read_csv(io.BytesIO(file_bytes), skipinitialspace=True)
 
     col_map = detect_csv_columns(df)
     return df, col_map
@@ -93,21 +94,28 @@ def detect_csv_columns(df: pd.DataFrame) -> Dict[str, str]:
 
     # Total Price / Cost column
     for candidate in [
+        "receipt price ($)", "receipt price", "total price ($)", "price ($)",
         "total price", "total", "price", "cost", "amount", 
-        "subtotal", "item price", "total amount"
+        "subtotal", "item price", "total amount", "receipt amount"
     ]:
         if candidate in normalized_cols:
             col_map["price"] = normalized_cols[candidate]
             break
 
     # Unit Price column
-    for candidate in ["unit price", "price per unit", "unit cost", "rate"]:
+    for candidate in [
+        "normalized unit price ($)", "normalized unit price", "unit price ($)",
+        "unit price", "price per unit", "unit cost", "rate"
+    ]:
         if candidate in normalized_cols:
             col_map["unit_price"] = normalized_cols[candidate]
             break
 
     # Quantity column
-    for candidate in ["quantity", "qty", "count", "units"]:
+    for candidate in [
+        "weight / qty", "weight/qty", "weight qty", "qty / weight",
+        "weight", "quantity", "qty", "count", "units"
+    ]:
         if candidate in normalized_cols:
             col_map["quantity"] = normalized_cols[candidate]
             break
@@ -118,6 +126,12 @@ def detect_csv_columns(df: pd.DataFrame) -> Dict[str, str]:
             col_map["unit"] = normalized_cols[candidate]
             break
 
+    # Standard Unit column
+    for candidate in ["std unit", "standard unit", "std_unit", "pricing unit", "pricing type", "std uom"]:
+        if candidate in normalized_cols:
+            col_map["std_unit"] = normalized_cols[candidate]
+            break
+
     # Date column
     for candidate in ["date", "purchase date", "bill date", "transaction date"]:
         if candidate in normalized_cols:
@@ -125,7 +139,10 @@ def detect_csv_columns(df: pd.DataFrame) -> Dict[str, str]:
             break
 
     # Store Name column
-    for candidate in ["store name", "store", "vendor", "merchant", "retailer"]:
+    for candidate in [
+        "store / outlet", "store/outlet", "outlet",
+        "store name", "store", "vendor", "merchant", "retailer"
+    ]:
         if candidate in normalized_cols:
             col_map["store"] = normalized_cols[candidate]
             break
@@ -137,6 +154,45 @@ def detect_csv_columns(df: pd.DataFrame) -> Dict[str, str]:
             break
 
     return col_map
+
+
+def parse_std_unit(std_unit_str: Optional[str], item_unit: Optional[str] = None) -> Tuple[float, str]:
+    """Extract (scale_factor, base_unit) from standard unit string like 'per 100g', 'per oz', 'per lb'.
+    
+    scale_factor represents how many base units (item_unit) the normalized unit price represents.
+    For example:
+      'per 100g' with item_unit='g'     -> factor=100.0, base_unit='g'
+      'per oz'   with item_unit='oz'    -> factor=1.0,   base_unit='oz'
+      'per lb'   with item_unit='lb'    -> factor=1.0,   base_unit='lb'
+      'per unit' with item_unit='count' -> factor=1.0,   base_unit='count'
+    """
+    if not std_unit_str or pd.isna(std_unit_str):
+        return 1.0, (item_unit or "count")
+
+    clean = re.sub(r"^(?:per|/)\s*", "", str(std_unit_str).strip().lower())
+    m = re.match(r"^(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?", clean)
+    if m:
+        factor = float(m.group(1))
+        unit_str = (m.group(2) or "").strip()
+    else:
+        factor = 1.0
+        unit_str = clean.strip()
+
+    norm_unit = UNIT_MAP.get(unit_str, unit_str or item_unit or "count")
+    if norm_unit in ["unit", "ea", "ct"]:
+        norm_unit = "count"
+
+    # Scale factor relative to item_unit if there is a known prefix/unit difference
+    if item_unit == "g" and norm_unit == "kg":
+        factor = factor * 1000.0
+    elif item_unit == "kg" and norm_unit == "g":
+        factor = factor / 1000.0
+    elif item_unit == "oz" and norm_unit == "lb":
+        factor = factor * 16.0
+    elif item_unit == "lb" and norm_unit == "oz":
+        factor = factor / 16.0
+
+    return (factor if factor > 0 else 1.0), (norm_unit or item_unit or "count")
 
 
 def parse_date_safely(date_val: Any) -> date:
@@ -220,7 +276,13 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             elif raw_unit and raw_unit not in ["nan", "none"]:
                 extracted_unit = raw_unit
 
-        # 3. Price handling: Total Price or fallback to Quantity * Unit Price
+        # 2b. Standard Unit handling (e.g. 'per 100g', 'per oz', 'per lb', 'per unit')
+        std_unit_str = None
+        if "std_unit" in col_map and pd.notna(row[col_map["std_unit"]]):
+            std_unit_str = str(row[col_map["std_unit"]]).strip()
+        scale_factor, _ = parse_std_unit(std_unit_str, extracted_unit)
+
+        # 3. Price handling: Total Price or fallback to (Quantity / scale_factor) * Unit Price
         price_val = None
         if "price" in col_map and pd.notna(row[col_map["price"]]):
             price_val = clean_currency_val(row[col_map["price"]])
@@ -238,10 +300,17 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                     pass
 
         if price_val is None and raw_unit_price_val is not None and extracted_qty > 0:
-            price_val = round(extracted_qty * raw_unit_price_val, 2)
+            price_val = round((extracted_qty / scale_factor) * raw_unit_price_val, 2)
 
         if price_val is not None:
             total_amount += price_val
+
+        # Base unit price (per single base unit like 1g, 1oz, 1lb, 1 count)
+        calc_unit_price = None
+        if raw_unit_price_val is not None and scale_factor > 0:
+            calc_unit_price = round(raw_unit_price_val / scale_factor, 4)
+        elif price_val is not None and extracted_qty > 0:
+            calc_unit_price = round(price_val / extracted_qty, 4)
 
         # 4. Row-level Date and Store Name
         row_date = date.today()
@@ -251,8 +320,10 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
 
         row_store = primary_store
         if "store" in col_map and pd.notna(row[col_map["store"]]):
-            row_store = str(row[col_map["store"]]).strip()
+            row_store = format_store_name(row[col_map["store"]])
             primary_store = row_store
+        else:
+            row_store = format_store_name(row_store)
 
         # Bill record per (row_store, row_date)
         bill_key = (row_store, row_date)
@@ -286,7 +357,7 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             row_category = str(row[col_map["category"]]).strip()
 
         # 6. Entity Resolution (Exact -> RapidFuzz -> Fallback)
-        res = resolver.resolve(clean_name)
+        res = resolver.resolve(clean_name, store_name=row_store, purchase_date=row_date)
 
         if res.canonical_item:
             matched_count += 1
@@ -297,9 +368,62 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             status = "matched"
             matched_via_val = res.matched_via
             confidence_val = res.confidence
+
+            if (not res.canonical_item.preferred_store or res.canonical_item.preferred_store == "Grocery Store") and row_store and row_store != "Grocery Store":
+                res.canonical_item.preferred_store = row_store
+
+            # If resolved via Gemini or persistent mapping cache, register aliases & update mapping file
+            if res.matched_via in ("gemini_llm", "product_mapping") or res.llm_resolved:
+                aliases_to_add = set()
+                if raw_item_str:
+                    aliases_to_add.add(raw_item_str.strip().lower())
+                if clean_name:
+                    aliases_to_add.add(clean_name.strip().lower())
+                if res.llm_resolved and res.llm_resolved.canonical_name:
+                    aliases_to_add.add(res.llm_resolved.canonical_name.strip().lower())
+
+                for a_str in aliases_to_add:
+                    if a_str and not db.query(ItemAlias).filter(ItemAlias.raw_alias == a_str).first():
+                        db.add(ItemAlias(
+                            canonical_item_id=res.canonical_item.id,
+                            raw_alias=a_str,
+                            match_confidence=res.confidence,
+                            source="gemini_mapped" if res.matched_via == "gemini_llm" else "mappings_cache"
+                        ))
+                        resolver.alias_map[normalize_item_name(a_str)] = (res.canonical_item, 1.0)
+                        resolver.fuzzy_corpus[normalize_item_name(a_str)] = res.canonical_item
+
+                # Only save to product_mappings.json if LLM call was successful
+                if res.llm_resolved and getattr(res.llm_resolved, "llm_success", False):
+                    try:
+                        brand_val = res.llm_resolved.canonical_name if res.llm_resolved.canonical_name else (clean_name or raw_item_str)
+                        save_product_mapping(
+                            raw_name=raw_item_str,
+                            clean_name=clean_name,
+                            brand_name=brand_val,
+                            generic_name=res.canonical_item.canonical_name,
+                            category=res.canonical_item.category,
+                            standard_unit=res.canonical_item.standard_unit,
+                            is_bulk=res.canonical_item.is_bulk
+                        )
+                    except Exception as e:
+                        logger.error(f"Error saving product mapping for '{raw_item_str}': {e}")
         else:
-            # Automated Canonical Item Creation for brand-new unrecognized products
-            canonical_title = clean_name.strip().title() if clean_name else raw_item_str.strip().title()
+            # Automated Canonical Item Creation using generic_name from LLM / file mapping
+            if res.llm_resolved and res.llm_resolved.generic_name:
+                canonical_title = res.llm_resolved.generic_name.strip().title()
+                category = res.llm_resolved.category or row_category or "Pantry"
+                extracted_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
+                is_bulk = res.llm_resolved.is_bulk
+            elif res.llm_resolved and res.llm_resolved.canonical_name:
+                canonical_title = res.llm_resolved.canonical_name.strip().title()
+                category = res.llm_resolved.category or row_category or "Pantry"
+                extracted_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
+                is_bulk = res.llm_resolved.is_bulk
+            else:
+                canonical_title = clean_name.strip().title() if clean_name else raw_item_str.strip().title()
+                category = row_category or "Pantry"
+                is_bulk = False
             
             # Check if this item is non-grocery (e.g. shoes, planter, apparel, hardware, electronics)
             if is_non_grocery_text(canonical_title, row_category):
@@ -309,23 +433,17 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                 is_bulk = False
             else:
                 is_grocery = True
-                category = row_category or "Pantry"
                 cat_lower = category.lower()
                 if any(k in cat_lower for k in ["produce", "fruit", "veg"]):
                     shelf_life = 7
-                    is_bulk = False
                 elif any(k in cat_lower for k in ["dairy", "cheese", "milk", "egg", "bakery", "bread"]):
                     shelf_life = 10
-                    is_bulk = False
                 elif any(k in cat_lower for k in ["meat", "seafood", "poultry", "fish"]):
                     shelf_life = 5
-                    is_bulk = False
                 elif any(k in cat_lower for k in ["grain", "rice", "flour", "spice", "oil", "pantry"]):
                     shelf_life = 180
-                    is_bulk = extracted_qty >= 5.0 or "rice" in canonical_title.lower() or "flour" in canonical_title.lower()
                 else:
                     shelf_life = 14
-                    is_bulk = False
 
             # Check if canonical_title exists in db already (case-insensitive)
             existing_item = db.query(Item).filter(Item.canonical_name.ilike(canonical_title)).first()
@@ -338,54 +456,68 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                     is_bulk=is_bulk,
                     is_active=True,
                     is_grocery=is_grocery,
+                    default_unit_price=calc_unit_price,
                     preferred_store=row_store
                 )
                 db.add(new_item)
                 db.flush()
             else:
                 new_item = existing_item
+                if (not new_item.default_unit_price or new_item.default_unit_price <= 0) and calc_unit_price:
+                    new_item.default_unit_price = calc_unit_price
+                if (not new_item.preferred_store or new_item.preferred_store == "Grocery Store") and row_store and row_store != "Grocery Store":
+                    new_item.preferred_store = row_store
 
-            # Register raw receipt text and clean name as permanent aliases
-            raw_alias_str = raw_item_str.strip().lower()
-            if not db.query(ItemAlias).filter(ItemAlias.raw_alias == raw_alias_str).first():
-                new_alias = ItemAlias(
-                    canonical_item_id=new_item.id,
-                    raw_alias=raw_alias_str,
-                    match_confidence=1.0,
-                    source="auto_created"
-                )
-                db.add(new_alias)
+            # Register raw receipt text, clean name, and brand name as permanent aliases
+            aliases_to_add = set()
+            if raw_item_str:
+                aliases_to_add.add(raw_item_str.strip().lower())
+            if clean_name:
+                aliases_to_add.add(clean_name.strip().lower())
+            if res.llm_resolved and res.llm_resolved.canonical_name:
+                aliases_to_add.add(res.llm_resolved.canonical_name.strip().lower())
 
-            if clean_name and clean_name.strip().lower() != raw_alias_str:
-                clean_alias_str = clean_name.strip().lower()
-                if not db.query(ItemAlias).filter(ItemAlias.raw_alias == clean_alias_str).first():
-                    c_alias = ItemAlias(
+            for alias_text in aliases_to_add:
+                if alias_text and not db.query(ItemAlias).filter(ItemAlias.raw_alias == alias_text).first():
+                    new_alias = ItemAlias(
                         canonical_item_id=new_item.id,
-                        raw_alias=clean_alias_str,
+                        raw_alias=alias_text,
                         match_confidence=1.0,
-                        source="auto_created"
+                        source="gemini_mapped" if res.llm_resolved else "auto_created"
                     )
-                    db.add(c_alias)
+                    db.add(new_alias)
+                    resolver.alias_map[normalize_item_name(alias_text)] = (new_item, 1.0)
+                    resolver.fuzzy_corpus[normalize_item_name(alias_text)] = new_item
+
+            # Save mapping to data/product_mappings.json ONLY if LLM call was successful and no errors occurred
+            if res.llm_resolved and getattr(res.llm_resolved, "llm_success", False):
+                try:
+                    brand_val = res.llm_resolved.canonical_name if res.llm_resolved.canonical_name else (clean_name or raw_item_str)
+                    save_product_mapping(
+                        raw_name=raw_item_str,
+                        clean_name=clean_name,
+                        brand_name=brand_val,
+                        generic_name=canonical_title,
+                        category=category,
+                        standard_unit=extracted_unit,
+                        is_bulk=is_bulk
+                    )
+                except Exception as e:
+                    logger.error(f"Error saving product mapping for '{raw_item_str}': {e}")
 
             # Update resolver in-memory corpus so subsequent rows in this CSV resolve immediately
             resolver.canonical_map[normalize_item_name(new_item.canonical_name)] = new_item
-            resolver.alias_map[normalize_item_name(raw_alias_str)] = (new_item, 1.0)
             resolver.fuzzy_corpus[normalize_item_name(new_item.canonical_name)] = new_item
-            resolver.fuzzy_corpus[normalize_item_name(raw_alias_str)] = new_item
 
             canonical_id = new_item.id
             canonical_name = new_item.canonical_name
             shelf_life = new_item.default_shelf_life_days
             matched_count += 1
             status = "auto_created"
-            matched_via_val = "auto_created"
-            confidence_val = 1.0
+            matched_via_val = res.matched_via or "auto_created"
+            confidence_val = res.confidence or 1.0
 
         # 7. Record into PurchaseLog
-        calc_unit_price = raw_unit_price_val
-        if calc_unit_price is None and price_val is not None and extracted_qty > 0:
-            calc_unit_price = round(price_val / extracted_qty, 2)
-
         purchase_log = PurchaseLog(
             household_id=household_id,
             purchase_date=row_date,
@@ -434,7 +566,9 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                 unit=extracted_unit,
                 purchase_date=row_date,
                 expiration_date=None,
-                status=InventoryStatus.ACTIVE
+                status=InventoryStatus.ACTIVE,
+                store_name=row_store,
+                price=price_val
             )
             db.add(inventory_item)
 

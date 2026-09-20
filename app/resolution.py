@@ -1,13 +1,14 @@
 import os
 import logging
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any
 from sqlalchemy.orm import Session
 from rapidfuzz import fuzz, process
 
 from app.models import Item, ItemAlias
 from app.normalizer import normalize_item_name
-from app.services.llm_resolver import resolve_with_gemini
+from app.services.llm_resolver import resolve_with_gemini, LLMResolvedItem
+from app.services.mapping_service import load_product_mappings
 
 logger = logging.getLogger("entity_resolution")
 
@@ -16,8 +17,10 @@ logger = logging.getLogger("entity_resolution")
 class ResolutionResult:
     canonical_item: Optional[Item]
     confidence: float
-    matched_via: str  # exact_alias, rapidfuzz, heuristic_fallback, unresolved
+    matched_via: str  # exact_alias, rapidfuzz, heuristic_fallback, product_mapping, gemini_llm, unresolved
     matched_term: str
+    llm_resolved: Optional[LLMResolvedItem] = None
+    llm_success: bool = False
 
 
 class EntityResolver:
@@ -27,7 +30,7 @@ class EntityResolver:
     3. Heuristic / Semantic fallback
     """
 
-    def __init__(self, db: Session, similarity_threshold: float = 75.0):
+    def __init__(self, db: Session, similarity_threshold: float = 85.0):
         self.db = db
         self.similarity_threshold = float(os.getenv("RAPIDFUZZ_THRESHOLD", similarity_threshold))
         self._load_catalog()
@@ -56,8 +59,16 @@ class EntityResolver:
         for norm_name, item in self.canonical_map.items():
             self.fuzzy_corpus[norm_name] = item
 
-    def resolve(self, raw_product_name: str) -> ResolutionResult:
-        """Execute 3-tier entity resolution on raw product name."""
+        # Cache persistent product mappings from data/product_mappings.json
+        self.file_mappings = load_product_mappings()
+
+    def resolve(
+        self,
+        raw_product_name: str,
+        store_name: Optional[str] = None,
+        purchase_date: Optional[Any] = None
+    ) -> ResolutionResult:
+        """Execute 4-tier entity resolution on raw product name."""
         normalized = normalize_item_name(raw_product_name)
         if not normalized:
             return ResolutionResult(
@@ -119,24 +130,77 @@ class EntityResolver:
                     matched_term=norm_term
                 )
 
+        # Tier 3.5: Persistent Product Mapping Cache (data/product_mappings.json)
+        if hasattr(self, "file_mappings") and normalized in self.file_mappings:
+            entry = self.file_mappings[normalized]
+            gen_title = entry.get("generic_name", "").strip().title()
+            norm_gen = normalize_item_name(gen_title)
+            cached_llm = LLMResolvedItem(
+                canonical_name=entry.get("brand_name", raw_product_name).strip().title(),
+                generic_name=gen_title.lower(),
+                category=entry.get("category", "Pantry"),
+                standard_unit=entry.get("standard_unit", "count"),
+                is_bulk=entry.get("is_bulk", False)
+            )
+
+            # Check if canonical generic item exists in current database
+            if norm_gen in self.canonical_map:
+                return ResolutionResult(
+                    canonical_item=self.canonical_map[norm_gen],
+                    confidence=0.98,
+                    matched_via="product_mapping",
+                    matched_term=gen_title,
+                    llm_resolved=cached_llm
+                )
+            else:
+                return ResolutionResult(
+                    canonical_item=None,
+                    confidence=0.95,
+                    matched_via="product_mapping",
+                    matched_term=gen_title,
+                    llm_resolved=cached_llm
+                )
+
         # Tier 4: Gemini LLM Fallback
         existing_names = [it.canonical_name for it in self.items]
-        llm_out = resolve_with_gemini(raw_product_name, existing_items=existing_names)
+        llm_out = resolve_with_gemini(
+            raw_product_name,
+            store_name=store_name,
+            existing_items=existing_names,
+            purchase_date=purchase_date
+        )
         if llm_out:
-            if llm_out.matched_existing_canonical_name:
-                matched_item = next((it for it in self.items if it.canonical_name.lower() == llm_out.matched_existing_canonical_name.lower()), None)
-                if matched_item:
-                    return ResolutionResult(
-                        canonical_item=matched_item,
-                        confidence=0.92,
-                        matched_via="gemini_llm",
-                        matched_term=llm_out.matched_existing_canonical_name
-                    )
+            # Use generic_name as the target canonical entity
+            target_generic = (llm_out.generic_name or llm_out.canonical_name or raw_product_name).strip().title()
+            norm_generic = normalize_item_name(target_generic)
+
+            matched_item = self.canonical_map.get(norm_generic)
+            if not matched_item and llm_out.matched_existing_canonical_name:
+                matched_item = next(
+                    (it for it in self.items if it.canonical_name.lower() == llm_out.matched_existing_canonical_name.lower()),
+                    None
+                )
+
+            is_successful = getattr(llm_out, "llm_success", False)
+            via = "gemini_llm" if is_successful else "heuristic_fallback"
+
+            if matched_item:
+                return ResolutionResult(
+                    canonical_item=matched_item,
+                    confidence=0.95 if is_successful else 0.70,
+                    matched_via=via,
+                    matched_term=matched_item.canonical_name,
+                    llm_resolved=llm_out,
+                    llm_success=is_successful
+                )
+
             return ResolutionResult(
                 canonical_item=None,
-                confidence=0.85,
-                matched_via="gemini_llm",
-                matched_term=llm_out.canonical_name
+                confidence=0.90 if is_successful else 0.65,
+                matched_via=via,
+                matched_term=target_generic,
+                llm_resolved=llm_out,
+                llm_success=is_successful
             )
 
         # Unresolved

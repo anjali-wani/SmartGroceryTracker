@@ -142,3 +142,111 @@ def normalize_item_name(name: str) -> str:
     """Canonicalize string: lowercase, remove non-alphanumeric, strip extra whitespace."""
     cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", name.lower())
     return re.sub(r"\s+", " ", cleaned).strip()
+
+
+WEIGHT_TO_GRAMS = {
+    "g": 1.0,
+    "gm": 1.0,
+    "gms": 1.0,
+    "gram": 1.0,
+    "grams": 1.0,
+    "kg": 1000.0,
+    "kilo": 1000.0,
+    "kilogram": 1000.0,
+    "oz": 28.3495,
+    "ounce": 28.3495,
+    "ounces": 28.3495,
+    "lb": 453.592,
+    "lbs": 453.592,
+    "pound": 453.592,
+    "pounds": 453.592,
+}
+
+VOLUME_TO_ML = {
+    "ml": 1.0,
+    "l": 1000.0,
+    "liter": 1000.0,
+    "liters": 1000.0,
+    "ltr": 1000.0,
+    "fl oz": 29.5735,
+    "fl_oz": 29.5735,
+    "floz": 29.5735,
+    "pt": 473.176,
+    "pint": 473.176,
+    "qt": 946.353,
+    "quart": 946.353,
+    "gal": 3785.41,
+    "gallon": 3785.41,
+    "gallons": 3785.41,
+    "1/2 gal": 1892.71,
+    "half_gallon": 1892.71,
+}
+
+
+def convert_quantity(qty: float, from_unit: str, to_unit: str) -> Optional[float]:
+    """Convert quantity between compatible weight or volume units.
+    Returns None if units are incompatible (e.g. weight to count).
+    """
+    if qty is None:
+        return None
+    if not from_unit or not to_unit:
+        return None
+    f = from_unit.strip().lower()
+    t = to_unit.strip().lower()
+    if f == t:
+        return qty
+
+    f_norm = UNIT_MAP.get(f, f)
+    t_norm = UNIT_MAP.get(t, t)
+    if f_norm == t_norm:
+        return qty
+
+    if f_norm in WEIGHT_TO_GRAMS and t_norm in WEIGHT_TO_GRAMS:
+        grams = qty * WEIGHT_TO_GRAMS[f_norm]
+        return grams / WEIGHT_TO_GRAMS[t_norm]
+
+    if f_norm in VOLUME_TO_ML and t_norm in VOLUME_TO_ML:
+        ml = qty * VOLUME_TO_ML[f_norm]
+        return ml / VOLUME_TO_ML[t_norm]
+
+    return None
+
+
+def format_store_name(store_str: Optional[str]) -> str:
+    """Format and normalize shop / store names to Title Case with clean spacing.
+    
+    Capitalizes the first letter of each new word while preserving apostrophes
+    and hyphens, stripping unwanted leading/trailing whitespace.
+
+    Examples:
+        ' new India bazar' -> 'New India Bazar'
+        'New India Bazar'  -> 'New India Bazar'
+        'NEW INDIA BAZAR'  -> 'New India Bazar'
+        'walmart'          -> 'Walmart'
+        ' patel'           -> 'Patel'
+        'trader joe\'s'    -> "Trader Joe's"
+        'h-mart'           -> 'H-Mart'
+        None / '' / 'nan'  -> 'Grocery Store'
+    """
+    if not store_str or str(store_str).strip().lower() in ("nan", "none", "", "null", "undefined"):
+        return "Grocery Store"
+
+    # Replace right single quotation marks (unicode apostrophes) and collapse multi-whitespace
+    s = re.sub(r"\s+", " ", str(store_str).replace("’", "'").strip())
+    words = s.split(" ")
+    capitalized_words = []
+    for w in words:
+        if not w:
+            continue
+        if "'" in w:
+            parts = w.split("'")
+            cap_w = parts[0].capitalize() + "'" + ("'".join(p.lower() for p in parts[1:]))
+        elif "-" in w:
+            parts = w.split("-")
+            cap_w = "-".join(p.capitalize() for p in parts)
+        else:
+            cap_w = w.capitalize()
+        capitalized_words.append(cap_w)
+
+    return " ".join(capitalized_words)
+

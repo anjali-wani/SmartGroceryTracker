@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.models import GroceryListEntry, Item, PurchaseLog, Inventory, InventoryStatus
 from app.schemas import GroceryListResponse, GroceryListItemOut, AvailabilityPrompt
 from app.services.analytics import compute_item_velocity
+from app.normalizer import convert_quantity, format_store_name
 
 
 def generate_smart_grocery_list(
@@ -73,7 +74,7 @@ def generate_smart_grocery_list(
     availability_prompts: List[AvailabilityPrompt] = []
 
     for item in active_items:
-        if target_store and item.preferred_store and item.preferred_store.lower() != target_store.lower():
+        if target_store and item.preferred_store and format_store_name(item.preferred_store).lower() != format_store_name(target_store).lower():
             continue
 
         if item.id in existing_queued_ids or item.id in dismissed_canonical_ids:
@@ -127,6 +128,8 @@ def generate_smart_grocery_list(
                 "Pantry": 3.99,
                 "General": 3.49
             }
+            est_cost = None
+
             last_p = (
                 db.query(PurchaseLog)
                 .filter(
@@ -135,22 +138,36 @@ def generate_smart_grocery_list(
                     PurchaseLog.price.isnot(None),
                     PurchaseLog.price > 0
                 )
-                .order_by(PurchaseLog.purchase_date.desc())
+                .order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc())
                 .first()
             )
-            if last_p and last_p.price and last_p.price > 0:
-                est_cost = round(last_p.price * (reorder_qty / max(0.1, last_p.quantity)), 2)
-            elif item.default_unit_price and item.default_unit_price > 0:
+
+            # 1. Try to compute from most recent purchase if unit is compatible
+            if last_p and last_p.price and last_p.price > 0 and last_p.quantity and last_p.quantity > 0:
+                p_unit = (last_p.unit or "").strip().lower()
+                target_unit = (item.standard_unit or "").strip().lower()
+
+                if p_unit == target_unit:
+                    est_cost = round(last_p.price * (reorder_qty / last_p.quantity), 2)
+                else:
+                    converted_p_qty = convert_quantity(last_p.quantity, p_unit, target_unit)
+                    if converted_p_qty and converted_p_qty > 0:
+                        est_cost = round(last_p.price * (reorder_qty / converted_p_qty), 2)
+
+            # 2. Fall back to item's default unit price (keyed to item.standard_unit)
+            if est_cost is None and item.default_unit_price and item.default_unit_price > 0:
                 est_cost = round(item.default_unit_price * reorder_qty, 2)
-            else:
+
+            # 3. Fall back to category benchmark
+            if est_cost is None:
                 benchmark = CATEGORY_BENCHMARKS.get(item.category, 3.49)
                 est_cost = round(benchmark * reorder_qty, 2)
             # Check store ambiguity
             if item.preferred_store:
-                store = item.preferred_store
+                store = format_store_name(item.preferred_store)
             else:
                 past_stores = [
-                    p.store_name for p in db.query(PurchaseLog.store_name)
+                    format_store_name(p.store_name) for p in db.query(PurchaseLog.store_name)
                     .filter(
                         PurchaseLog.household_id == household_id,
                         PurchaseLog.canonical_item_id == item.id,
@@ -167,7 +184,7 @@ def generate_smart_grocery_list(
                     else:
                         store = "Any Store"
                 else:
-                    store = last_p.store_name if last_p and last_p.store_name else "Any Store" 
+                    store = format_store_name(last_p.store_name) if last_p and last_p.store_name else "Any Store"
 
             entry = GroceryListEntry(
                 household_id=household_id,
@@ -246,7 +263,7 @@ def generate_smart_grocery_list(
         }
 
         items_out.append(GroceryListItemOut(**item_dict))
-        store_key = e.target_store or "Any Store"
+        store_key = format_store_name(e.target_store) if e.target_store and e.target_store.lower() not in ("any store", "any") else "Any Store"
         items_by_store.setdefault(store_key, []).append(item_dict)
         cat_key = e.category or "General"
         items_by_cat.setdefault(cat_key, []).append(item_dict)

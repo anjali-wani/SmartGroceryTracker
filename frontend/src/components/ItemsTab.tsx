@@ -179,14 +179,17 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
     }
   };
 
-  // Helper to compute item price for cards
+  // Helper to compute item benchmark unit price for cards
   const getItemPrice = (item: CanonicalItem): number | null => {
     if (item.default_unit_price != null && item.default_unit_price > 0) {
       return item.default_unit_price;
     }
     const inv = inventoryMap.get(item.id);
-    if (inv && inv.price != null && inv.price > 0) {
-      return inv.price;
+    if (inv && inv.unit_price != null && inv.unit_price > 0) {
+      return inv.unit_price;
+    }
+    if (inv && inv.price != null && inv.price > 0 && inv.current_quantity > 0) {
+      return Number((inv.price / inv.current_quantity).toFixed(2));
     }
     return null;
   };
@@ -645,9 +648,20 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
                       }}
                     >
                       <DollarSign size={13} color={price != null ? "#10B981" : "#6B7280"} />
-                      {price != null
-                        ? `$${Number(price).toFixed(2)} / ${item.standard_unit || "count"}`
-                        : "No price"}
+                      {(() => {
+                        if (price == null) return "No price";
+                        const u = (item.standard_unit || "").toLowerCase();
+                        if (u === "g" || u === "gm" || u === "gram" || u === "grams") {
+                          return `$${(price * 100).toFixed(2)} / 100g`;
+                        }
+                        if (u === "ml") {
+                          return `$${(price * 100).toFixed(2)} / 100ml`;
+                        }
+                        if (price < 0.01) {
+                          return `$${price.toFixed(4)} / ${item.standard_unit || "count"}`;
+                        }
+                        return `$${Number(price).toFixed(2)} / ${item.standard_unit || "count"}`;
+                      })()}
                     </span>
                   </div>
 

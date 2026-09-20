@@ -5,8 +5,10 @@ import {
   Receipt,
   Home,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  Database
 } from "lucide-react";
+import type { DatabaseMode } from "../api/client";
 
 interface NavbarProps {
   currentTab: string;
@@ -17,6 +19,8 @@ interface NavbarProps {
   inventoryCount: number;
   backendOnline: boolean;
   onResetData: () => void;
+  dbMode: DatabaseMode;
+  onDbModeChange: (mode: DatabaseMode) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -28,6 +32,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   inventoryCount: _inventoryCount,
   backendOnline,
   onResetData,
+  dbMode,
+  onDbModeChange,
 }) => {
   const tabs = [
     {
@@ -90,9 +96,53 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Controls: Household Switcher & Reset Button */}
+        {/* Controls: Database Switcher, Household Switcher & Reset Button */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          
+
+          {/* Database Mode Switcher (Production vs Test) */}
+          <div style={{
+            background: dbMode === "production" ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.14)",
+            border: dbMode === "production" ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(245, 158, 11, 0.45)",
+            borderRadius: "10px",
+            padding: "4px 10px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: dbMode === "production" ? "0 0 12px rgba(16, 185, 129, 0.15)" : "0 0 12px rgba(245, 158, 11, 0.15)",
+            transition: "all 0.2s ease"
+          }}>
+            <Database size={15} color={dbMode === "production" ? "#34D399" : "#FBBF24"} />
+            <span style={{
+              fontSize: "0.78rem",
+              color: dbMode === "production" ? "#34D399" : "#FBBF24",
+              fontWeight: 700,
+              letterSpacing: "0.02em"
+            }}>
+              DB:
+            </span>
+            <select
+              value={dbMode}
+              onChange={(e) => onDbModeChange(e.target.value as DatabaseMode)}
+              title="Switch between Production (live) and Test (sandbox) databases"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#F3F4F6",
+                fontWeight: 600,
+                fontSize: "0.82rem",
+                cursor: "pointer",
+                outline: "none"
+              }}
+            >
+              <option value="production" style={{ background: "#111827", color: "#34D399" }}>
+                🟢 Production DB (Live)
+              </option>
+              <option value="test" style={{ background: "#111827", color: "#FBBF24" }}>
+                🟡 Test DB (Sandbox)
+              </option>
+            </select>
+          </div>
+
           <div style={{
             background: "rgba(255, 255, 255, 0.05)",
             border: "1px solid var(--border-subtle)",
@@ -123,16 +173,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             </select>
           </div>
 
-          {/* Reset Test Data Button */}
-          <button
-            onClick={onResetData}
-            className="btn-danger"
-            style={{ padding: "6px 12px", fontSize: "0.8rem", borderRadius: "10px" }}
-            title="Reset transactional data in DB for testing"
-          >
-            <RotateCcw size={14} />
-            <span>Reset Data</span>
-          </button>
+          {/* Reset Data Button (only for Test mode) */}
+          {dbMode === "test" && (
+            <button
+              onClick={onResetData}
+              className="btn-danger"
+              style={{ padding: "6px 12px", fontSize: "0.8rem", borderRadius: "10px" }}
+              title="Reset transactional data in Test DB"
+            >
+              <RotateCcw size={14} />
+              <span>Reset Test Data</span>
+            </button>
+          )}
 
         </div>
 

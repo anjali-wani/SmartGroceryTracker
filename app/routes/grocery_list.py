@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models import GroceryListEntry, Item
 from app.schemas import GroceryListResponse, GroceryListItemOut, ManualListItemCreate
 from app.services.list_generator import generate_smart_grocery_list
+from app.normalizer import format_store_name
 
 router = APIRouter(prefix="/grocery-list", tags=["Automated Grocery List Generator"])
 
@@ -18,7 +19,8 @@ def get_or_generate_grocery_list(
     db: Session = Depends(get_db)
 ):
     """Evaluates 7-day inventory runout predictions and periodic schedules to auto-generate shopping list."""
-    return generate_smart_grocery_list(db, household_id=household_id, forecast_days=days_ahead, target_store=store)
+    target_clean = format_store_name(store) if store else None
+    return generate_smart_grocery_list(db, household_id=household_id, forecast_days=days_ahead, target_store=target_clean)
 
 
 @router.post("/items", response_model=GroceryListItemOut, status_code=status.HTTP_201_CREATED)
@@ -48,7 +50,7 @@ def add_custom_grocery_item(
         canonical_item_id=canonical_id,
         custom_item_name=clean_name,
         category=payload.category or (matched_item.category if matched_item else "General"),
-        target_store=payload.target_store or (matched_item.preferred_store if matched_item and matched_item.preferred_store else "Any Store"),
+        target_store=format_store_name(payload.target_store) if payload.target_store else (format_store_name(matched_item.preferred_store) if matched_item and matched_item.preferred_store else "Any Store"),
         recommended_quantity=payload.quantity,
         unit=payload.unit,
         estimated_cost=est_cost,

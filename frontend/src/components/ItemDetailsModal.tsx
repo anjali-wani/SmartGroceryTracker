@@ -69,14 +69,32 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
     loadDetails();
   }, [itemId, householdId]);
 
-  // Derived effective price
+  // Derived effective benchmark unit rate
   const displayPrice: number | null = details
     ? details.item.default_unit_price != null && details.item.default_unit_price > 0
       ? details.item.default_unit_price
-      : details.active_inventory?.price != null && details.active_inventory.price > 0
-      ? details.active_inventory.price
-      : details.purchase_history.find((p) => p.price != null && p.price > 0)?.price ?? null
+      : details.active_inventory?.unit_price != null && details.active_inventory.unit_price > 0
+      ? details.active_inventory.unit_price
+      : details.purchase_history.find((p) => p.unit_price != null && p.unit_price > 0)?.unit_price
+      ?? (details.purchase_history[0]?.price != null && details.purchase_history[0]?.quantity && details.purchase_history[0].quantity > 0
+          ? Number((details.purchase_history[0].price / details.purchase_history[0].quantity).toFixed(2))
+          : null)
     : null;
+
+  const formatPriceAndUnit = (priceVal: number | null | undefined, unitVal: string | null | undefined) => {
+    if (priceVal == null || priceVal <= 0) return { priceText: "No price", unitText: "" };
+    const u = (unitVal || "").toLowerCase();
+    if (u === "g" || u === "gm" || u === "gram" || u === "grams") {
+      return { priceText: `$${(priceVal * 100).toFixed(2)}`, unitText: "/ 100g" };
+    }
+    if (u === "ml") {
+      return { priceText: `$${(priceVal * 100).toFixed(2)}`, unitText: "/ 100ml" };
+    }
+    if (priceVal < 0.01) {
+      return { priceText: `$${priceVal.toFixed(4)}`, unitText: `/ ${unitVal || "unit"}` };
+    }
+    return { priceText: `$${priceVal.toFixed(2)}`, unitText: `/ ${unitVal || "unit"}` };
+  };
 
   const handleSavePrice = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,7 +218,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            {/* Prominent Price Tag in Header */}
+            {/* Price badge */}
             <div
               style={{
                 background: "rgba(16, 185, 129, 0.12)",
@@ -212,11 +230,11 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
             >
               <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
                 <span style={{ fontSize: "1.45rem", fontWeight: 700, color: "#34D399" }}>
-                  {displayPrice != null ? `$${displayPrice.toFixed(2)}` : "No price"}
+                  {formatPriceAndUnit(displayPrice, details?.item.standard_unit).priceText}
                 </span>
-                {displayPrice != null && (
+                {formatPriceAndUnit(displayPrice, details?.item.standard_unit).unitText && (
                   <span style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>
-                    / {details?.item.standard_unit || "unit"}
+                    {formatPriceAndUnit(displayPrice, details?.item.standard_unit).unitText}
                   </span>
                 )}
               </div>
@@ -461,7 +479,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                               </span>
                             </td>
                             <td style={{ padding: "10px 12px", textAlign: "right", color: "#9CA3AF", fontSize: "0.8rem" }}>
-                              {p.unit_price != null ? `$${p.unit_price.toFixed(2)} / ${p.unit}` : "-"}
+                              {p.unit_price != null ? `${formatPriceAndUnit(p.unit_price, p.unit).priceText} ${formatPriceAndUnit(p.unit_price, p.unit).unitText}` : "-"}
                             </td>
                             <td style={{ padding: "10px 12px", textAlign: "right" }}>
                               <span style={{ color: "#34D399", fontWeight: 700, fontSize: "0.88rem" }}>

@@ -66,6 +66,7 @@ class InventoryOut(BaseModel):
     status: InventoryStatus
     store_name: Optional[str] = None
     price: Optional[float] = None
+    unit_price: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
 
