@@ -66,7 +66,9 @@ class EntityResolver:
         self,
         raw_product_name: str,
         store_name: Optional[str] = None,
-        purchase_date: Optional[Any] = None
+        purchase_date: Optional[Any] = None,
+        price: Optional[float] = None,
+        receipt_unit: Optional[str] = None
     ) -> ResolutionResult:
         """Execute 4-tier entity resolution on raw product name."""
         normalized = normalize_item_name(raw_product_name)
@@ -78,13 +80,30 @@ class EntityResolver:
                 matched_term=""
             )
 
+        def _get_cached_meta(key: str) -> Optional[LLMResolvedItem]:
+            if hasattr(self, "file_mappings") and self.file_mappings and key in self.file_mappings:
+                entry = self.file_mappings[key]
+                gen_title = entry.get("generic_name", "").strip().title()
+                std_u = entry.get("standard_unit", "count")
+                t_qty = entry.get("total_quantity") or f"1 {std_u}"
+                return LLMResolvedItem(
+                    canonical_name=entry.get("brand_name", raw_product_name).strip().title(),
+                    generic_name=gen_title.lower(),
+                    category=entry.get("category", "Pantry"),
+                    standard_unit=std_u,
+                    is_bulk=entry.get("is_bulk", False),
+                    total_quantity=t_qty
+                )
+            return None
+
         # Tier 1: Exact alias or canonical name match
         if normalized in self.canonical_map:
             return ResolutionResult(
                 canonical_item=self.canonical_map[normalized],
                 confidence=1.0,
                 matched_via="exact_canonical",
-                matched_term=normalized
+                matched_term=normalized,
+                llm_resolved=_get_cached_meta(normalized)
             )
 
         if normalized in self.alias_map:
@@ -93,7 +112,8 @@ class EntityResolver:
                 canonical_item=item,
                 confidence=conf,
                 matched_via="exact_alias",
-                matched_term=normalized
+                matched_term=normalized,
+                llm_resolved=_get_cached_meta(normalized)
             )
 
         # Tier 2: RapidFuzz similarity matching against corpus
@@ -115,7 +135,8 @@ class EntityResolver:
                     canonical_item=item,
                     confidence=confidence,
                     matched_via="rapidfuzz",
-                    matched_term=best_term
+                    matched_term=best_term,
+                    llm_resolved=_get_cached_meta(normalized) or _get_cached_meta(best_term)
                 )
 
         # Tier 3: Heuristic token overlap fallback
@@ -140,7 +161,8 @@ class EntityResolver:
                 generic_name=gen_title.lower(),
                 category=entry.get("category", "Pantry"),
                 standard_unit=entry.get("standard_unit", "count"),
-                is_bulk=entry.get("is_bulk", False)
+                is_bulk=entry.get("is_bulk", False),
+                total_quantity=entry.get("total_quantity") or f"1 {entry.get('standard_unit', 'count')}"
             )
 
             # Check if canonical generic item exists in current database
@@ -167,7 +189,9 @@ class EntityResolver:
             raw_product_name,
             store_name=store_name,
             existing_items=existing_names,
-            purchase_date=purchase_date
+            purchase_date=purchase_date,
+            price=price,
+            receipt_unit=receipt_unit
         )
         if llm_out:
             # Use generic_name as the target canonical entity

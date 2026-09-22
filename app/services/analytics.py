@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, Household
 from app.schemas import ItemVelocityOut, HouseholdVelocityReport
 from app.services.guest_engine import calculate_guest_discount_factor
+from app.normalizer import convert_quantity
 
 
 def calculate_modal_quantity(quantities: List[float]) -> float:
@@ -56,7 +57,14 @@ def compute_item_velocity(
         )
         .all()
     )
-    current_stock = sum(inv.current_quantity for inv in active_inv)
+    current_stock = 0.0
+    for inv in active_inv:
+        iq = inv.current_quantity
+        if inv.unit and item.standard_unit and inv.unit != item.standard_unit:
+            conv = convert_quantity(iq, inv.unit, item.standard_unit)
+            if conv is not None:
+                iq = conv
+        current_stock += iq
     unit = item.standard_unit
 
     if not purchases:
@@ -81,11 +89,24 @@ def compute_item_velocity(
             prompt_message=None
         )
 
-    all_quantities = [p.quantity for p in purchases if p.quantity > 0]
+    all_quantities = []
+    for p in purchases:
+        if p.quantity > 0:
+            pq = p.quantity
+            if p.unit and item.standard_unit and p.unit != item.standard_unit:
+                conv = convert_quantity(pq, p.unit, item.standard_unit)
+                if conv is not None:
+                    pq = round(conv, 2)
+            all_quantities.append(pq)
+
     modal_qty = calculate_modal_quantity(all_quantities)
     last_p = purchases[-1]
     last_date = last_p.purchase_date
     last_qty = last_p.quantity
+    if last_p.unit and item.standard_unit and last_p.unit != item.standard_unit:
+        conv = convert_quantity(last_qty, last_p.unit, item.standard_unit)
+        if conv is not None:
+            last_qty = round(conv, 2)
 
     # --- CASE 1: Only 1 purchase (Cold start - no arbitrary guesses, no user prompts) ---
     if len(purchases) == 1:
@@ -122,9 +143,14 @@ def compute_item_velocity(
         interval_days = (curr_p.purchase_date - prev_p.purchase_date).days
         if interval_days > 0:
             purchase_intervals.append(interval_days)
-            if prev_p.quantity > 0:
+            prev_qty = prev_p.quantity
+            if prev_p.unit and item.standard_unit and prev_p.unit != item.standard_unit:
+                conv = convert_quantity(prev_qty, prev_p.unit, item.standard_unit)
+                if conv is not None:
+                    prev_qty = conv
+            if prev_qty > 0:
                 # E.g. 1 lb lasted 14 days -> 14 days per 1 lb
-                unit_durations.append(interval_days / prev_p.quantity)
+                unit_durations.append(interval_days / prev_qty)
 
     avg_days_per_unit = sum(unit_durations) / len(unit_durations) if unit_durations else 14.0
     avg_interval = sum(purchase_intervals) / len(purchase_intervals) if purchase_intervals else 14.0

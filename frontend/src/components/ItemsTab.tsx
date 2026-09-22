@@ -12,7 +12,6 @@ import {
   ChevronRight,
   Store,
   X,
-  DollarSign,
   Clock
 } from "lucide-react";
 import type { CanonicalItem, InventoryItem, ItemVelocity } from "../types";
@@ -647,7 +646,6 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
                         gap: "3px"
                       }}
                     >
-                      <DollarSign size={13} color={price != null ? "#10B981" : "#6B7280"} />
                       {(() => {
                         if (price == null) return "No price";
                         const u = (item.standard_unit || "").toLowerCase();

@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, ItemAlias, ReceiptUpload
 from app.services.inventory_service import reconcile_repurchased_inventory
-from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name, format_store_name
-from app.services.mapping_service import save_product_mapping
+from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name, format_store_name, convert_quantity
+from app.services.mapping_service import save_product_mapping, load_product_mappings
+from app.services.llm_resolver import parse_total_quantity
 
 NON_GROCERY_KEYWORDS = [
     "shoe", "shoes", "sneaker", "sneakers", "sandal", "sandals", "boot", "boots",
@@ -357,7 +358,41 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             row_category = str(row[col_map["category"]]).strip()
 
         # 6. Entity Resolution (Exact -> RapidFuzz -> Fallback)
-        res = resolver.resolve(clean_name, store_name=row_store, purchase_date=row_date)
+        raw_receipt_unit = str(row[col_map["unit"]]).strip() if "unit" in col_map and pd.notna(row[col_map["unit"]]) else extracted_unit
+        res = resolver.resolve(clean_name, store_name=row_store, purchase_date=row_date, price=price_val, receipt_unit=raw_receipt_unit)
+
+        # Check if quantity is mentioned in counts / pack units
+        is_count_quantity = (
+            extracted_unit in ("count", "pack", "piece", "ea", "ct", "pk", "box", "dozen", "unit")
+            or ("unit" in col_map and str(row[col_map["unit"]]).strip().lower() in ("count", "ea", "each", "ct", "pk", "pack", "pc", "pcs", "unit", "units"))
+        )
+
+        # If quantity is in counts/pack units, extract total_quantity from LLM response or product_mappings.json
+        if is_count_quantity:
+            total_qty_str = None
+            if res.llm_resolved and getattr(res.llm_resolved, "total_quantity", None):
+                total_qty_str = res.llm_resolved.total_quantity
+
+            # Check in product_mappings.json cache if not already found in res.llm_resolved
+            if not total_qty_str and hasattr(resolver, "file_mappings") and resolver.file_mappings:
+                for candidate_key in [raw_item_str, clean_name, getattr(res.canonical_item, "canonical_name", None)]:
+                    if candidate_key:
+                        norm_cand = normalize_item_name(candidate_key)
+                        if norm_cand in resolver.file_mappings and resolver.file_mappings[norm_cand].get("total_quantity"):
+                            total_qty_str = resolver.file_mappings[norm_cand]["total_quantity"]
+                            break
+
+            if total_qty_str:
+                t_qty, t_unit = parse_total_quantity(total_qty_str)
+                if t_qty and t_qty > 0 and t_unit:
+                    if t_unit not in ("count", "pack", "piece"):
+                        extracted_qty = t_qty
+                        extracted_unit = t_unit
+                    else:
+                        extracted_qty = max(extracted_qty, t_qty)
+                        extracted_unit = "count"
+                    if price_val is not None and extracted_qty > 0:
+                        calc_unit_price = round(price_val / extracted_qty, 4)
 
         if res.canonical_item:
             matched_count += 1
@@ -404,8 +439,10 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                             generic_name=res.canonical_item.canonical_name,
                             category=res.canonical_item.category,
                             standard_unit=res.canonical_item.standard_unit,
-                            is_bulk=res.canonical_item.is_bulk
+                            is_bulk=res.canonical_item.is_bulk,
+                            total_quantity=getattr(res.llm_resolved, "total_quantity", None)
                         )
+                        resolver.file_mappings = load_product_mappings()
                     except Exception as e:
                         logger.error(f"Error saving product mapping for '{raw_item_str}': {e}")
         else:
@@ -413,16 +450,17 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             if res.llm_resolved and res.llm_resolved.generic_name:
                 canonical_title = res.llm_resolved.generic_name.strip().title()
                 category = res.llm_resolved.category or row_category or "Pantry"
-                extracted_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
+                item_standard_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
                 is_bulk = res.llm_resolved.is_bulk
             elif res.llm_resolved and res.llm_resolved.canonical_name:
                 canonical_title = res.llm_resolved.canonical_name.strip().title()
                 category = res.llm_resolved.category or row_category or "Pantry"
-                extracted_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
+                item_standard_unit = res.llm_resolved.standard_unit or extracted_unit or "count"
                 is_bulk = res.llm_resolved.is_bulk
             else:
                 canonical_title = clean_name.strip().title() if clean_name else raw_item_str.strip().title()
                 category = row_category or "Pantry"
+                item_standard_unit = extracted_unit or "count"
                 is_bulk = False
             
             # Check if this item is non-grocery (e.g. shoes, planter, apparel, hardware, electronics)
@@ -451,7 +489,7 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                 new_item = Item(
                     canonical_name=canonical_title,
                     category=category,
-                    standard_unit=extracted_unit or "count",
+                    standard_unit=item_standard_unit,
                     default_shelf_life_days=shelf_life,
                     is_bulk=is_bulk,
                     is_active=True,
@@ -499,9 +537,11 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                         brand_name=brand_val,
                         generic_name=canonical_title,
                         category=category,
-                        standard_unit=extracted_unit,
-                        is_bulk=is_bulk
+                        standard_unit=item_standard_unit,
+                        is_bulk=is_bulk,
+                        total_quantity=getattr(res.llm_resolved, "total_quantity", None)
                     )
+                    resolver.file_mappings = load_product_mappings()
                 except Exception as e:
                     logger.error(f"Error saving product mapping for '{raw_item_str}': {e}")
 
@@ -517,6 +557,32 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             matched_via_val = res.matched_via or "auto_created"
             confidence_val = res.confidence or 1.0
 
+        # Standardize quantity and unit to match the canonical item's standard_unit if compatible
+        target_item = db.query(Item).filter(Item.id == canonical_id).first() if canonical_id else None
+        if target_item and extracted_unit not in ("count", "pack", "piece") and target_item.standard_unit in ("count", "pack", "piece"):
+            target_item.standard_unit = extracted_unit
+
+        target_std_unit = (target_item.standard_unit if target_item else extracted_unit) or "count"
+
+        log_qty = extracted_qty
+        log_unit = extracted_unit
+        log_unit_price = calc_unit_price
+
+        if target_std_unit and extracted_unit and target_std_unit != extracted_unit:
+            conv = convert_quantity(extracted_qty, from_unit=extracted_unit, to_unit=target_std_unit)
+            if conv is not None:
+                log_qty = round(conv, 2)
+                log_unit = target_std_unit
+                if price_val is not None and log_qty > 0:
+                    log_unit_price = round(price_val / log_qty, 4)
+                elif calc_unit_price is not None:
+                    conv_1 = convert_quantity(1.0, from_unit=target_std_unit, to_unit=extracted_unit)
+                    if conv_1:
+                        log_unit_price = round(calc_unit_price * conv_1, 4)
+
+        if target_item and log_unit_price and (not target_item.default_unit_price or target_item.default_unit_price <= 0):
+            target_item.default_unit_price = log_unit_price
+
         # 7. Record into PurchaseLog
         purchase_log = PurchaseLog(
             household_id=household_id,
@@ -524,10 +590,10 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             store_name=row_store,
             raw_text=raw_item_str,
             canonical_item_id=canonical_id,
-            quantity=extracted_qty,
-            unit=extracted_unit,
+            quantity=log_qty,
+            unit=log_unit,
             price=price_val,
-            unit_price=calc_unit_price,
+            unit_price=log_unit_price,
             matched_via=matched_via_val,
             confidence=confidence_val,
             bill_id=bill_record.id
@@ -537,7 +603,6 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
 
         # 8. Update Active Inventory with Repurchase Auto-Consumption:
         # Check if item is grocery
-        target_item = db.query(Item).filter(Item.id == canonical_id).first() if canonical_id else None
         item_is_grocery = target_item.is_grocery if (target_item and hasattr(target_item, 'is_grocery')) else True
         if target_item and target_item.category == "Non-Grocery":
             item_is_grocery = False
@@ -562,8 +627,8 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                 household_id=household_id,
                 canonical_item_id=canonical_id,
                 purchase_log_id=purchase_log.id,
-                current_quantity=extracted_qty,
-                unit=extracted_unit,
+                current_quantity=log_qty,
+                unit=log_unit,
                 purchase_date=row_date,
                 expiration_date=None,
                 status=InventoryStatus.ACTIVE,
@@ -577,8 +642,8 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             clean_name=clean_name,
             canonical_name=canonical_name,
             category=category,
-            quantity=extracted_qty,
-            unit=extracted_unit,
+            quantity=log_qty,
+            unit=log_unit,
             price=price_val,
             matched_via=matched_via_val,
             confidence=confidence_val,

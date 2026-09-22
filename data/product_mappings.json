@@ -4,9 +4,10 @@
     "clean_name": "DEEP RICE FLOUR",
     "brand_name": "Deep Rice Flour",
     "generic_name": "Rice Flour",
-    "category": "Pantry",
-    "standard_unit": "lb",
-    "is_bulk": false
+    "category": "Grains & Pasta",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1 g"
   },
   "crisco pure vegetable oil": {
     "raw_name": "Crisco Pure Vegetable Oil",
@@ -15,7 +16,8 @@
     "generic_name": "Vegetable Oil",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "48 oz"
   },
   "hans moth": {
     "raw_name": "Hans moth",
@@ -24,7 +26,8 @@
     "generic_name": "Moth Beans",
     "category": "Grains & Pasta",
     "standard_unit": "lb",
-    "is_bulk": true
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "khazana poha thick": {
     "raw_name": "Khazana Poha Thick",
@@ -32,8 +35,9 @@
     "brand_name": "Khazana Thick Poha",
     "generic_name": "Poha",
     "category": "Grains & Pasta",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "khazana thick poha": {
     "raw_name": "Khazana Poha Thick",
@@ -41,161 +45,9 @@
     "brand_name": "Khazana Thick Poha",
     "generic_name": "Poha",
     "category": "Grains & Pasta",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "garvi gujarat bhel sev": {
-    "raw_name": "GARVI GUJARAT BHEL SEV",
-    "clean_name": "GARVI GUJARAT BHEL SEV",
-    "brand_name": "Garvi Gujarat Bhel Sev",
-    "generic_name": "Sev",
-    "category": "Snacks",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "deep masoor dal split lentils": {
-    "raw_name": "DEEP MASOOR DAL SPLIT LENTILS",
-    "clean_name": "DEEP MASOOR DAL SPLIT LENTILS",
-    "brand_name": "Deep Masoor Dal Split Lentils",
-    "generic_name": "Lentils",
-    "category": "Grains & Pasta",
     "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "ganesh idli batter": {
-    "raw_name": "Ganesh Idli Batter",
-    "clean_name": "Ganesh Idli Batter",
-    "brand_name": "Ganesh Idli Batter",
-    "generic_name": "Idli Batter",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "oreo milk cookies": {
-    "raw_name": "Oreo Milk Cookies",
-    "clean_name": "Oreo Milk Cookies",
-    "brand_name": "Oreo Cookies",
-    "generic_name": "Cookies",
-    "category": "Snacks",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "oreo cookies": {
-    "raw_name": "Oreo Milk Cookies",
-    "clean_name": "Oreo Milk Cookies",
-    "brand_name": "Oreo Cookies",
-    "generic_name": "Cookies",
-    "category": "Snacks",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "thai chilli per lb": {
-    "raw_name": "Thai Chilli per lb",
-    "clean_name": "Thai Chilli",
-    "brand_name": "Thai Chilli",
-    "generic_name": "Chilli",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "thai chilli": {
-    "raw_name": "Thai Chilli per lb",
-    "clean_name": "Thai Chilli",
-    "brand_name": "Thai Chilli",
-    "generic_name": "Chilli",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "green bell pepper per lb": {
-    "raw_name": "Green Bell Pepper Per Lb",
-    "clean_name": "Green Bell Pepper",
-    "brand_name": "Green Bell Pepper",
-    "generic_name": "Bell Pepper",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "green bell pepper": {
-    "raw_name": "Green Bell Pepper Per Lb",
-    "clean_name": "Green Bell Pepper",
-    "brand_name": "Green Bell Pepper",
-    "generic_name": "Bell Pepper",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "white potato big per lb": {
-    "raw_name": "White Potato Big per lb",
-    "clean_name": "White Potato Big",
-    "brand_name": "White Potato",
-    "generic_name": "Potatoes",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "white potato big": {
-    "raw_name": "White Potato Big per lb",
-    "clean_name": "White Potato Big",
-    "brand_name": "White Potato",
-    "generic_name": "Potatoes",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "white potato": {
-    "raw_name": "White Potato Big per lb",
-    "clean_name": "White Potato Big",
-    "brand_name": "White Potato",
-    "generic_name": "Potatoes",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "joy mint chutney": {
-    "raw_name": "Joy Mint Chutney",
-    "clean_name": "Joy Mint Chutney",
-    "brand_name": "Joy Mint Chutney",
-    "generic_name": "Mint Chutney",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "parle krackjack sweet salty crac": {
-    "raw_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
-    "clean_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
-    "brand_name": "Parle Krackjack Sweet & Salty Crackers",
-    "generic_name": "Crackers",
-    "category": "Snacks",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "parle krackjack sweet salty crackers": {
-    "raw_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
-    "clean_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
-    "brand_name": "Parle Krackjack Sweet & Salty Crackers",
-    "generic_name": "Crackers",
-    "category": "Snacks",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "lays india s magic masala": {
-    "raw_name": "LAYS INDIA'S MAGIC MASALA",
-    "clean_name": "LAYS INDIA'S MAGIC MASALA",
-    "brand_name": "Lay's India's Magic Masala",
-    "generic_name": "Potato Chips",
-    "category": "Snacks",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "lay s india s magic masala": {
-    "raw_name": "LAYS INDIA'S MAGIC MASALA",
-    "clean_name": "LAYS INDIA'S MAGIC MASALA",
-    "brand_name": "Lay's India's Magic Masala",
-    "generic_name": "Potato Chips",
-    "category": "Snacks",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "broccoli per lb": {
     "raw_name": "Broccoli per lb",
@@ -204,7 +56,8 @@
     "generic_name": "Broccoli",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "broccoli": {
     "raw_name": "Broccoli per lb",
@@ -213,178 +66,8 @@
     "generic_name": "Broccoli",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "verka paneer": {
-    "raw_name": "Verka Paneer",
-    "clean_name": "Verka Paneer",
-    "brand_name": "Verka Paneer",
-    "generic_name": "Paneer",
-    "category": "Dairy",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "amul cheese slices": {
-    "raw_name": "Amul Cheese Slices",
-    "clean_name": "Amul Cheese Slices",
-    "brand_name": "Amul Cheese Slices",
-    "generic_name": "Cheese Slices",
-    "category": "Dairy",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "heinz ketchup": {
-    "raw_name": "Heinz Ketchup",
-    "clean_name": "Heinz Ketchup",
-    "brand_name": "Heinz Ketchup",
-    "generic_name": "Ketchup",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "loose garlic per lb": {
-    "raw_name": "Loose Garlic per lb",
-    "clean_name": "Loose Garlic",
-    "brand_name": "Loose Garlic",
-    "generic_name": "Garlic",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "loose garlic": {
-    "raw_name": "Loose Garlic per lb",
-    "clean_name": "Loose Garlic",
-    "brand_name": "Loose Garlic",
-    "generic_name": "Garlic",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "red onion per lb": {
-    "raw_name": "Red Onion per lb",
-    "clean_name": "Red Onion",
-    "brand_name": "Red Onion",
-    "generic_name": "Onions",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "red onion": {
-    "raw_name": "Red Onion per lb",
-    "clean_name": "Red Onion",
-    "brand_name": "Red Onion",
-    "generic_name": "Onions",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "haldiram s ajwain paratha": {
-    "raw_name": "HALDIRAM'S AJWAIN PARATHA",
-    "clean_name": "HALDIRAM'S AJWAIN PARATHA",
-    "brand_name": "Haldiram's Ajwain Paratha",
-    "generic_name": "Paratha",
-    "category": "Pantry",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "red label tea": {
-    "raw_name": "RED LABEL TEA",
-    "clean_name": "RED LABEL TEA",
-    "brand_name": "Red Label Tea",
-    "generic_name": "Tea",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "bambino premium vermicelli": {
-    "raw_name": "Bambino Premium Vermicelli",
-    "clean_name": "Bambino Premium Vermicelli",
-    "brand_name": "Bambino Premium Vermicelli",
-    "generic_name": "Vermicelli",
-    "category": "Grains & Pasta",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "lijjat papad green chillies": {
-    "raw_name": "LIJJAT PAPAD GREEN CHILLIES",
-    "clean_name": "LIJJAT PAPAD GREEN CHILLIES",
-    "brand_name": "Lijjat Green Chilli Papad",
-    "generic_name": "Papad",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "lijjat green chilli papad": {
-    "raw_name": "LIJJAT PAPAD GREEN CHILLIES",
-    "clean_name": "LIJJAT PAPAD GREEN CHILLIES",
-    "brand_name": "Lijjat Green Chilli Papad",
-    "generic_name": "Papad",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "deep toor dal dry": {
-    "raw_name": "DEEP TOOR DAL (DRY)",
-    "clean_name": "DEEP TOOR DAL (DRY)",
-    "brand_name": "Deep Toor Dal",
-    "generic_name": "Toor Dal",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "deep toor dal": {
-    "raw_name": "DEEP TOOR DAL (DRY)",
-    "clean_name": "DEEP TOOR DAL (DRY)",
-    "brand_name": "Deep Toor Dal",
-    "generic_name": "Toor Dal",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "ashoka grated coconut": {
-    "raw_name": "Ashoka Grated Coconut",
-    "clean_name": "Ashoka Grated Coconut",
-    "brand_name": "Ashoka Grated Coconut",
-    "generic_name": "Grated Coconut",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "vadilal green peas mutter": {
-    "raw_name": "Vadilal Green Peas Mutter",
-    "clean_name": "Vadilal Green Peas Mutter",
-    "brand_name": "Vadilal Green Peas",
-    "generic_name": "Green Peas",
-    "category": "Produce",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "vadilal green peas": {
-    "raw_name": "Vadilal Green Peas Mutter",
-    "clean_name": "Vadilal Green Peas Mutter",
-    "brand_name": "Vadilal Green Peas",
-    "generic_name": "Green Peas",
-    "category": "Produce",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "cilantro ea": {
-    "raw_name": "Cilantro ea",
-    "clean_name": "Cilantro ea",
-    "brand_name": "Cilantro",
-    "generic_name": "Cilantro",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "cilantro": {
-    "raw_name": "Cilantro ea",
-    "clean_name": "Cilantro ea",
-    "brand_name": "Cilantro",
-    "generic_name": "Cilantro",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "indian carrot per lb": {
     "raw_name": "Indian Carrot per lb",
@@ -393,7 +76,8 @@
     "generic_name": "Carrots",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "indian carrot": {
     "raw_name": "Indian Carrot per lb",
@@ -402,466 +86,8 @@
     "generic_name": "Carrots",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "beetroot per lb": {
-    "raw_name": "Beetroot per lb",
-    "clean_name": "Beetroot",
-    "brand_name": "Beetroot",
-    "generic_name": "Beetroot",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "beetroot": {
-    "raw_name": "Beetroot per lb",
-    "clean_name": "Beetroot",
-    "brand_name": "Beetroot",
-    "generic_name": "Beetroot",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "roma tomato per lb": {
-    "raw_name": "Roma Tomato per lb",
-    "clean_name": "Roma Tomato",
-    "brand_name": "Roma Tomato",
-    "generic_name": "Roma Tomatoes",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "roma tomato": {
-    "raw_name": "Roma Tomato per lb",
-    "clean_name": "Roma Tomato",
-    "brand_name": "Roma Tomato",
-    "generic_name": "Roma Tomatoes",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "lime ea": {
-    "raw_name": "Lime Ea",
-    "clean_name": "Lime Ea",
-    "brand_name": "Lime",
-    "generic_name": "Lime",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "lime": {
-    "raw_name": "Lime Ea",
-    "clean_name": "Lime Ea",
-    "brand_name": "Lime",
-    "generic_name": "Lime",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "curry neem leaves": {
-    "raw_name": "CURRY/NEEM LEAVES",
-    "clean_name": "CURRY/NEEM LEAVES",
-    "brand_name": "Curry And Neem Leaves",
-    "generic_name": "Curry And Neem Leaves",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "curry and neem leaves": {
-    "raw_name": "CURRY/NEEM LEAVES",
-    "clean_name": "CURRY/NEEM LEAVES",
-    "brand_name": "Curry And Neem Leaves",
-    "generic_name": "Curry And Neem Leaves",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "berkeley whole milk 1 2 gallon": {
-    "raw_name": "BERKELEY WHOLE MILK 1/2 GALLON",
-    "clean_name": "BERKELEY WHOLE MILK",
-    "brand_name": "Berkeley Whole Milk",
-    "generic_name": "Milk",
-    "category": "Dairy",
-    "standard_unit": "gallon",
-    "is_bulk": false
-  },
-  "berkeley whole milk": {
-    "raw_name": "BERKELEY WHOLE MILK 1/2 GALLON",
-    "clean_name": "BERKELEY WHOLE MILK",
-    "brand_name": "Berkeley Whole Milk",
-    "generic_name": "Milk",
-    "category": "Dairy",
-    "standard_unit": "gallon",
-    "is_bulk": false
-  },
-  "cabbage": {
-    "raw_name": "CABBAGE",
-    "clean_name": "CABBAGE",
-    "brand_name": "Cabbage",
-    "generic_name": "Cabbage",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "veer vatana white peas 2lb": {
-    "raw_name": "VEER VATANA WHITE PEAS 2LB",
-    "clean_name": "VEER VATANA WHITE PEAS",
-    "brand_name": "Veer Vatana White Peas",
-    "generic_name": "White Peas",
-    "category": "Pantry",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "veer vatana white peas": {
-    "raw_name": "VEER VATANA WHITE PEAS 2LB",
-    "clean_name": "VEER VATANA WHITE PEAS",
-    "brand_name": "Veer Vatana White Peas",
-    "generic_name": "White Peas",
-    "category": "Pantry",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "whole wheat bread eggless": {
-    "raw_name": "WHOLE WHEAT BREAD EGGLESS",
-    "clean_name": "WHOLE WHEAT BREAD EGGLESS",
-    "brand_name": "Whole Wheat Eggless Bread",
-    "generic_name": "Bread",
-    "category": "Bakery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "whole wheat eggless bread": {
-    "raw_name": "WHOLE WHEAT BREAD EGGLESS",
-    "clean_name": "WHOLE WHEAT BREAD EGGLESS",
-    "brand_name": "Whole Wheat Eggless Bread",
-    "generic_name": "Bread",
-    "category": "Bakery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "amul cheese chiplets 200gm": {
-    "raw_name": "AMUL CHEESE CHIPLETS 200GM",
-    "clean_name": "AMUL CHEESE CHIPLETS 200GM",
-    "brand_name": "Amul Cheese Chiplets",
-    "generic_name": "Cheese",
-    "category": "Dairy",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "amul cheese chiplets": {
-    "raw_name": "AMUL CHEESE CHIPLETS 200GM",
-    "clean_name": "AMUL CHEESE CHIPLETS 200GM",
-    "brand_name": "Amul Cheese Chiplets",
-    "generic_name": "Cheese",
-    "category": "Dairy",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "haldiram khari": {
-    "raw_name": "HALDIRAM KHARI",
-    "clean_name": "HALDIRAM KHARI",
-    "brand_name": "Haldiram Khari",
-    "generic_name": "Khari",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "methi": {
-    "raw_name": "METHI",
-    "clean_name": "METHI",
-    "brand_name": "Methi",
-    "generic_name": "Fenugreek Leaves",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "persan cucumber": {
-    "raw_name": "PERSAN CUCUMBER",
-    "clean_name": "PERSAN CUCUMBER",
-    "brand_name": "Persian Cucumber",
-    "generic_name": "Cucumber",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "persian cucumber": {
-    "raw_name": "PERSAN CUCUMBER",
-    "clean_name": "PERSAN CUCUMBER",
-    "brand_name": "Persian Cucumber",
-    "generic_name": "Cucumber",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "sesame seed": {
-    "raw_name": "SESAME SEED",
-    "clean_name": "SESAME SEED",
-    "brand_name": "Sesame Seeds",
-    "generic_name": "Sesame Seeds",
-    "category": "Spices / Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "sesame seeds": {
-    "raw_name": "SESAME SEED",
-    "clean_name": "SESAME SEED",
-    "brand_name": "Sesame Seeds",
-    "generic_name": "Sesame Seeds",
-    "category": "Spices / Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "tata salt": {
-    "raw_name": "TATA SALT",
-    "clean_name": "TATA SALT",
-    "brand_name": "Tata Salt",
-    "generic_name": "Salt",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "krackjack 75gm": {
-    "raw_name": "KRACKJACK 75GM",
-    "clean_name": "KRACKJACK 75GM",
-    "brand_name": "Krackjack Biscuits",
-    "generic_name": "Biscuits",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "krackjack biscuits": {
-    "raw_name": "KRACKJACK 75GM",
-    "clean_name": "KRACKJACK 75GM",
-    "brand_name": "Krackjack Biscuits",
-    "generic_name": "Biscuits",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "aashirvaad atta": {
-    "raw_name": "AASHIRVAAD ATTA",
-    "clean_name": "AASHIRVAAD ATTA",
-    "brand_name": "Aashirvaad Atta",
-    "generic_name": "Wheat Flour",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "ginger": {
-    "raw_name": "GINGER",
-    "clean_name": "GINGER",
-    "brand_name": "Ginger",
-    "generic_name": "Ginger",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "indian okra": {
-    "raw_name": "INDIAN OKRA",
-    "clean_name": "INDIAN OKRA",
-    "brand_name": "Indian Okra",
-    "generic_name": "Okra",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "butter 100": {
-    "raw_name": "BUTTER 100",
-    "clean_name": "BUTTER 100",
-    "brand_name": "Patel Butter",
-    "generic_name": "Butter",
-    "category": "Dairy",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "patel butter": {
-    "raw_name": "BUTTER 100",
-    "clean_name": "BUTTER 100",
-    "brand_name": "Patel Butter",
-    "generic_name": "Butter",
-    "category": "Dairy",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "s green peas12oz": {
-    "raw_name": "S GREEN PEAS12OZ",
-    "clean_name": "S GREEN",
-    "brand_name": "S Green",
-    "generic_name": "Green Vegetables",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "s green": {
-    "raw_name": "S GREEN PEAS12OZ",
-    "clean_name": "S GREEN",
-    "brand_name": "S Green",
-    "generic_name": "Green Vegetables",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "dab sesame oilsm": {
-    "raw_name": "DAB SESAME OILSM",
-    "clean_name": "DAB SESAME OILSM",
-    "brand_name": "Dabur Sesame Oil",
-    "generic_name": "Sesame Oil",
-    "category": "Pantry",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "dabur sesame oil": {
-    "raw_name": "DAB SESAME OILSM",
-    "clean_name": "DAB SESAME OILSM",
-    "brand_name": "Dabur Sesame Oil",
-    "generic_name": "Sesame Oil",
-    "category": "Pantry",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "sb mini ht": {
-    "raw_name": "SB MINI HT",
-    "clean_name": "SB MINI HT",
-    "brand_name": "Strawberries Mini Hearts",
-    "generic_name": "Strawberries",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "strawberries mini hearts": {
-    "raw_name": "SB MINI HT",
-    "clean_name": "SB MINI HT",
-    "brand_name": "Strawberries Mini Hearts",
-    "generic_name": "Strawberries",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "4t shoe rack": {
-    "raw_name": "4T SHOE RACK",
-    "clean_name": "4T SHOE RACK",
-    "brand_name": "4-Tier Shoe Rack",
-    "generic_name": "Shoe Rack",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "4 tier shoe rack": {
-    "raw_name": "4T SHOE RACK",
-    "clean_name": "4T SHOE RACK",
-    "brand_name": "4-Tier Shoe Rack",
-    "generic_name": "Shoe Rack",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "nm vitb12 fd": {
-    "raw_name": "NM VITB12 FD",
-    "clean_name": "NM VITB12 FD",
-    "brand_name": "Nature Made Vitamin B12",
-    "generic_name": "Vitamin B12",
-    "category": "Pantry",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "nature made vitamin b12": {
-    "raw_name": "NM VITB12 FD",
-    "clean_name": "NM VITB12 FD",
-    "brand_name": "Nature Made Vitamin B12",
-    "generic_name": "Vitamin B12",
-    "category": "Pantry",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "memo book": {
-    "raw_name": "MEMO BOOK",
-    "clean_name": "MEMO BOOK",
-    "brand_name": "Memo Book",
-    "generic_name": "Notebook",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "vitaplus natural figs 7 oz": {
-    "raw_name": "VITAPLUS NATURAL FIGS 7 OZ",
-    "clean_name": "VITAPLUS NATURAL FIGS",
-    "brand_name": "Vitaplus Natural Figs",
-    "generic_name": "Figs",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "vitaplus natural figs": {
-    "raw_name": "VITAPLUS NATURAL FIGS 7 OZ",
-    "clean_name": "VITAPLUS NATURAL FIGS",
-    "brand_name": "Vitaplus Natural Figs",
-    "generic_name": "Figs",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "joy sandwich chutney 8oz": {
-    "raw_name": "JOY SANDWICH CHUTNEY 8oz",
-    "clean_name": "JOY SANDWICH CHUTNEY",
-    "brand_name": "Joy Sandwich Chutney",
-    "generic_name": "Chutney",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "joy sandwich chutney": {
-    "raw_name": "JOY SANDWICH CHUTNEY 8oz",
-    "clean_name": "JOY SANDWICH CHUTNEY",
-    "brand_name": "Joy Sandwich Chutney",
-    "generic_name": "Chutney",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "ataulfo manila mango each": {
-    "raw_name": "ATAULFO/MANILA MANGO EACH",
-    "clean_name": "ATAULFO/MANILA MANGO EACH",
-    "brand_name": "Ataulfo Mango",
-    "generic_name": "Mango",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "ataulfo mango": {
-    "raw_name": "ATAULFO/MANILA MANGO EACH",
-    "clean_name": "ATAULFO/MANILA MANGO EACH",
-    "brand_name": "Ataulfo Mango",
-    "generic_name": "Mango",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "laxmi sona masoori 4lb": {
-    "raw_name": "LAXMI SONA MASOORI 4LB",
-    "clean_name": "LAXMI SONA MASOORI",
-    "brand_name": "Laxmi Sona Masoori Rice",
-    "generic_name": "Rice",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": true
-  },
-  "laxmi sona masoori": {
-    "raw_name": "LAXMI SONA MASOORI 4LB",
-    "clean_name": "LAXMI SONA MASOORI",
-    "brand_name": "Laxmi Sona Masoori Rice",
-    "generic_name": "Rice",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": true
-  },
-  "laxmi sona masoori rice": {
-    "raw_name": "LAXMI SONA MASOORI 4LB",
-    "clean_name": "LAXMI SONA MASOORI",
-    "brand_name": "Laxmi Sona Masoori Rice",
-    "generic_name": "Rice",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": true
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "veer fennel seeds 200gm": {
     "raw_name": "VEER FENNEL SEEDS 200GM",
@@ -870,7 +96,8 @@
     "generic_name": "Fennel Seeds",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "200 g"
   },
   "veer fennel seeds": {
     "raw_name": "VEER FENNEL SEEDS 200GM",
@@ -879,790 +106,18 @@
     "generic_name": "Fennel Seeds",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "200 g"
   },
-  "laxmi sooji coarse 2lb": {
-    "raw_name": "LAXMI SOOJI COARSE 2LB",
-    "clean_name": "LAXMI SOOJI COARSE",
-    "brand_name": "Laxmi Sooji Coarse",
-    "generic_name": "Sooji",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "laxmi sooji coarse": {
-    "raw_name": "LAXMI SOOJI COARSE 2LB",
-    "clean_name": "LAXMI SOOJI COARSE",
-    "brand_name": "Laxmi Sooji Coarse",
-    "generic_name": "Sooji",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "pickle persian": {
-    "raw_name": "PICKLE PERSIAN",
-    "clean_name": "PICKLE PERSIAN",
-    "brand_name": "Persian Pickles",
-    "generic_name": "Pickles",
-    "category": "Pantry",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "persian pickles": {
-    "raw_name": "PICKLE PERSIAN",
-    "clean_name": "PICKLE PERSIAN",
-    "brand_name": "Persian Pickles",
-    "generic_name": "Pickles",
-    "category": "Pantry",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "gits khaman dhokla mix 500gm": {
-    "raw_name": "GITS KHAMAN DHOKLA MIX 500GM",
-    "clean_name": "GITS KHAMAN DHOKLA MIX 500GM",
-    "brand_name": "Gits Khaman Dhokla Mix",
-    "generic_name": "Dhokla Mix",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "gits khaman dhokla mix": {
-    "raw_name": "GITS KHAMAN DHOKLA MIX 500GM",
-    "clean_name": "GITS KHAMAN DHOKLA MIX 500GM",
-    "brand_name": "Gits Khaman Dhokla Mix",
-    "generic_name": "Dhokla Mix",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer cashew split 200gm": {
-    "raw_name": "VEER CASHEW SPLIT 200GM",
-    "clean_name": "VEER CASHEW SPLIT 200GM",
-    "brand_name": "Veer Cashew Split",
-    "generic_name": "Cashews",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer cashew split": {
-    "raw_name": "VEER CASHEW SPLIT 200GM",
-    "clean_name": "VEER CASHEW SPLIT 200GM",
-    "brand_name": "Veer Cashew Split",
-    "generic_name": "Cashews",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "samosa": {
-    "raw_name": "SAMOSA",
-    "clean_name": "SAMOSA",
-    "brand_name": "Samosa",
-    "generic_name": "Samosa",
-    "category": "Snacks",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "spinach bunch": {
-    "raw_name": "SPINACH BUNCH",
-    "clean_name": "SPINACH BUNCH",
-    "brand_name": "Spinach Bunch",
-    "generic_name": "Spinach",
+  "methi": {
+    "raw_name": "METHI",
+    "clean_name": "METHI",
+    "brand_name": "Methi",
+    "generic_name": "Methi",
     "category": "Produce",
     "standard_unit": "count",
-    "is_bulk": false
-  },
-  "veer moong dal 2lb": {
-    "raw_name": "VEER MOONG DAL 2LB",
-    "clean_name": "VEER MOONG DAL",
-    "brand_name": "Veer Moong Dal",
-    "generic_name": "Moong Dal",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "veer moong dal": {
-    "raw_name": "VEER MOONG DAL 2LB",
-    "clean_name": "VEER MOONG DAL",
-    "brand_name": "Veer Moong Dal",
-    "generic_name": "Moong Dal",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "ame gujarati jowar flour 2lb": {
-    "raw_name": "AME GUJARATI JOWAR FLOUR 2LB",
-    "clean_name": "AME GUJARATI JOWAR FLOUR",
-    "brand_name": "Ame Gujarati Jowar Flour",
-    "generic_name": "Jowar Flour",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "ame gujarati jowar flour": {
-    "raw_name": "AME GUJARATI JOWAR FLOUR 2LB",
-    "clean_name": "AME GUJARATI JOWAR FLOUR",
-    "brand_name": "Ame Gujarati Jowar Flour",
-    "generic_name": "Jowar Flour",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "bean green": {
-    "raw_name": "BEAN GREEN",
-    "clean_name": "BEAN GREEN",
-    "brand_name": "Green Beans",
-    "generic_name": "Green Beans",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "green beans": {
-    "raw_name": "BEAN GREEN",
-    "clean_name": "BEAN GREEN",
-    "brand_name": "Green Beans",
-    "generic_name": "Green Beans",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "beets": {
-    "raw_name": "BEETS",
-    "clean_name": "BEETS",
-    "brand_name": "Beets",
-    "generic_name": "Beets",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "onion yellow": {
-    "raw_name": "ONION YELLOW",
-    "clean_name": "ONION YELLOW",
-    "brand_name": "Yellow Onion",
-    "generic_name": "Onion",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "yellow onion": {
-    "raw_name": "ONION YELLOW",
-    "clean_name": "ONION YELLOW",
-    "brand_name": "Yellow Onion",
-    "generic_name": "Onion",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "nib walnuts no shell": {
-    "raw_name": "NIB WALNUTS NO SHELL",
-    "clean_name": "NIB WALNUTS NO SHELL",
-    "brand_name": "New India Bazar Walnuts No Shell",
-    "generic_name": "Walnuts",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "new india bazar walnuts no shell": {
-    "raw_name": "NIB WALNUTS NO SHELL",
-    "clean_name": "NIB WALNUTS NO SHELL",
-    "brand_name": "New India Bazar Walnuts No Shell",
-    "generic_name": "Walnuts",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "nib black raisins 1l": {
-    "raw_name": "NIB BLACK RAISINS 1L",
-    "clean_name": "NIB BLACK RAISINS",
-    "brand_name": "New India Bazar Black Raisins",
-    "generic_name": "Raisins",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "nib black raisins": {
-    "raw_name": "NIB BLACK RAISINS 1L",
-    "clean_name": "NIB BLACK RAISINS",
-    "brand_name": "New India Bazar Black Raisins",
-    "generic_name": "Raisins",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "new india bazar black raisins": {
-    "raw_name": "NIB BLACK RAISINS 1L",
-    "clean_name": "NIB BLACK RAISINS",
-    "brand_name": "New India Bazar Black Raisins",
-    "generic_name": "Raisins",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "veer cumin seeds 200gm": {
-    "raw_name": "VEER CUMIN SEEDS 200GM",
-    "clean_name": "VEER CUMIN SEEDS 200GM",
-    "brand_name": "Veer Cumin Seeds",
-    "generic_name": "Cumin Seeds",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer cumin seeds": {
-    "raw_name": "VEER CUMIN SEEDS 200GM",
-    "clean_name": "VEER CUMIN SEEDS 200GM",
-    "brand_name": "Veer Cumin Seeds",
-    "generic_name": "Cumin Seeds",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "sujata gold atta 4lb": {
-    "raw_name": "SUJATA GOLD ATTA 4LB",
-    "clean_name": "SUJATA GOLD ATTA",
-    "brand_name": "Sujata Gold Atta",
-    "generic_name": "Atta",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "sujata gold atta": {
-    "raw_name": "SUJATA GOLD ATTA 4LB",
-    "clean_name": "SUJATA GOLD ATTA",
-    "brand_name": "Sujata Gold Atta",
-    "generic_name": "Atta",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "veer bay leaves 50gm": {
-    "raw_name": "VEER BAY LEAVES 50GM",
-    "clean_name": "VEER BAY LEAVES 50GM",
-    "brand_name": "Veer Bay Leaves",
-    "generic_name": "Bay Leaves",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer bay leaves": {
-    "raw_name": "VEER BAY LEAVES 50GM",
-    "clean_name": "VEER BAY LEAVES 50GM",
-    "brand_name": "Veer Bay Leaves",
-    "generic_name": "Bay Leaves",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "deep hing 1 7oz": {
-    "raw_name": "DEEP HING 1.7OZ",
-    "clean_name": "DEEP HING",
-    "brand_name": "Deep Hing",
-    "generic_name": "Hing",
-    "category": "Spices / Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "deep hing": {
-    "raw_name": "DEEP HING 1.7OZ",
-    "clean_name": "DEEP HING",
-    "brand_name": "Deep Hing",
-    "generic_name": "Hing",
-    "category": "Spices / Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "tamarind concentrate 227gm": {
-    "raw_name": "TAMARIND CONCENTRATE 227GM",
-    "clean_name": "TAMARIND CONCENTRATE 227GM",
-    "brand_name": "Tamarind Concentrate",
-    "generic_name": "Tamarind Concentrate",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "tamarind concentrate": {
-    "raw_name": "TAMARIND CONCENTRATE 227GM",
-    "clean_name": "TAMARIND CONCENTRATE 227GM",
-    "brand_name": "Tamarind Concentrate",
-    "generic_name": "Tamarind Concentrate",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer kala chana 2lb": {
-    "raw_name": "VEER KALA CHANA 2LB",
-    "clean_name": "VEER KALA CHANA",
-    "brand_name": "Veer Kala Chana",
-    "generic_name": "Kala Chana",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "veer kala chana": {
-    "raw_name": "VEER KALA CHANA 2LB",
-    "clean_name": "VEER KALA CHANA",
-    "brand_name": "Veer Kala Chana",
-    "generic_name": "Kala Chana",
-    "category": "Grains & Pasta",
-    "standard_unit": "lb",
-    "is_bulk": false
-  },
-  "surati boondi 341gm": {
-    "raw_name": "SURATI BOONDI 341GM",
-    "clean_name": "SURATI BOONDI 341GM",
-    "brand_name": "Surati Boondi",
-    "generic_name": "Boondi",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "surati boondi": {
-    "raw_name": "SURATI BOONDI 341GM",
-    "clean_name": "SURATI BOONDI 341GM",
-    "brand_name": "Surati Boondi",
-    "generic_name": "Boondi",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "os byadgi red chili 100gm": {
-    "raw_name": "OS BYADGI RED CHILI 100GM",
-    "clean_name": "OS BYADGI RED CHILI 100GM",
-    "brand_name": "Os Byadgi Red Chili",
-    "generic_name": "Red Chili",
-    "category": "Spices / Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "os byadgi red chili": {
-    "raw_name": "OS BYADGI RED CHILI 100GM",
-    "clean_name": "OS BYADGI RED CHILI 100GM",
-    "brand_name": "Os Byadgi Red Chili",
-    "generic_name": "Red Chili",
-    "category": "Spices / Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "wipes": {
-    "raw_name": "WIPES",
-    "clean_name": "WIPES",
-    "brand_name": "Walmart Wipes",
-    "generic_name": "Wipes",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "walmart wipes": {
-    "raw_name": "WIPES",
-    "clean_name": "WIPES",
-    "brand_name": "Walmart Wipes",
-    "generic_name": "Wipes",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "listerine": {
-    "raw_name": "LISTERINE",
-    "clean_name": "LISTERINE",
-    "brand_name": "Listerine Mouthwash",
-    "generic_name": "Mouthwash",
-    "category": "Non-Grocery",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "listerine mouthwash": {
-    "raw_name": "LISTERINE",
-    "clean_name": "LISTERINE",
-    "brand_name": "Listerine Mouthwash",
-    "generic_name": "Mouthwash",
-    "category": "Non-Grocery",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "bic cr 10blk": {
-    "raw_name": "BIC CR 10BLK",
-    "clean_name": "BIC CR 10BLK",
-    "brand_name": "Bic Cristal Ballpoint Pens",
-    "generic_name": "Pens",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "bic cristal ballpoint pens": {
-    "raw_name": "BIC CR 10BLK",
-    "clean_name": "BIC CR 10BLK",
-    "brand_name": "Bic Cristal Ballpoint Pens",
-    "generic_name": "Pens",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "mint sweet m": {
-    "raw_name": "MINT-SWEET M",
-    "clean_name": "MINT-SWEET M",
-    "brand_name": "Sweet Mint",
-    "generic_name": "Mint",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "sweet mint": {
-    "raw_name": "MINT-SWEET M",
-    "clean_name": "MINT-SWEET M",
-    "brand_name": "Sweet Mint",
-    "generic_name": "Mint",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "mg pomix 8qt": {
-    "raw_name": "MG POMIX 8QT",
-    "clean_name": "MG POMIX 8QT",
-    "brand_name": "Miracle-Gro Potting Mix",
-    "generic_name": "Potting Mix",
-    "category": "Non-Grocery",
-    "standard_unit": "qt",
-    "is_bulk": false
-  },
-  "miracle gro potting mix": {
-    "raw_name": "MG POMIX 8QT",
-    "clean_name": "MG POMIX 8QT",
-    "brand_name": "Miracle-Gro Potting Mix",
-    "generic_name": "Potting Mix",
-    "category": "Non-Grocery",
-    "standard_unit": "qt",
-    "is_bulk": false
-  },
-  "lsh lvndr bb": {
-    "raw_name": "LSH LVNDR BB",
-    "clean_name": "LSH LVNDR BB",
-    "brand_name": "Lush Lavender Bubble Bath",
-    "generic_name": "Bubble Bath",
-    "category": "Non-Grocery",
-    "standard_unit": "fl oz",
-    "is_bulk": false
-  },
-  "lush lavender bubble bath": {
-    "raw_name": "LSH LVNDR BB",
-    "clean_name": "LSH LVNDR BB",
-    "brand_name": "Lush Lavender Bubble Bath",
-    "generic_name": "Bubble Bath",
-    "category": "Non-Grocery",
-    "standard_unit": "fl oz",
-    "is_bulk": false
-  },
-  "aqu lip spf": {
-    "raw_name": "AQU LIP SPF",
-    "clean_name": "AQU LIP SPF",
-    "brand_name": "Aquaphor Lip Repair SPF",
-    "generic_name": "Lip Balm",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "aquaphor lip repair spf": {
-    "raw_name": "AQU LIP SPF",
-    "clean_name": "AQU LIP SPF",
-    "brand_name": "Aquaphor Lip Repair SPF",
-    "generic_name": "Lip Balm",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "sen tp re pr": {
-    "raw_name": "SEN TP RE PR",
-    "clean_name": "SEN TP RE PR",
-    "brand_name": "Seventh Generation Toilet Paper",
-    "generic_name": "Toilet Paper",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "seventh generation toilet paper": {
-    "raw_name": "SEN TP RE PR",
-    "clean_name": "SEN TP RE PR",
-    "brand_name": "Seventh Generation Toilet Paper",
-    "generic_name": "Toilet Paper",
-    "category": "Non-Grocery",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "nib pumpkin seeds 400gm": {
-    "raw_name": "NIB PUMPKIN SEEDS 400GM",
-    "clean_name": "NIB PUMPKIN SEEDS 400GM",
-    "brand_name": "New India Bazar Pumpkin Seeds",
-    "generic_name": "Pumpkin Seeds",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "new india bazar pumpkin seeds": {
-    "raw_name": "NIB PUMPKIN SEEDS 400GM",
-    "clean_name": "NIB PUMPKIN SEEDS 400GM",
-    "brand_name": "New India Bazar Pumpkin Seeds",
-    "generic_name": "Pumpkin Seeds",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "mirch masala punjabi mix 340gm": {
-    "raw_name": "MIRCH MASALA PUNJABI MIX 340GM",
-    "clean_name": "MIRCH MASALA PUNJABI MIX 340GM",
-    "brand_name": "Mirch Masala Punjabi Mix",
-    "generic_name": "Snack Mix",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "mirch masala punjabi mix": {
-    "raw_name": "MIRCH MASALA PUNJABI MIX 340GM",
-    "clean_name": "MIRCH MASALA PUNJABI MIX 340GM",
-    "brand_name": "Mirch Masala Punjabi Mix",
-    "generic_name": "Snack Mix",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer pasta stick": {
-    "raw_name": "VEER PASTA STICK",
-    "clean_name": "VEER PASTA STICK",
-    "brand_name": "Veer Pasta Stick",
-    "generic_name": "Pasta",
-    "category": "Grains & Pasta",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "britannia 50 50 sweet salty family pack 372gm": {
-    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
-    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
-    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
-    "generic_name": "Biscuits",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "britannia 50 50 sweet salty family 372gm": {
-    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
-    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
-    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
-    "generic_name": "Biscuits",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "britannia 50 50 sweet salty biscuits": {
-    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
-    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
-    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
-    "generic_name": "Biscuits",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "surati mixed savouries 341gm": {
-    "raw_name": "SURATI MIXED SAVOURIES 341GM",
-    "clean_name": "SURATI MIXED SAVOURIES 341GM",
-    "brand_name": "Surati Mixed Savouries",
-    "generic_name": "Mixed Savouries",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "surati mixed savouries": {
-    "raw_name": "SURATI MIXED SAVOURIES 341GM",
-    "clean_name": "SURATI MIXED SAVOURIES 341GM",
-    "brand_name": "Surati Mixed Savouries",
-    "generic_name": "Mixed Savouries",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "pitambari deep shakti oil 450ml": {
-    "raw_name": "PITAMBARI DEEP SHAKTI OIL 450ML",
-    "clean_name": "PITAMBARI DEEP SHAKTI OIL",
-    "brand_name": "Pitambari Deep Shakti Oil",
-    "generic_name": "Oil",
-    "category": "Pantry",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "pitambari deep shakti oil": {
-    "raw_name": "PITAMBARI DEEP SHAKTI OIL 450ML",
-    "clean_name": "PITAMBARI DEEP SHAKTI OIL",
-    "brand_name": "Pitambari Deep Shakti Oil",
-    "generic_name": "Oil",
-    "category": "Pantry",
-    "standard_unit": "ml",
-    "is_bulk": false
-  },
-  "kachori aloo tikki": {
-    "raw_name": "KACHORI/ALOO TIKKI",
-    "clean_name": "KACHORI/ALOO TIKKI",
-    "brand_name": "Kachori Aloo Tikki",
-    "generic_name": "Kachori Aloo Tikki",
-    "category": "Snacks",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "amul pure ghee 1ltr": {
-    "raw_name": "AMUL PURE GHEE 1LTR",
-    "clean_name": "AMUL PURE GHEE",
-    "brand_name": "Amul Pure Ghee",
-    "generic_name": "Ghee",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "amul pure ghee": {
-    "raw_name": "AMUL PURE GHEE 1LTR",
-    "clean_name": "AMUL PURE GHEE",
-    "brand_name": "Amul Pure Ghee",
-    "generic_name": "Ghee",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer fryums yellow net 200gm": {
-    "raw_name": "VEER FRYUMS YELLOW NET 200GM",
-    "clean_name": "VEER FRYUMS YELLOW NET 200GM",
-    "brand_name": "Veer Fryums Yellow Net",
-    "generic_name": "Fryums",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "veer fryums yellow net": {
-    "raw_name": "VEER FRYUMS YELLOW NET 200GM",
-    "clean_name": "VEER FRYUMS YELLOW NET 200GM",
-    "brand_name": "Veer Fryums Yellow Net",
-    "generic_name": "Fryums",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "jiva organic jaggery powder 14oz": {
-    "raw_name": "JIVA ORGANIC JAGGERY POWDER 14OZ",
-    "clean_name": "JIVA ORGANIC JAGGERY POWDER",
-    "brand_name": "Jiva Organic Jaggery Powder",
-    "generic_name": "Jaggery Powder",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "jiva organic jaggery powder": {
-    "raw_name": "JIVA ORGANIC JAGGERY POWDER 14OZ",
-    "clean_name": "JIVA ORGANIC JAGGERY POWDER",
-    "brand_name": "Jiva Organic Jaggery Powder",
-    "generic_name": "Jaggery Powder",
-    "category": "Pantry",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "sw ranch kit": {
-    "raw_name": "SW RANCH KIT",
-    "clean_name": "SW RANCH KIT",
-    "brand_name": "Taylor Farms Southwest Ranch Salad Kit",
-    "generic_name": "Salad Kit",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "taylor farms southwest ranch salad kit": {
-    "raw_name": "SW RANCH KIT",
-    "clean_name": "SW RANCH KIT",
-    "brand_name": "Taylor Farms Southwest Ranch Salad Kit",
-    "generic_name": "Salad Kit",
-    "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
-  },
-  "nexiumotc 42": {
-    "raw_name": "NEXIUMOTC 42",
-    "clean_name": "NEXIUMOTC 42",
-    "brand_name": "Nexium 24Hr Acid Reducer",
-    "generic_name": "Acid Reducer",
-    "category": "Pharmacy",
-    "standard_unit": "count",
-    "is_bulk": true
-  },
-  "nexium 24hr acid reducer": {
-    "raw_name": "NEXIUMOTC 42",
-    "clean_name": "NEXIUMOTC 42",
-    "brand_name": "Nexium 24Hr Acid Reducer",
-    "generic_name": "Acid Reducer",
-    "category": "Pharmacy",
-    "standard_unit": "count",
-    "is_bulk": true
-  },
-  "org mediterr": {
-    "raw_name": "ORG MEDITERR",
-    "clean_name": "ORG MEDITERR",
-    "brand_name": "Organic Mediterranean Medley",
-    "generic_name": "Vegetables",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": true
-  },
-  "organic mediterranean medley": {
-    "raw_name": "ORG MEDITERR",
-    "clean_name": "ORG MEDITERR",
-    "brand_name": "Organic Mediterranean Medley",
-    "generic_name": "Vegetables",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": true
-  },
-  "ks batteries ks aaa": {
-    "raw_name": "KS BATTERIES / KS AAA",
-    "clean_name": "KS BATTERIES / KS AAA",
-    "brand_name": "Kirkland Signature AAA Batteries",
-    "generic_name": "Batteries",
-    "category": "Pantry",
-    "standard_unit": "count",
-    "is_bulk": true
-  },
-  "kirkland signature aaa batteries": {
-    "raw_name": "KS BATTERIES / KS AAA",
-    "clean_name": "KS BATTERIES / KS AAA",
-    "brand_name": "Kirkland Signature AAA Batteries",
-    "generic_name": "Batteries",
-    "category": "Pantry",
-    "standard_unit": "count",
-    "is_bulk": true
-  },
-  "veer frozen sweet corn 2lb": {
-    "raw_name": "VEER FROZEN SWEET CORN 2LB",
-    "clean_name": "VEER FROZEN SWEET CORN",
-    "brand_name": "Veer Frozen Sweet Corn",
-    "generic_name": "Sweet Corn",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "veer frozen sweet corn": {
-    "raw_name": "VEER FROZEN SWEET CORN 2LB",
-    "clean_name": "VEER FROZEN SWEET CORN",
-    "brand_name": "Veer Frozen Sweet Corn",
-    "generic_name": "Sweet Corn",
-    "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
-  },
-  "atul cheeze khakhra 200gm": {
-    "raw_name": "ATUL CHEEZE KHAKHRA 200GM",
-    "clean_name": "ATUL CHEEZE KHAKHRA 200GM",
-    "brand_name": "Atul Cheese Khakhra",
-    "generic_name": "Khakhra",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
-  },
-  "atul cheese khakhra": {
-    "raw_name": "ATUL CHEEZE KHAKHRA 200GM",
-    "clean_name": "ATUL CHEEZE KHAKHRA 200GM",
-    "brand_name": "Atul Cheese Khakhra",
-    "generic_name": "Khakhra",
-    "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "ks org a2 pr": {
     "raw_name": "KS ORG A2 PR",
@@ -1671,7 +126,8 @@
     "generic_name": "Milk",
     "category": "Dairy",
     "standard_unit": "gallon",
-    "is_bulk": false
+    "is_bulk": true,
+    "total_quantity": "1.5 gallons"
   },
   "kirkland signature organic a2 milk": {
     "raw_name": "KS ORG A2 PR",
@@ -1680,7 +136,1668 @@
     "generic_name": "Milk",
     "category": "Dairy",
     "standard_unit": "gallon",
-    "is_bulk": false
+    "is_bulk": true,
+    "total_quantity": "1.5 gallons"
+  },
+  "cilantro": {
+    "raw_name": "Cilantro ea",
+    "clean_name": "Cilantro ea",
+    "brand_name": "Cilantro",
+    "generic_name": "Cilantro",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "garvi gujarat bhel sev": {
+    "raw_name": "GARVI GUJARAT BHEL SEV",
+    "clean_name": "GARVI GUJARAT BHEL SEV",
+    "brand_name": "Garvi Gujarat Bhel Sev",
+    "generic_name": "Sev",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400g"
+  },
+  "deep masoor dal split lentils": {
+    "raw_name": "DEEP MASOOR DAL SPLIT LENTILS",
+    "clean_name": "DEEP MASOOR DAL SPLIT LENTILS",
+    "brand_name": "Deep Masoor Dal Split Lentils",
+    "generic_name": "Lentils",
+    "category": "Grains & Pasta",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1000g"
+  },
+  "ganesh idli batter": {
+    "raw_name": "Ganesh Idli Batter",
+    "clean_name": "Ganesh Idli Batter",
+    "brand_name": "Ganesh Idli Batter",
+    "generic_name": "Idli Batter",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "32 oz"
+  },
+  "oreo milk cookies": {
+    "raw_name": "Oreo Milk Cookies",
+    "clean_name": "Oreo Milk Cookies",
+    "brand_name": "Oreo Milk Cookies",
+    "generic_name": "Cookies",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "thai chilli per lb": {
+    "raw_name": "Thai Chilli per lb",
+    "clean_name": "Thai Chilli",
+    "brand_name": "Thai Chilli",
+    "generic_name": "Chili Peppers",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "thai chilli": {
+    "raw_name": "Thai Chilli per lb",
+    "clean_name": "Thai Chilli",
+    "brand_name": "Thai Chilli",
+    "generic_name": "Chili Peppers",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "green bell pepper per lb": {
+    "raw_name": "Green Bell Pepper Per Lb",
+    "clean_name": "Green Bell Pepper",
+    "brand_name": "Green Bell Pepper",
+    "generic_name": "Bell Pepper",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "green bell pepper": {
+    "raw_name": "Green Bell Pepper Per Lb",
+    "clean_name": "Green Bell Pepper",
+    "brand_name": "Green Bell Pepper",
+    "generic_name": "Bell Pepper",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "white potato big per lb": {
+    "raw_name": "White Potato Big per lb",
+    "clean_name": "White Potato Big",
+    "brand_name": "White Potato",
+    "generic_name": "Potatoes",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "white potato big": {
+    "raw_name": "White Potato Big per lb",
+    "clean_name": "White Potato Big",
+    "brand_name": "White Potato",
+    "generic_name": "Potatoes",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "white potato": {
+    "raw_name": "White Potato Big per lb",
+    "clean_name": "White Potato Big",
+    "brand_name": "White Potato",
+    "generic_name": "Potatoes",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "joy mint chutney": {
+    "raw_name": "Joy Mint Chutney",
+    "clean_name": "Joy Mint Chutney",
+    "brand_name": "Joy Mint Chutney",
+    "generic_name": "Mint Chutney",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
+  },
+  "parle krackjack sweet salty crac": {
+    "raw_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
+    "clean_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
+    "brand_name": "Parle Krackjack Sweet & Salty Crackers",
+    "generic_name": "Crackers",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "parle krackjack sweet salty crackers": {
+    "raw_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
+    "clean_name": "PARLE KRACKJACK SWEET & SALTY CRAC",
+    "brand_name": "Parle Krackjack Sweet & Salty Crackers",
+    "generic_name": "Crackers",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "lays india s magic masala": {
+    "raw_name": "LAYS INDIA'S MAGIC MASALA",
+    "clean_name": "LAYS INDIA'S MAGIC MASALA",
+    "brand_name": "Lay's India's Magic Masala",
+    "generic_name": "Potato Chips",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "lay s india s magic masala": {
+    "raw_name": "LAYS INDIA'S MAGIC MASALA",
+    "clean_name": "LAYS INDIA'S MAGIC MASALA",
+    "brand_name": "Lay's India's Magic Masala",
+    "generic_name": "Potato Chips",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "verka paneer": {
+    "raw_name": "Verka Paneer",
+    "clean_name": "Verka Paneer",
+    "brand_name": "Verka Paneer",
+    "generic_name": "Paneer",
+    "category": "Dairy",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "14 oz"
+  },
+  "amul cheese slices": {
+    "raw_name": "Amul Cheese Slices",
+    "clean_name": "Amul Cheese Slices",
+    "brand_name": "Amul Cheese Slices",
+    "generic_name": "Cheese Slices",
+    "category": "Dairy",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200g"
+  },
+  "heinz ketchup": {
+    "raw_name": "Heinz Ketchup",
+    "clean_name": "Heinz Ketchup",
+    "brand_name": "Heinz Ketchup",
+    "generic_name": "Ketchup",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "20 oz"
+  },
+  "loose garlic per lb": {
+    "raw_name": "Loose Garlic per lb",
+    "clean_name": "Loose Garlic",
+    "brand_name": "Garlic",
+    "generic_name": "Garlic",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "loose garlic": {
+    "raw_name": "Loose Garlic per lb",
+    "clean_name": "Loose Garlic",
+    "brand_name": "Garlic",
+    "generic_name": "Garlic",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "garlic": {
+    "raw_name": "Loose Garlic per lb",
+    "clean_name": "Loose Garlic",
+    "brand_name": "Garlic",
+    "generic_name": "Garlic",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "red onion per lb": {
+    "raw_name": "Red Onion per lb",
+    "clean_name": "Red Onion",
+    "brand_name": "Red Onion",
+    "generic_name": "Onions",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "red onion": {
+    "raw_name": "Red Onion per lb",
+    "clean_name": "Red Onion",
+    "brand_name": "Red Onion",
+    "generic_name": "Onions",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "haldiram s ajwain paratha": {
+    "raw_name": "HALDIRAM'S AJWAIN PARATHA",
+    "clean_name": "HALDIRAM'S AJWAIN PARATHA",
+    "brand_name": "Haldiram's Ajwain Paratha",
+    "generic_name": "Paratha",
+    "category": "Bakery",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400g"
+  },
+  "red label tea": {
+    "raw_name": "RED LABEL TEA",
+    "clean_name": "RED LABEL TEA",
+    "brand_name": "Red Label Tea",
+    "generic_name": "Tea",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "bambino premium vermicelli": {
+    "raw_name": "Bambino Premium Vermicelli",
+    "clean_name": "Bambino Premium Vermicelli",
+    "brand_name": "Bambino Premium Vermicelli",
+    "generic_name": "Vermicelli",
+    "category": "Grains & Pasta",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400g"
+  },
+  "lijjat papad green chillies": {
+    "raw_name": "LIJJAT PAPAD GREEN CHILLIES",
+    "clean_name": "LIJJAT PAPAD GREEN CHILLIES",
+    "brand_name": "Lijjat Papad Green Chillies",
+    "generic_name": "Papad",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200g"
+  },
+  "deep toor dal dry": {
+    "raw_name": "DEEP TOOR DAL (DRY)",
+    "clean_name": "DEEP TOOR DAL (DRY)",
+    "brand_name": "Deep Toor Dal",
+    "generic_name": "Toor Dal",
+    "category": "Grains & Pasta",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1000g"
+  },
+  "deep toor dal": {
+    "raw_name": "DEEP TOOR DAL (DRY)",
+    "clean_name": "DEEP TOOR DAL (DRY)",
+    "brand_name": "Deep Toor Dal",
+    "generic_name": "Toor Dal",
+    "category": "Grains & Pasta",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "1000g"
+  },
+  "ashoka grated coconut": {
+    "raw_name": "Ashoka Grated Coconut",
+    "clean_name": "Ashoka Grated Coconut",
+    "brand_name": "Ashoka Grated Coconut",
+    "generic_name": "Grated Coconut",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200g"
+  },
+  "vadilal green peas mutter": {
+    "raw_name": "Vadilal Green Peas Mutter",
+    "clean_name": "Vadilal Green Peas Mutter",
+    "brand_name": "Vadilal Green Peas",
+    "generic_name": "Green Peas",
+    "category": "Produce",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400g"
+  },
+  "vadilal green peas": {
+    "raw_name": "Vadilal Green Peas Mutter",
+    "clean_name": "Vadilal Green Peas Mutter",
+    "brand_name": "Vadilal Green Peas",
+    "generic_name": "Green Peas",
+    "category": "Produce",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400g"
+  },
+  "cilantro ea": {
+    "raw_name": "Cilantro ea",
+    "clean_name": "Cilantro ea",
+    "brand_name": "Cilantro",
+    "generic_name": "Cilantro",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "beetroot per lb": {
+    "raw_name": "Beetroot per lb",
+    "clean_name": "Beetroot",
+    "brand_name": "Beetroot",
+    "generic_name": "Beetroot",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "beetroot": {
+    "raw_name": "Beetroot per lb",
+    "clean_name": "Beetroot",
+    "brand_name": "Beetroot",
+    "generic_name": "Beetroot",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "roma tomato per lb": {
+    "raw_name": "Roma Tomato per lb",
+    "clean_name": "Roma Tomato",
+    "brand_name": "Roma Tomato",
+    "generic_name": "Tomatoes",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "roma tomato": {
+    "raw_name": "Roma Tomato per lb",
+    "clean_name": "Roma Tomato",
+    "brand_name": "Roma Tomato",
+    "generic_name": "Tomatoes",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "lime ea": {
+    "raw_name": "Lime Ea",
+    "clean_name": "Lime Ea",
+    "brand_name": "Lime",
+    "generic_name": "Lime",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "lime": {
+    "raw_name": "Lime Ea",
+    "clean_name": "Lime Ea",
+    "brand_name": "Lime",
+    "generic_name": "Lime",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "curry neem leaves": {
+    "raw_name": "CURRY/NEEM LEAVES",
+    "clean_name": "CURRY/NEEM LEAVES",
+    "brand_name": "Curry And Neem Leaves",
+    "generic_name": "Curry Leaves",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "curry and neem leaves": {
+    "raw_name": "CURRY/NEEM LEAVES",
+    "clean_name": "CURRY/NEEM LEAVES",
+    "brand_name": "Curry And Neem Leaves",
+    "generic_name": "Curry Leaves",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "berkeley whole milk 1 2 gallon": {
+    "raw_name": "BERKELEY WHOLE MILK 1/2 GALLON",
+    "clean_name": "BERKELEY WHOLE MILK",
+    "brand_name": "Berkeley Whole Milk",
+    "generic_name": "Milk",
+    "category": "Dairy",
+    "standard_unit": "gallon",
+    "is_bulk": false,
+    "total_quantity": "1 gallon"
+  },
+  "berkeley whole milk": {
+    "raw_name": "BERKELEY WHOLE MILK 1/2 GALLON",
+    "clean_name": "BERKELEY WHOLE MILK",
+    "brand_name": "Berkeley Whole Milk",
+    "generic_name": "Milk",
+    "category": "Dairy",
+    "standard_unit": "gallon",
+    "is_bulk": false,
+    "total_quantity": "1 gallon"
+  },
+  "cabbage": {
+    "raw_name": "CABBAGE",
+    "clean_name": "CABBAGE",
+    "brand_name": "Cabbage",
+    "generic_name": "Cabbage",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "veer vatana white peas 2lb": {
+    "raw_name": "VEER VATANA WHITE PEAS 2LB",
+    "clean_name": "VEER VATANA WHITE PEAS",
+    "brand_name": "Veer Vatana White Peas",
+    "generic_name": "White Peas",
+    "category": "Pantry",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "veer vatana white peas": {
+    "raw_name": "VEER VATANA WHITE PEAS 2LB",
+    "clean_name": "VEER VATANA WHITE PEAS",
+    "brand_name": "Veer Vatana White Peas",
+    "generic_name": "White Peas",
+    "category": "Pantry",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "whole wheat bread eggless": {
+    "raw_name": "WHOLE WHEAT BREAD EGGLESS",
+    "clean_name": "WHOLE WHEAT BREAD EGGLESS",
+    "brand_name": "Whole Wheat Bread Eggless",
+    "generic_name": "Bread",
+    "category": "Bakery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "amul cheese chiplets 200gm": {
+    "raw_name": "AMUL CHEESE CHIPLETS 200GM",
+    "clean_name": "AMUL CHEESE CHIPLETS 200GM",
+    "brand_name": "Amul Cheese Chiplets",
+    "generic_name": "Cheese",
+    "category": "Dairy",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "amul cheese chiplets": {
+    "raw_name": "AMUL CHEESE CHIPLETS 200GM",
+    "clean_name": "AMUL CHEESE CHIPLETS 200GM",
+    "brand_name": "Amul Cheese Chiplets",
+    "generic_name": "Cheese",
+    "category": "Dairy",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "haldiram khari": {
+    "raw_name": "HALDIRAM KHARI",
+    "clean_name": "HALDIRAM KHARI",
+    "brand_name": "Haldiram Khari",
+    "generic_name": "Khari",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "persan cucumber": {
+    "raw_name": "PERSAN CUCUMBER",
+    "clean_name": "PERSAN CUCUMBER",
+    "brand_name": "Persian Cucumber",
+    "generic_name": "Cucumber",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "persian cucumber": {
+    "raw_name": "PICKLE PERSIAN",
+    "clean_name": "PICKLE PERSIAN",
+    "brand_name": "Persian Cucumber",
+    "generic_name": "Cucumbers",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "sesame seed": {
+    "raw_name": "SESAME SEED",
+    "clean_name": "SESAME SEED",
+    "brand_name": "Sesame Seed",
+    "generic_name": "Sesame Seeds",
+    "category": "Spices / Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "tata salt": {
+    "raw_name": "TATA SALT",
+    "clean_name": "TATA SALT",
+    "brand_name": "Tata Salt",
+    "generic_name": "Salt",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "krackjack 75gm": {
+    "raw_name": "KRACKJACK 75GM",
+    "clean_name": "KRACKJACK 75GM",
+    "brand_name": "Krackjack Biscuits",
+    "generic_name": "Biscuits",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "75 g"
+  },
+  "krackjack biscuits": {
+    "raw_name": "KRACKJACK 75GM",
+    "clean_name": "KRACKJACK 75GM",
+    "brand_name": "Krackjack Biscuits",
+    "generic_name": "Biscuits",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "75 g"
+  },
+  "aashirvaad atta": {
+    "raw_name": "AASHIRVAAD ATTA",
+    "clean_name": "AASHIRVAAD ATTA",
+    "brand_name": "Aashirvaad Atta",
+    "generic_name": "Atta",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "10 lb"
+  },
+  "ginger": {
+    "raw_name": "GINGER",
+    "clean_name": "GINGER",
+    "brand_name": "Ginger",
+    "generic_name": "Ginger",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "indian okra": {
+    "raw_name": "INDIAN OKRA",
+    "clean_name": "INDIAN OKRA",
+    "brand_name": "Indian Okra",
+    "generic_name": "Okra",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "butter 100": {
+    "raw_name": "BUTTER 100",
+    "clean_name": "BUTTER 100",
+    "brand_name": "Butter",
+    "generic_name": "Butter",
+    "category": "Dairy",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "butter": {
+    "raw_name": "BUTTER 100",
+    "clean_name": "BUTTER 100",
+    "brand_name": "Butter",
+    "generic_name": "Butter",
+    "category": "Dairy",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "s green peas12oz": {
+    "raw_name": "S GREEN PEAS12OZ",
+    "clean_name": "S GREEN",
+    "brand_name": "S Green",
+    "generic_name": "Green Chilies",
+    "category": "Produce",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
+  },
+  "s green": {
+    "raw_name": "S GREEN PEAS12OZ",
+    "clean_name": "S GREEN",
+    "brand_name": "S Green",
+    "generic_name": "Green Chilies",
+    "category": "Produce",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
+  },
+  "dab sesame oilsm": {
+    "raw_name": "DAB SESAME OILSM",
+    "clean_name": "DAB SESAME OILSM",
+    "brand_name": "Dab Sesame Oil",
+    "generic_name": "Sesame Oil",
+    "category": "Pantry",
+    "standard_unit": "ml",
+    "is_bulk": false,
+    "total_quantity": "200 ml"
+  },
+  "dab sesame oil": {
+    "raw_name": "DAB SESAME OILSM",
+    "clean_name": "DAB SESAME OILSM",
+    "brand_name": "Dab Sesame Oil",
+    "generic_name": "Sesame Oil",
+    "category": "Pantry",
+    "standard_unit": "ml",
+    "is_bulk": false,
+    "total_quantity": "200 ml"
+  },
+  "sb mini ht": {
+    "raw_name": "SB MINI HT",
+    "clean_name": "SB MINI HT",
+    "brand_name": "Starbucks Mini Hot Cocoa",
+    "generic_name": "Hot Cocoa",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "starbucks mini hot cocoa": {
+    "raw_name": "SB MINI HT",
+    "clean_name": "SB MINI HT",
+    "brand_name": "Starbucks Mini Hot Cocoa",
+    "generic_name": "Hot Cocoa",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "4t shoe rack": {
+    "raw_name": "4T SHOE RACK",
+    "clean_name": "4T SHOE RACK",
+    "brand_name": "4-Tier Shoe Rack",
+    "generic_name": "Shoe Rack",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "4 tier shoe rack": {
+    "raw_name": "4T SHOE RACK",
+    "clean_name": "4T SHOE RACK",
+    "brand_name": "4-Tier Shoe Rack",
+    "generic_name": "Shoe Rack",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "nm vitb12 fd": {
+    "raw_name": "NM VITB12 FD",
+    "clean_name": "NM VITB12 FD",
+    "brand_name": "Nature Made Vitamin B12",
+    "generic_name": "Vitamin B12",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "nature made vitamin b12": {
+    "raw_name": "NM VITB12 FD",
+    "clean_name": "NM VITB12 FD",
+    "brand_name": "Nature Made Vitamin B12",
+    "generic_name": "Vitamin B12",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "memo book": {
+    "raw_name": "MEMO BOOK",
+    "clean_name": "MEMO BOOK",
+    "brand_name": "Memo Book",
+    "generic_name": "Notebook",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "vitaplus natural figs 7 oz": {
+    "raw_name": "VITAPLUS NATURAL FIGS 7 OZ",
+    "clean_name": "VITAPLUS NATURAL FIGS",
+    "brand_name": "Vitaplus Natural Figs",
+    "generic_name": "Figs",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "vitaplus natural figs": {
+    "raw_name": "VITAPLUS NATURAL FIGS 7 OZ",
+    "clean_name": "VITAPLUS NATURAL FIGS",
+    "brand_name": "Vitaplus Natural Figs",
+    "generic_name": "Figs",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "joy sandwich chutney 8oz": {
+    "raw_name": "JOY SANDWICH CHUTNEY 8oz",
+    "clean_name": "JOY SANDWICH CHUTNEY",
+    "brand_name": "Joy Sandwich Chutney",
+    "generic_name": "Chutney",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "10 oz"
+  },
+  "joy sandwich chutney": {
+    "raw_name": "JOY SANDWICH CHUTNEY 8oz",
+    "clean_name": "JOY SANDWICH CHUTNEY",
+    "brand_name": "Joy Sandwich Chutney",
+    "generic_name": "Chutney",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "10 oz"
+  },
+  "ataulfo manila mango each": {
+    "raw_name": "ATAULFO/MANILA MANGO EACH",
+    "clean_name": "ATAULFO/MANILA MANGO EACH",
+    "brand_name": "Ataulfo Manila Mango",
+    "generic_name": "Mango",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "ataulfo manila mango": {
+    "raw_name": "ATAULFO/MANILA MANGO EACH",
+    "clean_name": "ATAULFO/MANILA MANGO EACH",
+    "brand_name": "Ataulfo Manila Mango",
+    "generic_name": "Mango",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "laxmi sona masoori 4lb": {
+    "raw_name": "LAXMI SONA MASOORI 4LB",
+    "clean_name": "LAXMI SONA MASOORI",
+    "brand_name": "Laxmi Sona Masoori Rice",
+    "generic_name": "Rice",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "laxmi sona masoori": {
+    "raw_name": "LAXMI SONA MASOORI 4LB",
+    "clean_name": "LAXMI SONA MASOORI",
+    "brand_name": "Laxmi Sona Masoori Rice",
+    "generic_name": "Rice",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "laxmi sona masoori rice": {
+    "raw_name": "LAXMI SONA MASOORI 4LB",
+    "clean_name": "LAXMI SONA MASOORI",
+    "brand_name": "Laxmi Sona Masoori Rice",
+    "generic_name": "Rice",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "laxmi sooji coarse 2lb": {
+    "raw_name": "LAXMI SOOJI COARSE 2LB",
+    "clean_name": "LAXMI SOOJI COARSE",
+    "brand_name": "Laxmi Sooji Coarse",
+    "generic_name": "Sooji",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "laxmi sooji coarse": {
+    "raw_name": "LAXMI SOOJI COARSE 2LB",
+    "clean_name": "LAXMI SOOJI COARSE",
+    "brand_name": "Laxmi Sooji Coarse",
+    "generic_name": "Sooji",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "pickle persian": {
+    "raw_name": "PICKLE PERSIAN",
+    "clean_name": "PICKLE PERSIAN",
+    "brand_name": "Persian Cucumber",
+    "generic_name": "Cucumbers",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "gits khaman dhokla mix 500gm": {
+    "raw_name": "GITS KHAMAN DHOKLA MIX 500GM",
+    "clean_name": "GITS KHAMAN DHOKLA MIX 500GM",
+    "brand_name": "Gits Khaman Dhokla Mix",
+    "generic_name": "Dhokla Mix",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "500g"
+  },
+  "gits khaman dhokla mix": {
+    "raw_name": "GITS KHAMAN DHOKLA MIX 500GM",
+    "clean_name": "GITS KHAMAN DHOKLA MIX 500GM",
+    "brand_name": "Gits Khaman Dhokla Mix",
+    "generic_name": "Dhokla Mix",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "500g"
+  },
+  "veer cashew split 200gm": {
+    "raw_name": "VEER CASHEW SPLIT 200GM",
+    "clean_name": "VEER CASHEW SPLIT 200GM",
+    "brand_name": "Veer Cashew Split",
+    "generic_name": "Cashews",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "veer cashew split": {
+    "raw_name": "VEER CASHEW SPLIT 200GM",
+    "clean_name": "VEER CASHEW SPLIT 200GM",
+    "brand_name": "Veer Cashew Split",
+    "generic_name": "Cashews",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "samosa": {
+    "raw_name": "SAMOSA",
+    "clean_name": "SAMOSA",
+    "brand_name": "Samosa",
+    "generic_name": "Samosa",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "spinach bunch": {
+    "raw_name": "SPINACH BUNCH",
+    "clean_name": "SPINACH BUNCH",
+    "brand_name": "Spinach Bunch",
+    "generic_name": "Spinach",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "veer moong dal 2lb": {
+    "raw_name": "VEER MOONG DAL 2LB",
+    "clean_name": "VEER MOONG DAL",
+    "brand_name": "Veer Moong Dal",
+    "generic_name": "Moong Dal",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "veer moong dal": {
+    "raw_name": "VEER MOONG DAL 2LB",
+    "clean_name": "VEER MOONG DAL",
+    "brand_name": "Veer Moong Dal",
+    "generic_name": "Moong Dal",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "ame gujarati jowar flour 2lb": {
+    "raw_name": "AME GUJARATI JOWAR FLOUR 2LB",
+    "clean_name": "AME GUJARATI JOWAR FLOUR",
+    "brand_name": "Ame Gujarati Jowar Flour",
+    "generic_name": "Jowar Flour",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "ame gujarati jowar flour": {
+    "raw_name": "AME GUJARATI JOWAR FLOUR 2LB",
+    "clean_name": "AME GUJARATI JOWAR FLOUR",
+    "brand_name": "Ame Gujarati Jowar Flour",
+    "generic_name": "Jowar Flour",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "bean green": {
+    "raw_name": "BEAN GREEN",
+    "clean_name": "BEAN GREEN",
+    "brand_name": "Green Beans",
+    "generic_name": "Green Beans",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "green beans": {
+    "raw_name": "BEAN GREEN",
+    "clean_name": "BEAN GREEN",
+    "brand_name": "Green Beans",
+    "generic_name": "Green Beans",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "beets": {
+    "raw_name": "BEETS",
+    "clean_name": "BEETS",
+    "brand_name": "Beets",
+    "generic_name": "Beets",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "onion yellow": {
+    "raw_name": "ONION YELLOW",
+    "clean_name": "ONION YELLOW",
+    "brand_name": "Yellow Onion",
+    "generic_name": "Onions",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "yellow onion": {
+    "raw_name": "ONION YELLOW",
+    "clean_name": "ONION YELLOW",
+    "brand_name": "Yellow Onion",
+    "generic_name": "Onions",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "nib walnuts no shell": {
+    "raw_name": "NIB WALNUTS NO SHELL",
+    "clean_name": "NIB WALNUTS NO SHELL",
+    "brand_name": "New India Bazar Walnuts No Shell",
+    "generic_name": "Walnuts",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "new india bazar walnuts no shell": {
+    "raw_name": "NIB WALNUTS NO SHELL",
+    "clean_name": "NIB WALNUTS NO SHELL",
+    "brand_name": "New India Bazar Walnuts No Shell",
+    "generic_name": "Walnuts",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "nib black raisins 1l": {
+    "raw_name": "NIB BLACK RAISINS 1L",
+    "clean_name": "NIB BLACK RAISINS",
+    "brand_name": "New India Bazar Black Raisins",
+    "generic_name": "Raisins",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "nib black raisins": {
+    "raw_name": "NIB BLACK RAISINS 1L",
+    "clean_name": "NIB BLACK RAISINS",
+    "brand_name": "New India Bazar Black Raisins",
+    "generic_name": "Raisins",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "new india bazar black raisins": {
+    "raw_name": "NIB BLACK RAISINS 1L",
+    "clean_name": "NIB BLACK RAISINS",
+    "brand_name": "New India Bazar Black Raisins",
+    "generic_name": "Raisins",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "veer cumin seeds 200gm": {
+    "raw_name": "VEER CUMIN SEEDS 200GM",
+    "clean_name": "VEER CUMIN SEEDS 200GM",
+    "brand_name": "Veer Cumin Seeds",
+    "generic_name": "Cumin Seeds",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "veer cumin seeds": {
+    "raw_name": "VEER CUMIN SEEDS 200GM",
+    "clean_name": "VEER CUMIN SEEDS 200GM",
+    "brand_name": "Veer Cumin Seeds",
+    "generic_name": "Cumin Seeds",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "veer bay leaves 50gm": {
+    "raw_name": "VEER BAY LEAVES 50GM",
+    "clean_name": "VEER BAY LEAVES 50GM",
+    "brand_name": "Veer Bay Leaves",
+    "generic_name": "Bay Leaves",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "50g"
+  },
+  "veer bay leaves": {
+    "raw_name": "VEER BAY LEAVES 50GM",
+    "clean_name": "VEER BAY LEAVES 50GM",
+    "brand_name": "Veer Bay Leaves",
+    "generic_name": "Bay Leaves",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "50g"
+  },
+  "deep hing 1 7oz": {
+    "raw_name": "DEEP HING 1.7OZ",
+    "clean_name": "DEEP HING",
+    "brand_name": "Deep Hing",
+    "generic_name": "Hing",
+    "category": "Spices / Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
+  },
+  "deep hing": {
+    "raw_name": "DEEP HING 1.7OZ",
+    "clean_name": "DEEP HING",
+    "brand_name": "Deep Hing",
+    "generic_name": "Hing",
+    "category": "Spices / Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
+  },
+  "tamarind concentrate 227gm": {
+    "raw_name": "TAMARIND CONCENTRATE 227GM",
+    "clean_name": "TAMARIND CONCENTRATE 227GM",
+    "brand_name": "Tamarind Concentrate",
+    "generic_name": "Tamarind Concentrate",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "227 g"
+  },
+  "tamarind concentrate": {
+    "raw_name": "TAMARIND CONCENTRATE 227GM",
+    "clean_name": "TAMARIND CONCENTRATE 227GM",
+    "brand_name": "Tamarind Concentrate",
+    "generic_name": "Tamarind Concentrate",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "227 g"
+  },
+  "veer kala chana 2lb": {
+    "raw_name": "VEER KALA CHANA 2LB",
+    "clean_name": "VEER KALA CHANA",
+    "brand_name": "Veer Kala Chana",
+    "generic_name": "Kala Chana",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "veer kala chana": {
+    "raw_name": "VEER KALA CHANA 2LB",
+    "clean_name": "VEER KALA CHANA",
+    "brand_name": "Veer Kala Chana",
+    "generic_name": "Kala Chana",
+    "category": "Grains & Pasta",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "surati boondi 341gm": {
+    "raw_name": "SURATI BOONDI 341GM",
+    "clean_name": "SURATI BOONDI 341GM",
+    "brand_name": "Surati Boondi",
+    "generic_name": "Boondi",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "341 g"
+  },
+  "surati boondi": {
+    "raw_name": "SURATI BOONDI 341GM",
+    "clean_name": "SURATI BOONDI 341GM",
+    "brand_name": "Surati Boondi",
+    "generic_name": "Boondi",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "341 g"
+  },
+  "os byadgi red chili 100gm": {
+    "raw_name": "OS BYADGI RED CHILI 100GM",
+    "clean_name": "OS BYADGI RED CHILI 100GM",
+    "brand_name": "Os Byadgi Red Chili",
+    "generic_name": "Red Chili",
+    "category": "Spices / Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "100 g"
+  },
+  "os byadgi red chili": {
+    "raw_name": "OS BYADGI RED CHILI 100GM",
+    "clean_name": "OS BYADGI RED CHILI 100GM",
+    "brand_name": "Os Byadgi Red Chili",
+    "generic_name": "Red Chili",
+    "category": "Spices / Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "100 g"
+  },
+  "wipes": {
+    "raw_name": "WIPES",
+    "clean_name": "WIPES",
+    "brand_name": "Wipes",
+    "generic_name": "Wipes",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "listerine": {
+    "raw_name": "LISTERINE",
+    "clean_name": "LISTERINE",
+    "brand_name": "Listerine Mouthwash",
+    "generic_name": "Mouthwash",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "listerine mouthwash": {
+    "raw_name": "LISTERINE",
+    "clean_name": "LISTERINE",
+    "brand_name": "Listerine Mouthwash",
+    "generic_name": "Mouthwash",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "bic cr 10blk": {
+    "raw_name": "BIC CR 10BLK",
+    "clean_name": "BIC CR 10BLK",
+    "brand_name": "Bic Cristal Ballpoint Pens",
+    "generic_name": "Pens",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "10 count"
+  },
+  "bic cristal ballpoint pens": {
+    "raw_name": "BIC CR 10BLK",
+    "clean_name": "BIC CR 10BLK",
+    "brand_name": "Bic Cristal Ballpoint Pens",
+    "generic_name": "Pens",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "10 count"
+  },
+  "mint sweet m": {
+    "raw_name": "MINT-SWEET M",
+    "clean_name": "MINT-SWEET M",
+    "brand_name": "Sweet Mint",
+    "generic_name": "Mint",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "sweet mint": {
+    "raw_name": "MINT-SWEET M",
+    "clean_name": "MINT-SWEET M",
+    "brand_name": "Sweet Mint",
+    "generic_name": "Mint",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "mg pomix 8qt": {
+    "raw_name": "MG POMIX 8QT",
+    "clean_name": "MG POMIX 8QT",
+    "brand_name": "Great Value Potting Mix",
+    "generic_name": "Potting Mix",
+    "category": "Non-Grocery",
+    "standard_unit": "qt",
+    "is_bulk": false,
+    "total_quantity": "8 quarts"
+  },
+  "great value potting mix": {
+    "raw_name": "MG POMIX 8QT",
+    "clean_name": "MG POMIX 8QT",
+    "brand_name": "Great Value Potting Mix",
+    "generic_name": "Potting Mix",
+    "category": "Non-Grocery",
+    "standard_unit": "qt",
+    "is_bulk": false,
+    "total_quantity": "8 quarts"
+  },
+  "lsh lvndr bb": {
+    "raw_name": "LSH LVNDR BB",
+    "clean_name": "LSH LVNDR BB",
+    "brand_name": "Lush Lavender Bath Bomb",
+    "generic_name": "Bath Bomb",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "lush lavender bath bomb": {
+    "raw_name": "LSH LVNDR BB",
+    "clean_name": "LSH LVNDR BB",
+    "brand_name": "Lush Lavender Bath Bomb",
+    "generic_name": "Bath Bomb",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "aqu lip spf": {
+    "raw_name": "AQU LIP SPF",
+    "clean_name": "AQU LIP SPF",
+    "brand_name": "Aquaphor Lip Repair SPF 30",
+    "generic_name": "Lip Balm",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "aquaphor lip repair spf 30": {
+    "raw_name": "AQU LIP SPF",
+    "clean_name": "AQU LIP SPF",
+    "brand_name": "Aquaphor Lip Repair SPF 30",
+    "generic_name": "Lip Balm",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "sen tp re pr": {
+    "raw_name": "SEN TP RE PR",
+    "clean_name": "SEN TP RE PR",
+    "brand_name": "Scented Toilet Paper",
+    "generic_name": "Toilet Paper",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "scented toilet paper": {
+    "raw_name": "SEN TP RE PR",
+    "clean_name": "SEN TP RE PR",
+    "brand_name": "Scented Toilet Paper",
+    "generic_name": "Toilet Paper",
+    "category": "Non-Grocery",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "nib pumpkin seeds 400gm": {
+    "raw_name": "NIB PUMPKIN SEEDS 400GM",
+    "clean_name": "NIB PUMPKIN SEEDS 400GM",
+    "brand_name": "New India Bazar Pumpkin Seeds",
+    "generic_name": "Pumpkin Seeds",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400 g"
+  },
+  "new india bazar pumpkin seeds": {
+    "raw_name": "NIB PUMPKIN SEEDS 400GM",
+    "clean_name": "NIB PUMPKIN SEEDS 400GM",
+    "brand_name": "New India Bazar Pumpkin Seeds",
+    "generic_name": "Pumpkin Seeds",
+    "category": "Pantry",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "400 g"
+  },
+  "mirch masala punjabi mix 340gm": {
+    "raw_name": "MIRCH MASALA PUNJABI MIX 340GM",
+    "clean_name": "MIRCH MASALA PUNJABI MIX 340GM",
+    "brand_name": "Mirch Masala Punjabi Mix",
+    "generic_name": "Snack Mix",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "340g"
+  },
+  "mirch masala punjabi mix": {
+    "raw_name": "MIRCH MASALA PUNJABI MIX 340GM",
+    "clean_name": "MIRCH MASALA PUNJABI MIX 340GM",
+    "brand_name": "Mirch Masala Punjabi Mix",
+    "generic_name": "Snack Mix",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "340g"
+  },
+  "veer pasta stick": {
+    "raw_name": "VEER PASTA STICK",
+    "clean_name": "VEER PASTA STICK",
+    "brand_name": "Veer Pasta Stick",
+    "generic_name": "Pasta",
+    "category": "Grains & Pasta",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "britannia 50 50 sweet salty family pack 372gm": {
+    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
+    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
+    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
+    "generic_name": "Biscuits",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "372g"
+  },
+  "britannia 50 50 sweet salty family 372gm": {
+    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
+    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
+    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
+    "generic_name": "Biscuits",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "372g"
+  },
+  "britannia 50 50 sweet salty biscuits": {
+    "raw_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY PACK 372GM",
+    "clean_name": "BRITANNIA 50/50 SWEET & SALTY FAMILY 372GM",
+    "brand_name": "Britannia 50/50 Sweet & Salty Biscuits",
+    "generic_name": "Biscuits",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "372g"
+  },
+  "surati mixed savouries 341gm": {
+    "raw_name": "SURATI MIXED SAVOURIES 341GM",
+    "clean_name": "SURATI MIXED SAVOURIES 341GM",
+    "brand_name": "Surati Mixed Savouries",
+    "generic_name": "Savouries",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "341 g"
+  },
+  "surati mixed savouries": {
+    "raw_name": "SURATI MIXED SAVOURIES 341GM",
+    "clean_name": "SURATI MIXED SAVOURIES 341GM",
+    "brand_name": "Surati Mixed Savouries",
+    "generic_name": "Savouries",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "341 g"
+  },
+  "pitambari deep shakti oil 450ml": {
+    "raw_name": "PITAMBARI DEEP SHAKTI OIL 450ML",
+    "clean_name": "PITAMBARI DEEP SHAKTI OIL",
+    "brand_name": "Pitambari Deep Shakti Oil",
+    "generic_name": "Oil",
+    "category": "Pantry",
+    "standard_unit": "ml",
+    "is_bulk": false,
+    "total_quantity": "500 ml"
+  },
+  "pitambari deep shakti oil": {
+    "raw_name": "PITAMBARI DEEP SHAKTI OIL 450ML",
+    "clean_name": "PITAMBARI DEEP SHAKTI OIL",
+    "brand_name": "Pitambari Deep Shakti Oil",
+    "generic_name": "Oil",
+    "category": "Pantry",
+    "standard_unit": "ml",
+    "is_bulk": false,
+    "total_quantity": "500 ml"
+  },
+  "kachori aloo tikki": {
+    "raw_name": "KACHORI/ALOO TIKKI",
+    "clean_name": "KACHORI/ALOO TIKKI",
+    "brand_name": "Kachori Aloo Tikki",
+    "generic_name": "Kachori Aloo Tikki",
+    "category": "Snacks",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "amul pure ghee 1ltr": {
+    "raw_name": "AMUL PURE GHEE 1LTR",
+    "clean_name": "AMUL PURE GHEE",
+    "brand_name": "Amul Pure Ghee",
+    "generic_name": "Ghee",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "amul pure ghee": {
+    "raw_name": "AMUL PURE GHEE 1LTR",
+    "clean_name": "AMUL PURE GHEE",
+    "brand_name": "Amul Pure Ghee",
+    "generic_name": "Ghee",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "veer fryums yellow net 200gm": {
+    "raw_name": "VEER FRYUMS YELLOW NET 200GM",
+    "clean_name": "VEER FRYUMS YELLOW NET 200GM",
+    "brand_name": "Veer Fryums Yellow",
+    "generic_name": "Fryums",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "veer fryums yellow": {
+    "raw_name": "VEER FRYUMS YELLOW NET 200GM",
+    "clean_name": "VEER FRYUMS YELLOW NET 200GM",
+    "brand_name": "Veer Fryums Yellow",
+    "generic_name": "Fryums",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "jiva organic jaggery powder 14oz": {
+    "raw_name": "JIVA ORGANIC JAGGERY POWDER 14OZ",
+    "clean_name": "JIVA ORGANIC JAGGERY POWDER",
+    "brand_name": "Jiva Organic Jaggery Powder",
+    "generic_name": "Jaggery Powder",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "jiva organic jaggery powder": {
+    "raw_name": "JIVA ORGANIC JAGGERY POWDER 14OZ",
+    "clean_name": "JIVA ORGANIC JAGGERY POWDER",
+    "brand_name": "Jiva Organic Jaggery Powder",
+    "generic_name": "Jaggery Powder",
+    "category": "Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "16 oz"
+  },
+  "sw ranch kit": {
+    "raw_name": "SW RANCH KIT",
+    "clean_name": "SW RANCH KIT",
+    "brand_name": "Taylor Farms Ranch Salad Kit",
+    "generic_name": "Salad Kit",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
+  },
+  "taylor farms ranch salad kit": {
+    "raw_name": "SW RANCH KIT",
+    "clean_name": "SW RANCH KIT",
+    "brand_name": "Taylor Farms Ranch Salad Kit",
+    "generic_name": "Salad Kit",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
+  },
+  "nexiumotc 42": {
+    "raw_name": "NEXIUMOTC 42",
+    "clean_name": "NEXIUMOTC 42",
+    "brand_name": "Nexium 24HR Acid Reducer",
+    "generic_name": "Acid Reducer",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "42 count"
+  },
+  "nexium 24hr acid reducer": {
+    "raw_name": "NEXIUMOTC 42",
+    "clean_name": "NEXIUMOTC 42",
+    "brand_name": "Nexium 24HR Acid Reducer",
+    "generic_name": "Acid Reducer",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "42 count"
+  },
+  "org mediterr": {
+    "raw_name": "ORG MEDITERR",
+    "clean_name": "ORG MEDITERR",
+    "brand_name": "Organic Mediterranean Salad Mix",
+    "generic_name": "Salad Mix",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
+  },
+  "organic mediterranean salad mix": {
+    "raw_name": "ORG MEDITERR",
+    "clean_name": "ORG MEDITERR",
+    "brand_name": "Organic Mediterranean Salad Mix",
+    "generic_name": "Salad Mix",
+    "category": "Produce",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
+  },
+  "ks batteries ks aaa": {
+    "raw_name": "KS BATTERIES / KS AAA",
+    "clean_name": "KS BATTERIES / KS AAA",
+    "brand_name": "Kirkland Signature AAA Batteries",
+    "generic_name": "Batteries",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "48 count"
+  },
+  "kirkland signature aaa batteries": {
+    "raw_name": "KS BATTERIES / KS AAA",
+    "clean_name": "KS BATTERIES / KS AAA",
+    "brand_name": "Kirkland Signature AAA Batteries",
+    "generic_name": "Batteries",
+    "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "48 count"
+  },
+  "veer frozen sweet corn 2lb": {
+    "raw_name": "VEER FROZEN SWEET CORN 2LB",
+    "clean_name": "VEER FROZEN SWEET CORN",
+    "brand_name": "Veer Frozen Sweet Corn",
+    "generic_name": "Sweet Corn",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "veer frozen sweet corn": {
+    "raw_name": "VEER FROZEN SWEET CORN 2LB",
+    "clean_name": "VEER FROZEN SWEET CORN",
+    "brand_name": "Veer Frozen Sweet Corn",
+    "generic_name": "Sweet Corn",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "atul cheeze khakhra 200gm": {
+    "raw_name": "ATUL CHEEZE KHAKHRA 200GM",
+    "clean_name": "ATUL CHEEZE KHAKHRA 200GM",
+    "brand_name": "Atul Cheese Khakhra",
+    "generic_name": "Khakhra",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
+  },
+  "atul cheese khakhra": {
+    "raw_name": "ATUL CHEEZE KHAKHRA 200GM",
+    "clean_name": "ATUL CHEEZE KHAKHRA 200GM",
+    "brand_name": "Atul Cheese Khakhra",
+    "generic_name": "Khakhra",
+    "category": "Snacks",
+    "standard_unit": "g",
+    "is_bulk": false,
+    "total_quantity": "200 g"
   },
   "adidas flex": {
     "raw_name": "ADIDAS FLEX",
@@ -1688,8 +1805,9 @@
     "brand_name": "Adidas Flex",
     "generic_name": "Shoes",
     "category": "Non-Grocery",
-    "standard_unit": "pair",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "adidas snkr": {
     "raw_name": "ADIDAS SNKR",
@@ -1697,8 +1815,9 @@
     "brand_name": "Adidas Sneakers",
     "generic_name": "Sneakers",
     "category": "Non-Grocery",
-    "standard_unit": "pair",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "adidas sneakers": {
     "raw_name": "ADIDAS SNKR",
@@ -1706,8 +1825,9 @@
     "brand_name": "Adidas Sneakers",
     "generic_name": "Sneakers",
     "category": "Non-Grocery",
-    "standard_unit": "pair",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "deep upvas sabudana tapioca pearls": {
     "raw_name": "DEEP UPVAS SABUDANA TAPIOCA PEARLS",
@@ -1715,8 +1835,29 @@
     "brand_name": "Deep Upvas Sabudana Tapioca Pearls",
     "generic_name": "Tapioca Pearls",
     "category": "Pantry",
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
+  },
+  "hot indian long chilli per lb": {
+    "raw_name": "Hot Indian Long Chilli Per Lb",
+    "clean_name": "Hot Indian Long Chilli",
+    "brand_name": "Hot Indian Long Chilli",
+    "generic_name": "Chilli",
+    "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "hot indian long chilli": {
+    "raw_name": "Hot Indian Long Chilli Per Lb",
+    "clean_name": "Hot Indian Long Chilli",
+    "brand_name": "Hot Indian Long Chilli",
+    "generic_name": "Chilli",
+    "category": "Produce",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "paper bag": {
     "raw_name": "Paper bag",
@@ -1725,7 +1866,8 @@
     "generic_name": "Paper Bag",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "ms 6 planter": {
     "raw_name": "MS 6 PLANTER",
@@ -1734,7 +1876,8 @@
     "generic_name": "Planter",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "mainstays 6 inch planter": {
     "raw_name": "MS 6 PLANTER",
@@ -1743,25 +1886,28 @@
     "generic_name": "Planter",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "rov he aaa8": {
     "raw_name": "ROV HE AAA8",
     "clean_name": "ROV HE AAA8",
-    "brand_name": "Rov AAA Batteries",
+    "brand_name": "Rov Heavy Duty AAA Batteries",
     "generic_name": "Batteries",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "8 count"
   },
-  "rov aaa batteries": {
+  "rov heavy duty aaa batteries": {
     "raw_name": "ROV HE AAA8",
     "clean_name": "ROV HE AAA8",
-    "brand_name": "Rov AAA Batteries",
+    "brand_name": "Rov Heavy Duty AAA Batteries",
     "generic_name": "Batteries",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "8 count"
   },
   "amsp zinnia": {
     "raw_name": "AMSP ZINNIA",
@@ -1770,7 +1916,8 @@
     "generic_name": "Zinnia",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "ribbon": {
     "raw_name": "RIBBON",
@@ -1779,25 +1926,28 @@
     "generic_name": "Ribbon",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "wash anywher": {
     "raw_name": "WASH ANYWHER",
     "clean_name": "WASH ANYWHER",
-    "brand_name": "Walmart Wash Anywhere",
+    "brand_name": "Wash Anywhere",
     "generic_name": "Cleaning Spray",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
-  "walmart wash anywhere": {
+  "wash anywhere": {
     "raw_name": "WASH ANYWHER",
     "clean_name": "WASH ANYWHER",
-    "brand_name": "Walmart Wash Anywhere",
+    "brand_name": "Wash Anywhere",
     "generic_name": "Cleaning Spray",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "sig black beans": {
     "raw_name": "SIG BLACK BEANS",
@@ -1806,7 +1956,8 @@
     "generic_name": "Black Beans",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "15 oz"
   },
   "signature select black beans": {
     "raw_name": "SIG BLACK BEANS",
@@ -1815,25 +1966,28 @@
     "generic_name": "Black Beans",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "15 oz"
   },
   "tostitos cantina t": {
     "raw_name": "TOSTITOS CANTINA T",
     "clean_name": "TOSTITOS CANTINA T",
-    "brand_name": "Tostitos Cantina Tortilla Chips",
+    "brand_name": "Tostitos Cantina Thin & Crispy Tortilla Chips",
     "generic_name": "Tortilla Chips",
     "category": "Snacks",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "12 oz"
   },
-  "tostitos cantina tortilla chips": {
+  "tostitos cantina thin crispy tortilla chips": {
     "raw_name": "TOSTITOS CANTINA T",
     "clean_name": "TOSTITOS CANTINA T",
-    "brand_name": "Tostitos Cantina Tortilla Chips",
+    "brand_name": "Tostitos Cantina Thin & Crispy Tortilla Chips",
     "generic_name": "Tortilla Chips",
     "category": "Snacks",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "12 oz"
   },
   "fajitas mix": {
     "raw_name": "FAJITAS MIX",
@@ -1841,8 +1995,9 @@
     "brand_name": "Fajita Mix",
     "generic_name": "Fajita Mix",
     "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "fajita mix": {
     "raw_name": "FAJITAS MIX",
@@ -1850,8 +2005,9 @@
     "brand_name": "Fajita Mix",
     "generic_name": "Fajita Mix",
     "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "la victoria salsa": {
     "raw_name": "LA VICTORIA SALSA",
@@ -1859,26 +2015,29 @@
     "brand_name": "La Victoria Salsa",
     "generic_name": "Salsa",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "luc ches mex nacho": {
     "raw_name": "LUC CHES MEX NACHO",
     "clean_name": "LUC CHES MEX NACHO",
-    "brand_name": "Lucerne Mexican Nacho Cheese",
+    "brand_name": "Lucerne Cheese Mexican Nacho",
     "generic_name": "Cheese",
     "category": "Dairy",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "8 oz"
   },
-  "lucerne mexican nacho cheese": {
+  "lucerne cheese mexican nacho": {
     "raw_name": "LUC CHES MEX NACHO",
     "clean_name": "LUC CHES MEX NACHO",
-    "brand_name": "Lucerne Mexican Nacho Cheese",
+    "brand_name": "Lucerne Cheese Mexican Nacho",
     "generic_name": "Cheese",
     "category": "Dairy",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "8 oz"
   },
   "daisy sour cream": {
     "raw_name": "DAISY SOUR CREAM",
@@ -1887,7 +2046,8 @@
     "generic_name": "Sour Cream",
     "category": "Dairy",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "16 oz"
   },
   "iceberg lettuce": {
     "raw_name": "ICEBERG LETTUCE",
@@ -1896,7 +2056,8 @@
     "generic_name": "Lettuce",
     "category": "Produce",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "med hass avocados": {
     "raw_name": "MED HASS AVOCADOS",
@@ -1905,7 +2066,8 @@
     "generic_name": "Avocados",
     "category": "Produce",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "medium hass avocados": {
     "raw_name": "MED HASS AVOCADOS",
@@ -1914,7 +2076,8 @@
     "generic_name": "Avocados",
     "category": "Produce",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "rakhi": {
     "raw_name": "RAKHI",
@@ -1923,34 +2086,38 @@
     "generic_name": "Rakhi",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "fs chitale bakarwadi": {
     "raw_name": "FS CHITALE BAKARWADI",
     "clean_name": "FS CHITALE BAKARWADI",
-    "brand_name": "Chitale Bandhu Bakarwadi",
+    "brand_name": "Chitale Bakarwadi",
     "generic_name": "Bakarwadi",
     "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
-  "chitale bandhu bakarwadi": {
+  "chitale bakarwadi": {
     "raw_name": "FS CHITALE BAKARWADI",
     "clean_name": "FS CHITALE BAKARWADI",
-    "brand_name": "Chitale Bandhu Bakarwadi",
+    "brand_name": "Chitale Bakarwadi",
     "generic_name": "Bakarwadi",
     "category": "Snacks",
-    "standard_unit": "g",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "pani puri": {
     "raw_name": "PANI PURI",
     "clean_name": "PANI PURI",
     "brand_name": "Pani Puri",
     "generic_name": "Pani Puri",
-    "category": "Pantry",
+    "category": "Snacks",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "masala roti": {
     "raw_name": "MASALA ROTI",
@@ -1959,43 +2126,48 @@
     "generic_name": "Roti",
     "category": "Bakery",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "org chapati": {
     "raw_name": "ORG CHAPATI",
     "clean_name": "ORG CHAPATI",
     "brand_name": "Organic Chapati",
     "generic_name": "Chapati",
-    "category": "Bakery",
+    "category": "Grains & Pasta",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "organic chapati": {
     "raw_name": "ORG CHAPATI",
     "clean_name": "ORG CHAPATI",
     "brand_name": "Organic Chapati",
     "generic_name": "Chapati",
-    "category": "Bakery",
+    "category": "Grains & Pasta",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "dnsknlegging": {
     "raw_name": "DNSKNLEGGING",
     "clean_name": "DNSKNLEGGING",
-    "brand_name": "Danskin Legging",
+    "brand_name": "Danskin Leggings",
     "generic_name": "Leggings",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
-  "danskin legging": {
+  "danskin leggings": {
     "raw_name": "DNSKNLEGGING",
     "clean_name": "DNSKNLEGGING",
-    "brand_name": "Danskin Legging",
+    "brand_name": "Danskin Leggings",
     "generic_name": "Leggings",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "tomato round": {
     "raw_name": "TOMATO ROUND",
@@ -2004,7 +2176,8 @@
     "generic_name": "Tomatoes",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "round tomato": {
     "raw_name": "TOMATO ROUND",
@@ -2013,7 +2186,8 @@
     "generic_name": "Tomatoes",
     "category": "Produce",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "parle krackjack value pack 264gm": {
     "raw_name": "PARLE KRACKJACK VALUE PACK (264GM)",
@@ -2022,7 +2196,8 @@
     "generic_name": "Biscuits",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "264 g"
   },
   "parle krackjack value 264gm": {
     "raw_name": "PARLE KRACKJACK VALUE PACK (264GM)",
@@ -2031,7 +2206,8 @@
     "generic_name": "Biscuits",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "264 g"
   },
   "parle krackjack biscuits": {
     "raw_name": "PARLE KRACKJACK VALUE PACK (264GM)",
@@ -2040,34 +2216,48 @@
     "generic_name": "Biscuits",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "264 g"
   },
   "veer besan 2lb": {
     "raw_name": "VEER BESAN 2LB",
     "clean_name": "VEER BESAN",
     "brand_name": "Veer Besan",
-    "generic_name": "Gram Flour",
+    "generic_name": "Besan",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "veer besan": {
     "raw_name": "VEER BESAN 2LB",
     "clean_name": "VEER BESAN",
     "brand_name": "Veer Besan",
-    "generic_name": "Gram Flour",
+    "generic_name": "Besan",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "nib raw peanut gota": {
     "raw_name": "NIB RAW PEANUT GOTA",
     "clean_name": "NIB RAW PEANUT GOTA",
-    "brand_name": "Nib Raw Peanut Gota",
+    "brand_name": "New India Bazar Raw Peanut Gota",
     "generic_name": "Peanuts",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": true
+    "is_bulk": false,
+    "total_quantity": "1 lb"
+  },
+  "new india bazar raw peanut gota": {
+    "raw_name": "NIB RAW PEANUT GOTA",
+    "clean_name": "NIB RAW PEANUT GOTA",
+    "brand_name": "New India Bazar Raw Peanut Gota",
+    "generic_name": "Peanuts",
+    "category": "Pantry",
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "ks org cshw": {
     "raw_name": "KS ORG CSHW",
@@ -2076,7 +2266,8 @@
     "generic_name": "Cashews",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "40 oz"
   },
   "kirkland signature organic cashews": {
     "raw_name": "KS ORG CSHW",
@@ -2085,7 +2276,8 @@
     "generic_name": "Cashews",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "40 oz"
   },
   "nib pizza base": {
     "raw_name": "NIB PIZZA BASE",
@@ -2094,7 +2286,8 @@
     "generic_name": "Pizza Base",
     "category": "Bakery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "deep tandoori naan 5pcs 375gm": {
     "raw_name": "DEEP TANDOORI NAAN 5PCS 375GM",
@@ -2103,7 +2296,8 @@
     "generic_name": "Naan",
     "category": "Bakery",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "375 g"
   },
   "deep tandoori naan 375gm": {
     "raw_name": "DEEP TANDOORI NAAN 5PCS 375GM",
@@ -2112,7 +2306,8 @@
     "generic_name": "Naan",
     "category": "Bakery",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "375 g"
   },
   "deep tandoori naan": {
     "raw_name": "DEEP TANDOORI NAAN 5PCS 375GM",
@@ -2121,7 +2316,8 @@
     "generic_name": "Naan",
     "category": "Bakery",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "375 g"
   },
   "ramen masala one sachet": {
     "raw_name": "RAMEN MASALA ONE SACHET",
@@ -2130,7 +2326,8 @@
     "generic_name": "Ramen Masala",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "ramen masala sachet": {
     "raw_name": "RAMEN MASALA ONE SACHET",
@@ -2139,7 +2336,8 @@
     "generic_name": "Ramen Masala",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "veer aloo bhujia 400gm": {
     "raw_name": "VEER ALOO BHUJIA 400GM",
@@ -2148,7 +2346,8 @@
     "generic_name": "Aloo Bhujia",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "400 g"
   },
   "veer aloo bhujia": {
     "raw_name": "VEER ALOO BHUJIA 400GM",
@@ -2157,7 +2356,8 @@
     "generic_name": "Aloo Bhujia",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "400 g"
   },
   "pizza sauce": {
     "raw_name": "PIZZA SAUCE",
@@ -2165,62 +2365,69 @@
     "brand_name": "Pizza Sauce",
     "generic_name": "Pizza Sauce",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "prg gar 24": {
     "raw_name": "PRG GAR 24",
     "clean_name": "PRG GAR 24",
-    "brand_name": "Great Value Garlic",
-    "generic_name": "Garlic",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
+    "brand_name": "Great Value Garlic Powder",
+    "generic_name": "Garlic Powder",
+    "category": "Spices / Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "24 oz"
   },
-  "great value garlic": {
+  "great value garlic powder": {
     "raw_name": "PRG GAR 24",
     "clean_name": "PRG GAR 24",
-    "brand_name": "Great Value Garlic",
-    "generic_name": "Garlic",
-    "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": false
+    "brand_name": "Great Value Garlic Powder",
+    "generic_name": "Garlic Powder",
+    "category": "Spices / Pantry",
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "24 oz"
   },
   "fw port open": {
     "raw_name": "FW PORT OPEN",
     "clean_name": "FW PORT OPEN",
-    "brand_name": "Freshness Guaranteed Portobello Mushrooms",
+    "brand_name": "Fresh Portobello Mushrooms",
     "generic_name": "Portobello Mushrooms",
     "category": "Produce",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
-  "freshness guaranteed portobello mushrooms": {
+  "fresh portobello mushrooms": {
     "raw_name": "FW PORT OPEN",
     "clean_name": "FW PORT OPEN",
-    "brand_name": "Freshness Guaranteed Portobello Mushrooms",
+    "brand_name": "Fresh Portobello Mushrooms",
     "generic_name": "Portobello Mushrooms",
     "category": "Produce",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "tbc cl wv 24": {
     "raw_name": "TBC CL WV 24",
     "clean_name": "TBC CL WV 24",
-    "brand_name": "Great Value Clear Water",
-    "generic_name": "Water",
+    "brand_name": "Great Value Clorox Wipes",
+    "generic_name": "Disinfecting Wipes",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": false,
+    "total_quantity": "24 count"
   },
-  "great value clear water": {
+  "great value clorox wipes": {
     "raw_name": "TBC CL WV 24",
     "clean_name": "TBC CL WV 24",
-    "brand_name": "Great Value Clear Water",
-    "generic_name": "Water",
+    "brand_name": "Great Value Clorox Wipes",
+    "generic_name": "Disinfecting Wipes",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": false,
+    "total_quantity": "24 count"
   },
   "pb ap 2lb": {
     "raw_name": "PB AP 2LB",
@@ -2228,8 +2435,9 @@
     "brand_name": "Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "pb ap": {
     "raw_name": "PB AP 2LB",
@@ -2237,8 +2445,9 @@
     "brand_name": "Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "peanut butter": {
     "raw_name": "PB AP 2LB",
@@ -2246,8 +2455,9 @@
     "brand_name": "Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "gv rotini 16": {
     "raw_name": "GV ROTINI 16",
@@ -2256,7 +2466,8 @@
     "generic_name": "Rotini",
     "category": "Grains & Pasta",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "16 oz"
   },
   "great value rotini": {
     "raw_name": "GV ROTINI 16",
@@ -2265,25 +2476,28 @@
     "generic_name": "Rotini",
     "category": "Grains & Pasta",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "16 oz"
   },
   "gv mozzsh 8": {
     "raw_name": "GV MOZZSH 8",
     "clean_name": "GV MOZZSH 8",
-    "brand_name": "Great Value Mozzarella Shredded Cheese",
+    "brand_name": "Great Value Shredded Mozzarella Cheese",
     "generic_name": "Mozzarella Cheese",
     "category": "Dairy",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "8 oz"
   },
-  "great value mozzarella shredded cheese": {
+  "great value shredded mozzarella cheese": {
     "raw_name": "GV MOZZSH 8",
     "clean_name": "GV MOZZSH 8",
-    "brand_name": "Great Value Mozzarella Shredded Cheese",
+    "brand_name": "Great Value Shredded Mozzarella Cheese",
     "generic_name": "Mozzarella Cheese",
     "category": "Dairy",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "8 oz"
   },
   "ckout bagfee": {
     "raw_name": "CKOUT BAGFEE",
@@ -2292,7 +2506,8 @@
     "generic_name": "Bag Fee",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "checkout bag fee": {
     "raw_name": "CKOUT BAGFEE",
@@ -2301,7 +2516,8 @@
     "generic_name": "Bag Fee",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "50 hangers": {
     "raw_name": "50 HANGERS",
@@ -2310,7 +2526,8 @@
     "generic_name": "Hangers",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "50 count"
   },
   "costco hangers": {
     "raw_name": "50 HANGERS",
@@ -2319,7 +2536,8 @@
     "generic_name": "Hangers",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "50 count"
   },
   "yellow mini": {
     "raw_name": "YELLOW MINI",
@@ -2327,8 +2545,9 @@
     "brand_name": "Yellow Mini Peppers",
     "generic_name": "Peppers",
     "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": true
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "yellow mini peppers": {
     "raw_name": "YELLOW MINI",
@@ -2336,8 +2555,9 @@
     "brand_name": "Yellow Mini Peppers",
     "generic_name": "Peppers",
     "category": "Produce",
-    "standard_unit": "lb",
-    "is_bulk": true
+    "standard_unit": "count",
+    "is_bulk": true,
+    "total_quantity": "1 count"
   },
   "surati shredded coconut 340gm": {
     "raw_name": "SURATI SHREDDED COCONUT 340GM",
@@ -2346,7 +2566,8 @@
     "generic_name": "Shredded Coconut",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "340 g"
   },
   "surati shredded coconut": {
     "raw_name": "SURATI SHREDDED COCONUT 340GM",
@@ -2355,7 +2576,8 @@
     "generic_name": "Shredded Coconut",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "340 g"
   },
   "nanak frozen rasmalai 20ps": {
     "raw_name": "NANAK FROZEN RASMALAI 20PS",
@@ -2364,7 +2586,8 @@
     "generic_name": "Rasmalai",
     "category": "Snacks",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "20 count"
   },
   "nanak frozen rasmalai": {
     "raw_name": "NANAK FROZEN RASMALAI 20PS",
@@ -2373,25 +2596,28 @@
     "generic_name": "Rasmalai",
     "category": "Snacks",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "20 count"
   },
   "mtr puliogare paste 200gm": {
     "raw_name": "MTR PULIOGARE PASTE 200GM",
     "clean_name": "MTR PULIOGARE PASTE 200GM",
     "brand_name": "Mtr Puliogare Paste",
-    "generic_name": "Puliogare Paste",
+    "generic_name": "Tamarind Rice Paste",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "200 g"
   },
   "mtr puliogare paste": {
     "raw_name": "MTR PULIOGARE PASTE 200GM",
     "clean_name": "MTR PULIOGARE PASTE 200GM",
     "brand_name": "Mtr Puliogare Paste",
-    "generic_name": "Puliogare Paste",
+    "generic_name": "Tamarind Rice Paste",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "200 g"
   },
   "veer moong chilka 2lb": {
     "raw_name": "VEER MOONG CHILKA 2LB",
@@ -2400,7 +2626,8 @@
     "generic_name": "Moong Dal",
     "category": "Grains & Pasta",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "veer moong chilka": {
     "raw_name": "VEER MOONG CHILKA 2LB",
@@ -2409,7 +2636,8 @@
     "generic_name": "Moong Dal",
     "category": "Grains & Pasta",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "c h sugar granulated 4lb": {
     "raw_name": "C&H SUGAR GRANULATED 4LB",
@@ -2418,7 +2646,8 @@
     "generic_name": "Sugar",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "c h sugar granulated": {
     "raw_name": "C&H SUGAR GRANULATED 4LB",
@@ -2427,7 +2656,8 @@
     "generic_name": "Sugar",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "c h granulated sugar": {
     "raw_name": "C&H SUGAR GRANULATED 4LB",
@@ -2436,7 +2666,8 @@
     "generic_name": "Sugar",
     "category": "Pantry",
     "standard_unit": "lb",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "nescafe clasico dawn jar 1 7oz": {
     "raw_name": "NESCAFE CLASICO DAWN JAR 1.7OZ",
@@ -2445,7 +2676,8 @@
     "generic_name": "Instant Coffee",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "7 oz"
   },
   "nescafe clasico dawn jar": {
     "raw_name": "NESCAFE CLASICO DAWN JAR 1.7OZ",
@@ -2454,7 +2686,8 @@
     "generic_name": "Instant Coffee",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "7 oz"
   },
   "nescafe clasico instant coffee": {
     "raw_name": "NESCAFE CLASICO DAWN JAR 1.7OZ",
@@ -2463,7 +2696,8 @@
     "generic_name": "Instant Coffee",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "7 oz"
   },
   "deep si kerala mixture 12oz": {
     "raw_name": "DEEP SI KERALA MIXTURE 12OZ",
@@ -2472,7 +2706,8 @@
     "generic_name": "Snack Mix",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "10 oz"
   },
   "deep si kerala mixture": {
     "raw_name": "DEEP SI KERALA MIXTURE 12OZ",
@@ -2481,7 +2716,8 @@
     "generic_name": "Snack Mix",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "10 oz"
   },
   "deep kerala mixture": {
     "raw_name": "DEEP SI KERALA MIXTURE 12OZ",
@@ -2490,7 +2726,8 @@
     "generic_name": "Snack Mix",
     "category": "Snacks",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "10 oz"
   },
   "deep coriander chili bhakri 7oz": {
     "raw_name": "DEEP CORIANDER CHILI BHAKRI 7OZ",
@@ -2499,7 +2736,8 @@
     "generic_name": "Bhakri",
     "category": "Snacks",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "deep coriander chili bhakri": {
     "raw_name": "DEEP CORIANDER CHILI BHAKRI 7OZ",
@@ -2508,7 +2746,8 @@
     "generic_name": "Bhakri",
     "category": "Snacks",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "veer rajagra flour 400gm": {
     "raw_name": "VEER RAJAGRA FLOUR 400GM",
@@ -2517,7 +2756,8 @@
     "generic_name": "Rajagra Flour",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "400 g"
   },
   "veer rajagra flour": {
     "raw_name": "VEER RAJAGRA FLOUR 400GM",
@@ -2526,7 +2766,8 @@
     "generic_name": "Rajagra Flour",
     "category": "Pantry",
     "standard_unit": "g",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "400 g"
   },
   "veer flax seeds 7oz": {
     "raw_name": "VEER FLAX SEEDS 7OZ",
@@ -2535,7 +2776,8 @@
     "generic_name": "Flax Seeds",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "veer flax seeds": {
     "raw_name": "VEER FLAX SEEDS 7OZ",
@@ -2544,7 +2786,8 @@
     "generic_name": "Flax Seeds",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "thai cry paste 4oz": {
     "raw_name": "THAI CRY PASTE 4OZ",
@@ -2553,7 +2796,8 @@
     "generic_name": "Curry Paste",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "4 oz"
   },
   "thai cry paste": {
     "raw_name": "THAI CRY PASTE 4OZ",
@@ -2562,7 +2806,8 @@
     "generic_name": "Curry Paste",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "4 oz"
   },
   "thai curry paste": {
     "raw_name": "THAI CRY PASTE 4OZ",
@@ -2571,7 +2816,8 @@
     "generic_name": "Curry Paste",
     "category": "Pantry",
     "standard_unit": "oz",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "4 oz"
   },
   "gv parchment": {
     "raw_name": "GV PARCHMENT",
@@ -2580,7 +2826,8 @@
     "generic_name": "Parchment Paper",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "great value parchment paper": {
     "raw_name": "GV PARCHMENT",
@@ -2589,7 +2836,8 @@
     "generic_name": "Parchment Paper",
     "category": "Pantry",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "canvas pdq": {
     "raw_name": "CANVAS PDQ",
@@ -2598,7 +2846,8 @@
     "generic_name": "Canvas",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "ab 2oz pnt": {
     "raw_name": "AB 2OZ PNT",
@@ -2606,8 +2855,9 @@
     "brand_name": "Great Value Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "ab pnt": {
     "raw_name": "AB 2OZ PNT",
@@ -2615,8 +2865,9 @@
     "brand_name": "Great Value Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "great value peanut butter": {
     "raw_name": "AB 2OZ PNT",
@@ -2624,8 +2875,9 @@
     "brand_name": "Great Value Peanut Butter",
     "generic_name": "Peanut Butter",
     "category": "Pantry",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "pepperidge": {
     "raw_name": "PEPPERIDGE",
@@ -2634,7 +2886,8 @@
     "generic_name": "Bread",
     "category": "Bakery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "pepperidge farm bread": {
     "raw_name": "PEPPERIDGE",
@@ -2643,7 +2896,8 @@
     "generic_name": "Bread",
     "category": "Bakery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "2oz paint": {
     "raw_name": "2OZ PAINT",
@@ -2651,8 +2905,9 @@
     "brand_name": "Paint",
     "generic_name": "Paint",
     "category": "Non-Grocery",
-    "standard_unit": "gallon",
-    "is_bulk": false
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "paint": {
     "raw_name": "2OZ PAINT",
@@ -2660,8 +2915,9 @@
     "brand_name": "Paint",
     "generic_name": "Paint",
     "category": "Non-Grocery",
-    "standard_unit": "gallon",
-    "is_bulk": false
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "1 oz"
   },
   "hh 12pc brsh": {
     "raw_name": "HH 12PC BRSH",
@@ -2670,7 +2926,8 @@
     "generic_name": "Hair Brush",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "hh brsh": {
     "raw_name": "HH 12PC BRSH",
@@ -2679,7 +2936,8 @@
     "generic_name": "Hair Brush",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "hair brush": {
     "raw_name": "HH 12PC BRSH",
@@ -2688,25 +2946,28 @@
     "generic_name": "Hair Brush",
     "category": "Non-Grocery",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "org smoothie": {
     "raw_name": "ORG SMOOTHIE",
     "clean_name": "ORG SMOOTHIE",
-    "brand_name": "Organic Smoothie",
+    "brand_name": "Kirkland Signature Organic Smoothie",
     "generic_name": "Smoothie",
     "category": "Dairy",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "18 count"
   },
-  "organic smoothie": {
+  "kirkland signature organic smoothie": {
     "raw_name": "ORG SMOOTHIE",
     "clean_name": "ORG SMOOTHIE",
-    "brand_name": "Organic Smoothie",
+    "brand_name": "Kirkland Signature Organic Smoothie",
     "generic_name": "Smoothie",
     "category": "Dairy",
     "standard_unit": "count",
-    "is_bulk": true
+    "is_bulk": true,
+    "total_quantity": "18 count"
   },
   "pomegranate": {
     "raw_name": "POMEGRANATE",
@@ -2715,7 +2976,8 @@
     "generic_name": "Pomegranate",
     "category": "Produce",
     "standard_unit": "count",
-    "is_bulk": false
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "bellpepper red": {
     "raw_name": "BELLPEPPER RED",
@@ -2723,8 +2985,9 @@
     "brand_name": "Red Bell Pepper",
     "generic_name": "Bell Pepper",
     "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "red bell pepper": {
     "raw_name": "BELLPEPPER RED",
@@ -2732,8 +2995,9 @@
     "brand_name": "Red Bell Pepper",
     "generic_name": "Bell Pepper",
     "category": "Produce",
-    "standard_unit": "count",
-    "is_bulk": false
+    "standard_unit": "lb",
+    "is_bulk": false,
+    "total_quantity": "1 lb"
   },
   "cray clay air dry": {
     "raw_name": "CRAY CLAY AIR-DRY",
@@ -2741,8 +3005,9 @@
     "brand_name": "Crayola Air-Dry Clay",
     "generic_name": "Clay",
     "category": "Non-Grocery",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "crayola air dry clay": {
     "raw_name": "CRAY CLAY AIR-DRY",
@@ -2750,25 +3015,28 @@
     "brand_name": "Crayola Air-Dry Clay",
     "generic_name": "Clay",
     "category": "Non-Grocery",
-    "standard_unit": "oz",
-    "is_bulk": false
+    "standard_unit": "count",
+    "is_bulk": false,
+    "total_quantity": "1 count"
   },
   "cs 20z metallic p": {
     "raw_name": "CS 20Z METALLIC P",
     "clean_name": "CS 20Z METALLIC P",
-    "brand_name": "Craft Smart Metallic Paint",
+    "brand_name": "Metallic Paint",
     "generic_name": "Paint",
     "category": "Non-Grocery",
-    "standard_unit": "gallon",
-    "is_bulk": false
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "20 oz"
   },
-  "craft smart metallic paint": {
+  "metallic paint": {
     "raw_name": "CS 20Z METALLIC P",
     "clean_name": "CS 20Z METALLIC P",
-    "brand_name": "Craft Smart Metallic Paint",
+    "brand_name": "Metallic Paint",
     "generic_name": "Paint",
     "category": "Non-Grocery",
-    "standard_unit": "gallon",
-    "is_bulk": false
+    "standard_unit": "oz",
+    "is_bulk": false,
+    "total_quantity": "20 oz"
   }
 }

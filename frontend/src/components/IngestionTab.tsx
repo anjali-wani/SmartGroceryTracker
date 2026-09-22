@@ -7,7 +7,6 @@ import {
   ChevronDown,
   ChevronUp,
   Calendar,
-  DollarSign,
   Package,
   CheckCircle2
 } from "lucide-react";
@@ -385,7 +384,6 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
                           </span>
                           <span>•</span>
                           <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#34D399", fontWeight: 600 }}>
-                            <DollarSign size={13} />
                             <span>${bill.total_amount.toFixed(2)}</span>
                           </span>
                         </div>

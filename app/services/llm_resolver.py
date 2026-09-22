@@ -2,7 +2,7 @@ import os
 import json
 import time
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("llm_resolver")
@@ -14,6 +14,10 @@ class LLMResolvedItem(BaseModel):
     standard_unit: str = Field("count", description="Standard unit (lb, oz, gallon, count, g)")
     is_bulk: bool = Field(False, description="Whether item is typically bulk")
     matched_existing_canonical_name: Optional[str] = Field(None, description="Matched existing item name if alias")
+    total_quantity: str = Field(
+        ...,
+        description="The aggregated total volume, weight, or count across the package or multi-pack items, taking into account store context (e.g. warehouse clubs like Costco sell Kirkland Signature Organic A2 milk 'KS ORG A2 PR' as a 3-pack of 0.5 gal = '1.5 gallons', while retail supermarkets like Safeway sell individual cartons = '1 gallon'). Always return the total net amount with its unit."
+    )
     llm_success: bool = Field(False, description="Whether the LLM API call was successfully executed and returned valid data")
 
 
@@ -68,7 +72,9 @@ def resolve_with_gemini(
     raw_text: str,
     store_name: Optional[str] = None,
     existing_items: Optional[List[str]] = None,
-    purchase_date: Optional[Any] = None
+    purchase_date: Optional[Any] = None,
+    price: Optional[float] = None,
+    receipt_unit: Optional[str] = None
 ) -> Optional[LLMResolvedItem]:
     """Resolve unrecognized item using Gemini Flash, with local heuristic fallback."""
     if os.getenv("DISABLE_LLM", "").lower() in ("true", "1", "yes"):
@@ -100,14 +106,23 @@ def resolve_with_gemini(
 
         client = genai.Client(api_key=api_key)
         store_clean = format_store_name(store_name) if store_name else "Grocery Store"
+        price_str = f" Receipt line price: ${price:.2f}." if price is not None and price > 0 else ""
+        unit_str = f" Receipt unit: '{receipt_unit.strip()}'." if receipt_unit and receipt_unit.strip().lower() not in ("none", "nan", "") else ""
         prompt = (
-            f"You are a grocery classification engine. Identify the product name, generic name, category, and unit for raw receipt item: '{raw_text}' from '{store_clean}'.\n"
+            f"You are a grocery classification engine. Identify the product name, generic name, category, and unit for raw receipt item: '{raw_text}' from '{store_clean}'.{price_str}{unit_str}\n"
             f"Return the following fields:\n"
             f"1. canonical_name: Clean, title-case brand/product name (e.g. 'Kirkland Signature Organic Milk').\n"
             f"2. generic_name: The base/generic grocery name in lowercase. E.g. for 'KS_ORG_A2_MLK' or 'Kirkland Signature Organic Milk', generic_name is 'milk'; for 'Gala Apples', generic_name is 'apples'; for 'Deep Rice Flour', generic_name is 'rice flour'; for 'Veer Cashew Split', generic_name is 'cashews'.\n"
             f"3. category: Category (Produce, Dairy, Pantry, Bakery, Meat & Seafood, Snacks, Grains & Pasta, Spices / Pantry, etc.).\n"
-            f"4. standard_unit: Standard unit (count, lb, oz, g, gallon, ml, etc.).\n"
-            f"5. is_bulk: Boolean indicating if typically purchased in bulk."
+            f"4. standard_unit: Standard unit (count, lb, oz, g, gallon, ml, etc.). If the receipt unit is 'EA', 'count', or 'unit', standard_unit for bunched or individual items should be 'count'.\n"
+            f"5. is_bulk: Boolean indicating if typically purchased in bulk.\n"
+            f"6. total_quantity: The aggregated total volume, weight, or count across the package or multi-pack items, taking into account the STORE CONTEXT and RECEIPT UNIT:\n"
+            f"   - For warehouse clubs and bulk stores (e.g., Costco, Sam's Club, BJ's), use warehouse-specific packaging standards and multi-packs (e.g., at Costco, Kirkland Signature Organic A2 Milk 'KS ORG A2 PR' is sold as a 3-pack of 0.5 gallon cartons, so return '1.5 gallons'; Kirkland Signature organic whole milk is a 2-pack of 1-gallon jugs, so return '2 gallons'; eggs are sold as 2-dozen or 5-dozen).\n"
+            f"   - For standard retail supermarkets (e.g., Safeway, Kroger, Ralphs), where milk is typically sold as individual 1-gallon or half-gallon cartons, return the individual retail carton size (e.g., '1 gallon' or '0.5 gallon').\n"
+            f"   - For bunched produce, herbs, and leafy greens (e.g., 'CILANTRO', 'METHI', 'MINT', 'PALAK', 'SPINACH BUNCH', 'CURRY LEAVES', 'GREEN ONIONS') especially when receipt unit is 'EA', 'count', or 'unit', return '1 count'.\n"
+            f"   - For ethnic or specialty grocers (e.g., New India Bazar, Apni Mandi), use standard package sizes indicated in the item name or typical packaging (e.g., '200g' for 'VEER FENNEL SEEDS 200GM').\n"
+            f"   - For single produce items (e.g., 'LEMON', 'AVOCADO'), return '1 count'.\n"
+            f"   Do not return pack count alone (e.g. do not return '3 packs' or '1 unit') and do not return null; always return the aggregated net total amount with its measurement unit (e.g., '1.5 gallons', '48 oz', '2 lb', '1 count')."
         )
 
         model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
@@ -203,5 +218,21 @@ def fallback_heuristic_resolve(
         category=category,
         standard_unit=unit,
         is_bulk=is_bulk,
-        matched_existing_canonical_name=matched_existing
+        matched_existing_canonical_name=matched_existing,
+        total_quantity=f"1 {unit}"
     )
+
+
+def parse_total_quantity(total_qty_str: Optional[str]) -> Tuple[Optional[float], Optional[str]]:
+    """Parse string from LLM like '1.5 gallons', '32 oz', '500g' into (quantity, standard_unit)."""
+    if not total_qty_str or not isinstance(total_qty_str, str):
+        return None, None
+    clean = total_qty_str.strip()
+    if not clean or clean.lower() in ("none", "null", "n/a"):
+        return None, None
+    from app.normalizer import extract_quantity_and_unit
+    _, qty, unit = extract_quantity_and_unit(clean)
+    if qty and qty > 0 and unit:
+        return qty, unit
+    return None, None
+

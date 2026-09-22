@@ -44,7 +44,8 @@ def save_product_mapping(
     standard_unit: Optional[str] = None,
     brand_name: Optional[str] = None,
     clean_name: Optional[str] = None,
-    is_bulk: bool = False
+    is_bulk: bool = False,
+    total_quantity: Optional[str] = None
 ) -> bool:
     """Save or update a product name -> generic name mapping in product_mappings.json."""
     if not raw_name or not generic_name:
@@ -70,6 +71,8 @@ def save_product_mapping(
         "standard_unit": unit_val,
         "is_bulk": bool(is_bulk)
     }
+    if total_quantity:
+        entry["total_quantity"] = total_quantity
 
     # Store under primary normalized raw key
     mappings[norm_key] = entry
