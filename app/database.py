@@ -104,6 +104,8 @@ def _run_migrations(target_engine):
             "ALTER TABLE grocery_list_entries ADD COLUMN is_dismissed BOOLEAN DEFAULT 0",
             "ALTER TABLE inventory ADD COLUMN store_name VARCHAR(200)",
             "ALTER TABLE inventory ADD COLUMN price FLOAT",
+            "UPDATE items SET is_grocery = 0 WHERE LOWER(category) LIKE '%non%grocery%'",
+            "DELETE FROM grocery_list_entries WHERE LOWER(category) LIKE '%non%grocery%' OR canonical_item_id IN (SELECT id FROM items WHERE is_grocery = 0 OR LOWER(category) LIKE '%non%grocery%')",
         ]
         for stmt in migration_statements:
             try:

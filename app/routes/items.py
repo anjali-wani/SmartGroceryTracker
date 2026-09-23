@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from app.services.analytics import compute_item_velocity
+from app.services.analytics import compute_item_velocity, determine_preferred_store
 from app.services.inventory_service import reconcile_repurchased_inventory
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Item, ItemAlias, Inventory, InventoryStatus, PurchaseLog
 from app.schemas import ItemOut, ItemCreate, ItemAliasOut, InventoryOut, ItemArchiveResponse, ItemScheduleUpdate, ItemDetailsOut, ItemPurchaseHistoryEntry, ItemConsumptionRhythm
-from app.normalizer import format_store_name
+from app.normalizer import format_store_name, convert_quantity
 
 router = APIRouter(prefix="/items", tags=["Items & Inventory"])
 
@@ -49,13 +49,19 @@ def create_canonical_item(item_in: ItemCreate, db: Session = Depends(get_db)):
             detail=f"Cannot add item '{item_in.canonical_name}': this name is already registered as an alias for '{parent_name}' (Item ID {existing_alias.canonical_item_id})."
         )
 
+    is_groc = item_in.is_grocery
+    cat_val = item_in.category
+    if (cat_val and "non" in cat_val.lower() and "grocery" in cat_val.lower()) or not is_groc:
+        is_groc = False
+        cat_val = "Non-Grocery"
+
     item = Item(
         canonical_name=item_in.canonical_name,
-        category=item_in.category,
+        category=cat_val,
         standard_unit=item_in.standard_unit,
         default_shelf_life_days=item_in.default_shelf_life_days,
         is_bulk=item_in.is_bulk,
-        is_grocery=item_in.is_grocery,
+        is_grocery=is_groc,
         default_unit_price=item_in.default_unit_price,
         preferred_store=format_store_name(item_in.preferred_store) if item_in.preferred_store else None
     )
@@ -233,6 +239,14 @@ def update_item_schedule(
         item.preferred_store = format_store_name(payload.preferred_store) if payload.preferred_store else None
     if payload.default_unit_price is not None:
         item.default_unit_price = payload.default_unit_price
+    if payload.category is not None:
+        item.category = payload.category
+        if "non" in item.category.lower() and "grocery" in item.category.lower():
+            item.is_grocery = False
+    if payload.is_grocery is not None:
+        item.is_grocery = payload.is_grocery
+        if not item.is_grocery:
+            item.category = "Non-Grocery"
 
     db.commit()
     db.refresh(item)
@@ -320,6 +334,48 @@ def get_item_full_details(
         PurchaseLog.household_id == household_id,
         PurchaseLog.canonical_item_id == item_id
     ).order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc()).all()
+
+    best_store = determine_preferred_store(item.id, db, household_id=household_id, fallback_store=item.preferred_store)
+    if best_store and item.preferred_store != best_store:
+        item.preferred_store = best_store
+
+    # Synchronize default_unit_price with preferred store ONLY if not already set (preserve user manual overrides)
+    if not item.default_unit_price or item.default_unit_price <= 0:
+        pref_store_clean = (item.preferred_store or "").lower()
+        target_unit = item.standard_unit or "count"
+
+        def get_compatible_rate(p: PurchaseLog) -> Optional[float]:
+            if not p.unit_price or p.unit_price <= 0:
+                return None
+            if p.unit == target_unit:
+                return p.unit_price
+            conv_f = convert_quantity(1.0, from_unit=p.unit, to_unit=target_unit)
+            if conv_f and conv_f > 0:
+                return round(p.unit_price / conv_f, 4)
+            return None
+
+        best_rate = None
+        for p in purchase_logs:
+            if p.store_name and format_store_name(p.store_name).lower() == pref_store_clean:
+                rate = get_compatible_rate(p)
+                if rate is not None:
+                    best_rate = rate
+                    break
+
+        if best_rate is None:
+            for p in purchase_logs:
+                rate = get_compatible_rate(p)
+                if rate is not None:
+                    best_rate = rate
+                    break
+
+        if best_rate is not None:
+            item.default_unit_price = best_rate
+            db.commit()
+            db.refresh(item)
+    else:
+        db.commit()
+        db.refresh(item)
 
     item_out = ItemOut.model_validate(item)
     if item_out.default_unit_price is None:

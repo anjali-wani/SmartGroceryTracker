@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, ItemAlias, ReceiptUpload
 from app.services.inventory_service import reconcile_repurchased_inventory
+from app.services.analytics import determine_preferred_store
 from app.normalizer import extract_quantity_and_unit, UNIT_MAP, normalize_item_name, format_store_name, convert_quantity
 from app.services.mapping_service import save_product_mapping, load_product_mappings
 from app.services.llm_resolver import parse_total_quantity
@@ -32,7 +33,7 @@ def is_non_grocery_text(name: str, cat: Optional[str] = None) -> bool:
     if cat and any(k in cat.lower() for k in NON_GROCERY_CATEGORIES):
         return True
     text = f"{name} {cat or ''}".lower()
-    return any(re.search(rf"{re.escape(kw)}", text) for kw in NON_GROCERY_KEYWORDS)
+    return any(re.search(rf"\b{re.escape(kw)}\b", text) for kw in NON_GROCERY_KEYWORDS)
 
 from app.resolution import EntityResolver
 from app.schemas import CSVUploadSummary, ProcessedLineItem
@@ -251,6 +252,7 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
 
     # Maintain separate bill records per (store_name, date) combination
     bills_map: Dict[Tuple[str, date], ReceiptUpload] = {}
+    touched_canonical_ids: set = set()
 
     for _, row in df.iterrows():
         raw_item_str = str(row[col_map["item"]]).strip()
@@ -359,7 +361,15 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
 
         # 6. Entity Resolution (Exact -> RapidFuzz -> Fallback)
         raw_receipt_unit = str(row[col_map["unit"]]).strip() if "unit" in col_map and pd.notna(row[col_map["unit"]]) else extracted_unit
-        res = resolver.resolve(clean_name, store_name=row_store, purchase_date=row_date, price=price_val, receipt_unit=raw_receipt_unit)
+        res = resolver.resolve(
+            clean_name,
+            store_name=row_store,
+            purchase_date=row_date,
+            price=price_val,
+            receipt_unit=raw_receipt_unit,
+            receipt_category=row_category,
+            raw_line=raw_item_str
+        )
 
         # Check if quantity is mentioned in counts / pack units
         is_count_quantity = (
@@ -406,6 +416,18 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
 
             if (not res.canonical_item.preferred_store or res.canonical_item.preferred_store == "Grocery Store") and row_store and row_store != "Grocery Store":
                 res.canonical_item.preferred_store = row_store
+
+            # If item or resolution indicates Non-Grocery, enforce on canonical item
+            is_non_groc = (
+                category.lower() in ("non-grocery", "non grocery")
+                or (res.llm_resolved and res.llm_resolved.category and res.llm_resolved.category.lower() in ("non-grocery", "non grocery"))
+                or (row_category and row_category.lower() in ("non-grocery", "non grocery"))
+                or is_non_grocery_text(canonical_name, row_category)
+            )
+            if is_non_groc:
+                res.canonical_item.category = "Non-Grocery"
+                res.canonical_item.is_grocery = False
+                category = "Non-Grocery"
 
             # If resolved via Gemini or persistent mapping cache, register aliases & update mapping file
             if res.matched_via in ("gemini_llm", "product_mapping") or res.llm_resolved:
@@ -463,8 +485,8 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                 item_standard_unit = extracted_unit or "count"
                 is_bulk = False
             
-            # Check if this item is non-grocery (e.g. shoes, planter, apparel, hardware, electronics)
-            if is_non_grocery_text(canonical_title, row_category):
+            # Check if this item is non-grocery (e.g. shoes, planter, apparel, hardware, electronics, crafts)
+            if category.lower() in ("non-grocery", "non grocery") or is_non_grocery_text(canonical_title, row_category):
                 category = "Non-Grocery"
                 is_grocery = False
                 shelf_life = 365
@@ -505,6 +527,9 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
                     new_item.default_unit_price = calc_unit_price
                 if (not new_item.preferred_store or new_item.preferred_store == "Grocery Store") and row_store and row_store != "Grocery Store":
                     new_item.preferred_store = row_store
+                if category == "Non-Grocery" or is_grocery is False:
+                    new_item.category = "Non-Grocery"
+                    new_item.is_grocery = False
 
             # Register raw receipt text, clean name, and brand name as permanent aliases
             aliases_to_add = set()
@@ -548,6 +573,8 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             # Update resolver in-memory corpus so subsequent rows in this CSV resolve immediately
             resolver.canonical_map[normalize_item_name(new_item.canonical_name)] = new_item
             resolver.fuzzy_corpus[normalize_item_name(new_item.canonical_name)] = new_item
+            if new_item not in resolver.items:
+                resolver.items.append(new_item)
 
             canonical_id = new_item.id
             canonical_name = new_item.canonical_name
@@ -556,6 +583,9 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
             status = "auto_created"
             matched_via_val = res.matched_via or "auto_created"
             confidence_val = res.confidence or 1.0
+
+        if canonical_id:
+            touched_canonical_ids.add(canonical_id)
 
         # Standardize quantity and unit to match the canonical item's standard_unit if compatible
         target_item = db.query(Item).filter(Item.id == canonical_id).first() if canonical_id else None
@@ -655,6 +685,59 @@ def process_receipt_csv(file_bytes: bytes, db: Session, household_id: int = 1, f
         b.total_amount = round(b.total_amount, 2)
     
     first_bill_id = list(bills_map.values())[0].id if bills_map else None
+
+    # Update preferred_store and default_unit_price for all touched items based on purchase frequency (if tied, take the store from the last entry)
+    for cid in touched_canonical_ids:
+        c_item = db.query(Item).filter(Item.id == cid).first()
+        if c_item:
+            best_store = determine_preferred_store(cid, db, household_id=household_id, fallback_store=c_item.preferred_store)
+            if best_store:
+                c_item.preferred_store = best_store
+
+            # Synchronize default_unit_price with preferred store's most recent purchase
+            c_logs = (
+                db.query(PurchaseLog)
+                .filter(
+                    PurchaseLog.canonical_item_id == cid,
+                    PurchaseLog.household_id == household_id,
+                    PurchaseLog.unit_price.isnot(None),
+                    PurchaseLog.unit_price > 0
+                )
+                .order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc())
+                .all()
+            )
+            pref_store_clean = (c_item.preferred_store or "").lower()
+            target_unit = c_item.standard_unit or "count"
+
+            def get_compatible_rate(p: PurchaseLog) -> Optional[float]:
+                if not p.unit_price or p.unit_price <= 0:
+                    return None
+                if p.unit == target_unit:
+                    return p.unit_price
+                conv_f = convert_quantity(1.0, from_unit=p.unit, to_unit=target_unit)
+                if conv_f and conv_f > 0:
+                    return round(p.unit_price / conv_f, 4)
+                return None
+
+            best_rate = None
+            # 1. Look for preferred store with compatible unit
+            for p in c_logs:
+                if p.store_name and format_store_name(p.store_name).lower() == pref_store_clean:
+                    rate = get_compatible_rate(p)
+                    if rate is not None:
+                        best_rate = rate
+                        break
+
+            # 2. Look for any store with compatible unit
+            if best_rate is None:
+                for p in c_logs:
+                    rate = get_compatible_rate(p)
+                    if rate is not None:
+                        best_rate = rate
+                        break
+
+            if best_rate is not None:
+                c_item.default_unit_price = best_rate
 
     reconcile_repurchased_inventory(db, household_id)
     db.commit()

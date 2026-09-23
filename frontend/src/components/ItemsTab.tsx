@@ -107,14 +107,16 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
 
   // Metrics (clean catalog metrics with no active/pantry stock counters)
   const metrics = useMemo(() => {
+    const checkIsNonGrocery = (it: ItemOut) => {
+      return it.is_grocery === false || Boolean(it.category && it.category.toLowerCase().replace(/[\s_-]+/g, "") === "nongrocery");
+    };
+
     const total = items.length;
     const withVelocity = items.filter((it) => {
       const vel = velocityMap.get(it.id);
       return vel && vel.daily_velocity > 0;
     }).length;
-    const nonGrocery = items.filter(
-      (it) => it.is_grocery === false || it.category.toLowerCase() === "non-grocery"
-    ).length;
+    const nonGrocery = items.filter(checkIsNonGrocery).length;
     const grocery = total - nonGrocery;
 
     return { total, withVelocity, nonGrocery, grocery };
@@ -135,7 +137,7 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
       if (!matchesSearch) return false;
 
       // Item type filter (All / Grocery / Non-Grocery)
-      const isNonGrocery = item.is_grocery === false || item.category.toLowerCase() === "non-grocery";
+      const isNonGrocery = item.is_grocery === false || Boolean(item.category && item.category.toLowerCase().replace(/[\s_-]+/g, "") === "nongrocery");
       if (itemTypeFilter === "GROCERY" && isNonGrocery) return false;
       if (itemTypeFilter === "NON_GROCERY" && !isNonGrocery) return false;
 
@@ -154,14 +156,15 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
 
     try {
       setAddingItem(true);
+      const isNonGrocCat = newItemCategory === "Non-Grocery" || newItemCategory.toLowerCase().replace(/[\s_-]+/g, "") === "nongrocery";
       await createCanonicalItem({
         canonical_name: newItemName.trim(),
-        category: newItemCategory,
+        category: isNonGrocCat ? "Non-Grocery" : newItemCategory,
         standard_unit: newItemUnit.trim() || "count",
-        default_shelf_life_days: Number(newItemShelfLife) || 14,
+        default_shelf_life_days: Number(newItemShelfLife) || (isNonGrocCat ? 365 : 14),
         preferred_store: newItemStore.trim() || undefined,
         default_unit_price: newItemPrice ? parseFloat(newItemPrice) : undefined,
-        is_grocery: newItemIsGrocery
+        is_grocery: isNonGrocCat ? false : newItemIsGrocery
       });
 
       setIsAddModalOpen(false);
@@ -566,7 +569,7 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
         >
           {filteredItems.map((item) => {
             const vel = velocityMap.get(item.id);
-            const isNonGrocery = item.is_grocery === false || item.category.toLowerCase() === "non-grocery";
+            const isNonGrocery = item.is_grocery === false || Boolean(item.category && item.category.toLowerCase().replace(/[\s_-]+/g, "") === "nongrocery");
             const price = getItemPrice(item);
 
             return (
@@ -797,7 +800,17 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
                   </label>
                   <select
                     value={newItemCategory}
-                    onChange={(e) => setNewItemCategory(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setNewItemCategory(val);
+                      if (val === "Non-Grocery") {
+                        setNewItemIsGrocery(false);
+                        setNewItemShelfLife(365);
+                      } else {
+                        setNewItemIsGrocery(true);
+                        setNewItemShelfLife(14);
+                      }
+                    }}
                     style={{
                       width: "100%",
                       background: "#1F2937",

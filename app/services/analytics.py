@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models import PurchaseLog, Inventory, InventoryStatus, Item, Household
 from app.schemas import ItemVelocityOut, HouseholdVelocityReport
 from app.services.guest_engine import calculate_guest_discount_factor
-from app.normalizer import convert_quantity
+from app.normalizer import convert_quantity, format_store_name
 
 
 def calculate_modal_quantity(quantities: List[float]) -> float:
@@ -18,6 +18,52 @@ def calculate_modal_quantity(quantities: List[float]) -> float:
     candidates = [qty for qty, freq in counts.items() if freq == max_freq]
     # If frequencies are same, pick bigger quantity
     return max(candidates)
+
+
+def determine_preferred_store(
+    item_id: int,
+    db: Session,
+    household_id: int = 1,
+    fallback_store: Optional[str] = None
+) -> Optional[str]:
+    """Calculate preferred store for an item based on purchase history:
+    1. If a product is purchased frequently from one store, that store becomes the preferred choice.
+    2. If purchase frequencies/ratios are equal (a tie), take the store from the last entry (most recent purchase).
+    """
+    logs: List[PurchaseLog] = (
+        db.query(PurchaseLog)
+        .filter(
+            PurchaseLog.canonical_item_id == item_id,
+            PurchaseLog.household_id == household_id,
+            PurchaseLog.store_name.isnot(None)
+        )
+        .order_by(PurchaseLog.purchase_date.desc(), PurchaseLog.id.desc())
+        .all()
+    )
+
+    valid_logs = [log for log in logs if log.store_name and log.store_name.strip() and log.store_name.strip().lower() != "grocery store"]
+    if not valid_logs:
+        return format_store_name(fallback_store) if fallback_store else None
+
+    # Track frequency and earliest appearance index (0 = most recent entry)
+    store_counts: Dict[str, int] = {}
+    store_latest_recency: Dict[str, int] = {}
+
+    for idx, log in enumerate(valid_logs):
+        s_clean = format_store_name(log.store_name)
+        store_counts[s_clean] = store_counts.get(s_clean, 0) + 1
+        if s_clean not in store_latest_recency:
+            store_latest_recency[s_clean] = idx
+
+    max_count = max(store_counts.values())
+    top_stores = [s for s, count in store_counts.items() if count == max_count]
+
+    if len(top_stores) == 1:
+        return top_stores[0]
+
+    # Equal ratio / tie: take the store from the last entry (lowest index in valid_logs)
+    top_stores.sort(key=lambda s: store_latest_recency[s])
+    return top_stores[0]
 
 
 def compute_item_velocity(

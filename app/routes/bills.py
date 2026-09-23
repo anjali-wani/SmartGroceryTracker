@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -6,6 +7,8 @@ from app.database import get_db
 from app.models import PurchaseLog, Inventory, InventoryStatus, ReceiptUpload
 from app.schemas import CSVUploadSummary, PurchaseLogOut, ReceiptUploadOut, BillItemOut
 from app.services.ingestion import process_receipt_csv
+
+logger = logging.getLogger("grocery_bills")
 
 router = APIRouter(prefix="/bills", tags=["Bills & Ingestion"])
 
@@ -37,6 +40,7 @@ async def upload_csv_receipt(
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(ve))
     except Exception as e:
+        logger.exception(f"Error processing CSV bill: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to process CSV bill: {str(e)}"

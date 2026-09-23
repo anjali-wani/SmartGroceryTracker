@@ -32,6 +32,12 @@ def add_custom_grocery_item(
     """Add a manual item to the shopping list with canonical linking and price estimation."""
     clean_name = payload.item_name.strip()
     matched_item = db.query(Item).filter(Item.canonical_name.ilike(clean_name)).first()
+    if (matched_item and (not matched_item.is_grocery or (matched_item.category and "non" in matched_item.category.lower() and "grocery" in matched_item.category.lower()))) or (payload.category and "non" in payload.category.lower() and "grocery" in payload.category.lower()):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"'{clean_name}' is a non-grocery item and cannot be added to the Sunday Grocery List."
+        )
+
     canonical_id = matched_item.id if matched_item else None
 
     if canonical_id:

@@ -105,9 +105,13 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
       return;
     }
 
+    const u = (details?.item.standard_unit || "").toLowerCase();
+    const isGrams = u === "g" || u === "gm" || u === "gram" || u === "grams";
+    const priceToSend = isGrams ? Number((parsed / 100).toFixed(6)) : parsed;
+
     try {
       setSavingPrice(true);
-      const updatedItem = await updateItemPrice(itemId, parsed);
+      const updatedItem = await updateItemPrice(itemId, priceToSend);
       setDetails((prev) => (prev ? { ...prev, item: updatedItem } : prev));
       setIsEditingPrice(false);
       if (onItemUpdated) onItemUpdated();
@@ -299,7 +303,9 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                     {!isEditingPrice && (
                       <button
                         onClick={() => {
-                          setPriceInput(displayPrice != null ? displayPrice.toFixed(2) : "");
+                          const u = (details.item.standard_unit || "").toLowerCase();
+                          const isGrams = u === "g" || u === "gm" || u === "gram" || u === "grams";
+                          setPriceInput(displayPrice != null ? (isGrams ? (displayPrice * 100).toFixed(2) : displayPrice.toFixed(2)) : "");
                           setIsEditingPrice(true);
                         }}
                         className="btn-secondary"
@@ -327,7 +333,9 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                         style={{ width: "90px", padding: "4px 8px", fontSize: "0.85rem" }}
                         autoFocus
                       />
-                      <span style={{ fontSize: "0.8rem", color: "#9CA3AF" }}>/ {details.item.standard_unit || "count"}</span>
+                      <span style={{ fontSize: "0.8rem", color: "#9CA3AF" }}>
+                        / {((details.item.standard_unit || "").toLowerCase() === "g" || (details.item.standard_unit || "").toLowerCase() === "gm") ? "100g" : (details.item.standard_unit || "count")}
+                      </span>
                       <button
                         type="submit"
                         disabled={savingPrice}
@@ -348,10 +356,10 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                   ) : (
                     <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "10px" }}>
                       <span style={{ fontSize: "1.6rem", fontWeight: 700, color: "#10B981" }}>
-                        {displayPrice != null ? `$${displayPrice.toFixed(2)}` : "—"}
+                        {formatPriceAndUnit(displayPrice, details.item.standard_unit).priceText}
                       </span>
                       <span style={{ fontSize: "0.85rem", color: "#9CA3AF" }}>
-                        per {details.item.standard_unit || "count"}
+                        {formatPriceAndUnit(displayPrice, details.item.standard_unit).unitText || `per ${details.item.standard_unit || "count"}`}
                       </span>
                     </div>
                   )}

@@ -20,14 +20,15 @@ if not api_key or not api_key.strip():
     sys.exit(1)
 
 print(f"✅ Found GEMINI_API_KEY: {api_key[:6]}...{api_key[-4:]}")
-print("📡 Connecting to Google Gemini API (gemini-3.1-flash-lite)...")
+print("📡 Connecting to Google Gemini API (gemini-3.5-flash-lite)...")
 
 try:
     from google import genai
     client = genai.Client(api_key=api_key)
     
+    model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     response = client.models.generate_content(
-        model="gemini-3.1-flash-lite",
+        model=model_name,
         contents="Respond with only: 'Gemini API is active and healthy!'"
     )
     print(f"✅ Connection Successful! Response: {response.text.strip()}")

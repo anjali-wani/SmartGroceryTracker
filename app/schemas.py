@@ -169,6 +169,8 @@ class ItemScheduleUpdate(BaseModel):
     reorder_cadence_days: Optional[int] = None
     preferred_store: Optional[str] = None
     default_unit_price: Optional[float] = None
+    category: Optional[str] = None
+    is_grocery: Optional[bool] = None
 
 
 class ItemArchiveResponse(BaseModel):

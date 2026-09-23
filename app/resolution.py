@@ -25,9 +25,10 @@ class ResolutionResult:
 
 class EntityResolver:
     """Multi-tier entity resolution engine for grocery items:
-    1. Exact alias lookup
-    2. RapidFuzz similarity matching against canonical catalogue & alias dictionary
-    3. Heuristic / Semantic fallback
+    1. Exact alias/canonical lookup (Tier 1)
+    2. Persistent Product Mapping Cache from data/product_mappings.json (Tier 2)
+    3. Gemini LLM Fallback (Tier 3)
+    (RapidFuzz similarity matching & Heuristic token overlap commented out)
     """
 
     def __init__(self, db: Session, similarity_threshold: float = 85.0):
@@ -68,7 +69,9 @@ class EntityResolver:
         store_name: Optional[str] = None,
         purchase_date: Optional[Any] = None,
         price: Optional[float] = None,
-        receipt_unit: Optional[str] = None
+        receipt_unit: Optional[str] = None,
+        receipt_category: Optional[str] = None,
+        raw_line: Optional[str] = None
     ) -> ResolutionResult:
         """Execute 4-tier entity resolution on raw product name."""
         normalized = normalize_item_name(raw_product_name)
@@ -116,43 +119,8 @@ class EntityResolver:
                 llm_resolved=_get_cached_meta(normalized)
             )
 
-        # Tier 2: RapidFuzz similarity matching against corpus
-        if self.fuzzy_corpus:
-            choices = list(self.fuzzy_corpus.keys())
-            # Use token_set_ratio or WRatio for handling words in different orders or subsets
-            match = process.extractOne(
-                normalized,
-                choices,
-                scorer=fuzz.token_set_ratio,
-                score_cutoff=self.similarity_threshold
-            )
-
-            if match:
-                best_term, score, _ = match
-                item = self.fuzzy_corpus[best_term]
-                confidence = round(score / 100.0, 2)
-                return ResolutionResult(
-                    canonical_item=item,
-                    confidence=confidence,
-                    matched_via="rapidfuzz",
-                    matched_term=best_term,
-                    llm_resolved=_get_cached_meta(normalized) or _get_cached_meta(best_term)
-                )
-
-        # Tier 3: Heuristic token overlap fallback
-        tokens = set(normalized.split())
-        for norm_term, item in self.fuzzy_corpus.items():
-            candidate_tokens = set(norm_term.split())
-            if tokens and candidate_tokens and (tokens.issubset(candidate_tokens) or candidate_tokens.issubset(tokens)):
-                return ResolutionResult(
-                    canonical_item=item,
-                    confidence=0.70,
-                    matched_via="heuristic_fallback",
-                    matched_term=norm_term
-                )
-
-        # Tier 3.5: Persistent Product Mapping Cache (data/product_mappings.json)
-        if hasattr(self, "file_mappings") and normalized in self.file_mappings:
+        # Tier 2: Persistent Product Mapping Cache (data/product_mappings.json)
+        if hasattr(self, "file_mappings") and self.file_mappings and normalized in self.file_mappings:
             entry = self.file_mappings[normalized]
             gen_title = entry.get("generic_name", "").strip().title()
             norm_gen = normalize_item_name(gen_title)
@@ -183,7 +151,47 @@ class EntityResolver:
                     llm_resolved=cached_llm
                 )
 
-        # Tier 4: Gemini LLM Fallback
+        # -------------------------------------------------------------------------
+        # NOTE: RapidFuzz and Heuristic search are commented out per user request.
+        # Any item not matched exactly (Tier 1) or found in product_mappings.json (Tier 2)
+        # directly triggers the LLM API call below (Tier 3).
+        # -------------------------------------------------------------------------
+        # # RapidFuzz similarity matching against corpus
+        # if self.fuzzy_corpus:
+        #     choices = list(self.fuzzy_corpus.keys())
+        #     # Use token_set_ratio or WRatio for handling words in different orders or subsets
+        #     match = process.extractOne(
+        #         normalized,
+        #         choices,
+        #         scorer=fuzz.token_set_ratio,
+        #         score_cutoff=self.similarity_threshold
+        #     )
+        #
+        #     if match:
+        #         best_term, score, _ = match
+        #         item = self.fuzzy_corpus[best_term]
+        #         confidence = round(score / 100.0, 2)
+        #         return ResolutionResult(
+        #             canonical_item=item,
+        #             confidence=confidence,
+        #             matched_via="rapidfuzz",
+        #             matched_term=best_term,
+        #             llm_resolved=_get_cached_meta(normalized) or _get_cached_meta(best_term)
+        #         )
+        #
+        # # Heuristic token overlap fallback
+        # tokens = set(normalized.split())
+        # for norm_term, item in self.fuzzy_corpus.items():
+        #     candidate_tokens = set(norm_term.split())
+        #     if tokens and candidate_tokens and (tokens.issubset(candidate_tokens) or candidate_tokens.issubset(tokens)):
+        #         return ResolutionResult(
+        #             canonical_item=item,
+        #             confidence=0.70,
+        #             matched_via="heuristic_fallback",
+        #             matched_term=norm_term
+        #         )
+
+        # Tier 3: Gemini LLM Fallback (triggered if not found in product_mappings.json)
         existing_names = [it.canonical_name for it in self.items]
         llm_out = resolve_with_gemini(
             raw_product_name,
@@ -191,7 +199,9 @@ class EntityResolver:
             existing_items=existing_names,
             purchase_date=purchase_date,
             price=price,
-            receipt_unit=receipt_unit
+            receipt_unit=receipt_unit,
+            receipt_category=receipt_category,
+            raw_line=raw_line
         )
         if llm_out:
             # Use generic_name as the target canonical entity

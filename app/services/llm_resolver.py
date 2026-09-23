@@ -74,14 +74,17 @@ def resolve_with_gemini(
     existing_items: Optional[List[str]] = None,
     purchase_date: Optional[Any] = None,
     price: Optional[float] = None,
-    receipt_unit: Optional[str] = None
+    receipt_unit: Optional[str] = None,
+    receipt_category: Optional[str] = None,
+    raw_line: Optional[str] = None
 ) -> Optional[LLMResolvedItem]:
     """Resolve unrecognized item using Gemini Flash, with local heuristic fallback."""
+    display_name = raw_line or raw_text
     if os.getenv("DISABLE_LLM", "").lower() in ("true", "1", "yes"):
         fallback = fallback_heuristic_resolve(raw_text, store_name, existing_items)
         fallback.llm_success = False
         log_gemini_api_call(
-            product_name=raw_text,
+            product_name=display_name,
             store_name=store_name,
             purchase_date=purchase_date,
             response_text=f"(Local Heuristic - DISABLE_LLM=true) {fallback.model_dump_json()}"
@@ -93,7 +96,7 @@ def resolve_with_gemini(
         fallback = fallback_heuristic_resolve(raw_text, store_name, existing_items)
         fallback.llm_success = False
         log_gemini_api_call(
-            product_name=raw_text,
+            product_name=display_name,
             store_name=store_name,
             purchase_date=purchase_date,
             response_text=f"(Local Heuristic - No GEMINI_API_KEY) {fallback.model_dump_json()}"
@@ -108,24 +111,27 @@ def resolve_with_gemini(
         store_clean = format_store_name(store_name) if store_name else "Grocery Store"
         price_str = f" Receipt line price: ${price:.2f}." if price is not None and price > 0 else ""
         unit_str = f" Receipt unit: '{receipt_unit.strip()}'." if receipt_unit and receipt_unit.strip().lower() not in ("none", "nan", "") else ""
+        category_str = f" Receipt department / category: '{receipt_category.strip()}'." if receipt_category and receipt_category.strip().lower() not in ("none", "nan", "") else ""
+        raw_str = f" (Original receipt line: '{raw_line.strip()}')." if raw_line and raw_line.strip() != raw_text.strip() else ""
         prompt = (
-            f"You are a grocery classification engine. Identify the product name, generic name, category, and unit for raw receipt item: '{raw_text}' from '{store_clean}'.{price_str}{unit_str}\n"
+            f"You are a receipt item classification engine. Receipts from supermarkets and superstores (e.g., Walmart, Target, Costco) often contain both groceries and non-food general merchandise (e.g., crafts, art supplies, stationery, apparel, home goods, hardware, electronics, personal care). If an item is non-food, classify its category as 'Non-Grocery'. Identify the product name, generic name, category, and unit for raw receipt item: '{raw_text}'{raw_str} from '{store_clean}'.{price_str}{unit_str}{category_str}\n"
             f"Return the following fields:\n"
             f"1. canonical_name: Clean, title-case brand/product name (e.g. 'Kirkland Signature Organic Milk').\n"
-            f"2. generic_name: The base/generic grocery name in lowercase. E.g. for 'KS_ORG_A2_MLK' or 'Kirkland Signature Organic Milk', generic_name is 'milk'; for 'Gala Apples', generic_name is 'apples'; for 'Deep Rice Flour', generic_name is 'rice flour'; for 'Veer Cashew Split', generic_name is 'cashews'.\n"
-            f"3. category: Category (Produce, Dairy, Pantry, Bakery, Meat & Seafood, Snacks, Grains & Pasta, Spices / Pantry, etc.).\n"
+            f"2. generic_name: The base/generic name in lowercase. E.g. for 'KS_ORG_A2_MLK' or 'Kirkland Signature Organic Milk', generic_name is 'milk'; for 'Gala Apples', generic_name is 'apples'; for 'Deep Rice Flour', generic_name is 'rice flour'; for 'Veer Cashew Split', generic_name is 'cashews'.\n"
+            f"3. category: Category (Produce, Dairy, Pantry, Bakery, Meat & Seafood, Snacks, Grains & Pasta, Spices / Pantry, or 'Non-Grocery' for any non-food items like crafts, art supplies, apparel, hardware, stationery, etc.).\n"
             f"4. standard_unit: Standard unit (count, lb, oz, g, gallon, ml, etc.). If the receipt unit is 'EA', 'count', or 'unit', standard_unit for bunched or individual items should be 'count'.\n"
             f"5. is_bulk: Boolean indicating if typically purchased in bulk.\n"
             f"6. total_quantity: The aggregated total volume, weight, or count across the package or multi-pack items, taking into account the STORE CONTEXT and RECEIPT UNIT:\n"
             f"   - For warehouse clubs and bulk stores (e.g., Costco, Sam's Club, BJ's), use warehouse-specific packaging standards and multi-packs (e.g., at Costco, Kirkland Signature Organic A2 Milk 'KS ORG A2 PR' is sold as a 3-pack of 0.5 gallon cartons, so return '1.5 gallons'; Kirkland Signature organic whole milk is a 2-pack of 1-gallon jugs, so return '2 gallons'; eggs are sold as 2-dozen or 5-dozen).\n"
             f"   - For standard retail supermarkets (e.g., Safeway, Kroger, Ralphs), where milk is typically sold as individual 1-gallon or half-gallon cartons, return the individual retail carton size (e.g., '1 gallon' or '0.5 gallon').\n"
             f"   - For bunched produce, herbs, and leafy greens (e.g., 'CILANTRO', 'METHI', 'MINT', 'PALAK', 'SPINACH BUNCH', 'CURRY LEAVES', 'GREEN ONIONS') especially when receipt unit is 'EA', 'count', or 'unit', return '1 count'.\n"
+            f"   - For Indian grocery stores (e.g., Patel Brothers, Apni Mandi, New India Bazar), trailing numbers on packaged dairy, spices, or groceries without an explicit unit (e.g., 'BUTTER 100', 'PANEER 200', 'GHEE 500') represent package weight in grams (e.g., '100g', '200g', '500g'). Set standard_unit to 'g' and total_quantity accordingly.\n"
             f"   - For ethnic or specialty grocers (e.g., New India Bazar, Apni Mandi), use standard package sizes indicated in the item name or typical packaging (e.g., '200g' for 'VEER FENNEL SEEDS 200GM').\n"
             f"   - For single produce items (e.g., 'LEMON', 'AVOCADO'), return '1 count'.\n"
             f"   Do not return pack count alone (e.g. do not return '3 packs' or '1 unit') and do not return null; always return the aggregated net total amount with its measurement unit (e.g., '1.5 gallons', '48 oz', '2 lb', '1 count')."
         )
 
-        model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+        model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
         # Sleep 4 seconds between successive Gemini API calls
         wait_between_gemini_calls(4.0)
@@ -212,6 +218,14 @@ def fallback_heuristic_resolve(
                 matched_existing = ex
                 break
 
+    import re
+    trailing_match = re.search(r'[\s_]+(\d{2,4})$', clean)
+    if trailing_match and any(k in lower for k in ["butter", "paneer", "ghee", "masala", "powder"]):
+        unit = "g"
+        tot_qty = f"{trailing_match.group(1)} g"
+    else:
+        tot_qty = f"1 {unit}"
+
     return LLMResolvedItem(
         canonical_name=title,
         generic_name=generic_name,
@@ -219,7 +233,7 @@ def fallback_heuristic_resolve(
         standard_unit=unit,
         is_bulk=is_bulk,
         matched_existing_canonical_name=matched_existing,
-        total_quantity=f"1 {unit}"
+        total_quantity=tot_qty
     )
 
 

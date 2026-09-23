@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.models import GroceryListEntry, Item, PurchaseLog, Inventory, InventoryStatus
 from app.schemas import GroceryListResponse, GroceryListItemOut, AvailabilityPrompt
-from app.services.analytics import compute_item_velocity
+from app.services.analytics import compute_item_velocity, determine_preferred_store
 from app.normalizer import convert_quantity, format_store_name
 
 
@@ -27,6 +27,17 @@ def generate_smart_grocery_list(
         GroceryListEntry.is_checked == False,
         (GroceryListEntry.is_dismissed == False) | (GroceryListEntry.is_dismissed == None),
         GroceryListEntry.priority_reason.notin_(["MANUAL", "CONFIRMED_DEPLETED"])
+    ).delete(synchronize_session=False)
+
+    # Immediately purge any non-grocery entries from the grocery list
+    db.query(GroceryListEntry).filter(
+        GroceryListEntry.household_id == household_id,
+        (GroceryListEntry.category.ilike("%non%grocery%")) |
+        (GroceryListEntry.canonical_item_id.in_(
+            db.query(Item.id).filter(
+                (Item.is_grocery == False) | (Item.category.ilike("%non%grocery%"))
+            )
+        ))
     ).delete(synchronize_session=False)
     db.commit()
 
@@ -64,7 +75,7 @@ def generate_smart_grocery_list(
         .filter(
             Item.is_active == True,
             Item.is_grocery == True,
-            Item.category != "Non-Grocery",
+            ~Item.category.ilike("%non%grocery%"),
             Item.id.in_(household_item_ids)
         )
         .order_by(Item.category, Item.canonical_name)
@@ -74,6 +85,15 @@ def generate_smart_grocery_list(
     availability_prompts: List[AvailabilityPrompt] = []
 
     for item in active_items:
+        if not item.is_grocery or (item.category and "non" in item.category.lower() and "grocery" in item.category.lower()):
+            continue
+
+        # Determine preferred store by purchase frequency; if tied, take the store from the last entry
+        pref_from_history = determine_preferred_store(item.id, db, household_id=household_id, fallback_store=item.preferred_store)
+        if pref_from_history and item.preferred_store != pref_from_history:
+            item.preferred_store = pref_from_history
+            db.add(item)
+
         if target_store and item.preferred_store and format_store_name(item.preferred_store).lower() != format_store_name(target_store).lower():
             continue
 
@@ -162,29 +182,12 @@ def generate_smart_grocery_list(
             if est_cost is None:
                 benchmark = CATEGORY_BENCHMARKS.get(item.category, 3.49)
                 est_cost = round(benchmark * reorder_qty, 2)
-            # Check store ambiguity
-            if item.preferred_store:
-                store = format_store_name(item.preferred_store)
-            else:
-                past_stores = [
-                    format_store_name(p.store_name) for p in db.query(PurchaseLog.store_name)
-                    .filter(
-                        PurchaseLog.household_id == household_id,
-                        PurchaseLog.canonical_item_id == item.id,
-                        PurchaseLog.store_name.isnot(None)
-                    ).all()
-                    if p.store_name and p.store_name.strip()
-                ]
-                if past_stores:
-                    from collections import Counter
-                    counts = Counter(past_stores)
-                    most_common_store, count = counts.most_common(1)[0]
-                    if len(counts) == 1 or (count / len(past_stores) >= 0.60):
-                        store = most_common_store
-                    else:
-                        store = "Any Store"
-                else:
-                    store = format_store_name(last_p.store_name) if last_p and last_p.store_name else "Any Store"
+            # Determine preferred store by purchase frequency; if tied, take the store from the last entry
+            pref_from_history = determine_preferred_store(item.id, db, household_id=household_id, fallback_store=item.preferred_store)
+            store = pref_from_history or (format_store_name(item.preferred_store) if item.preferred_store else "Any Store")
+            if pref_from_history and item.preferred_store != pref_from_history:
+                item.preferred_store = pref_from_history
+                db.add(item)
 
             entry = GroceryListEntry(
                 household_id=household_id,
@@ -217,7 +220,8 @@ def generate_smart_grocery_list(
         .filter(
             GroceryListEntry.household_id == household_id,
             (GroceryListEntry.is_dismissed == False) | (GroceryListEntry.is_dismissed == None),
-            (Item.id == None) | ((Item.is_grocery == True) & (Item.category != "Non-Grocery"))
+            ~GroceryListEntry.category.ilike("%non%grocery%"),
+            (Item.id == None) | ((Item.is_grocery == True) & (~Item.category.ilike("%non%grocery%")))
         )
     )
     if dismissed_canonical_ids:
@@ -232,10 +236,26 @@ def generate_smart_grocery_list(
     total_cost = 0.0
 
     for e in all_entries:
+        cat_lower = (e.category or (e.item.category if e.item else "") or "").lower()
+        if "non" in cat_lower and "grocery" in cat_lower:
+            continue
+        if e.item and (not e.item.is_grocery or (e.item.category and "non" in e.item.category.lower() and "grocery" in e.item.category.lower())):
+            continue
+
+        # Automatically synchronize target_store with canonical item's preferred_store based on frequency & recency (unless manually overridden)
+        if e.item and e.priority_reason != "MANUAL":
+            pref_store = determine_preferred_store(e.item.id, db, household_id=household_id, fallback_store=e.item.preferred_store)
+            if pref_store:
+                if e.item.preferred_store != pref_store:
+                    e.item.preferred_store = pref_store
+                    db.add(e.item)
+                if e.target_store != pref_store:
+                    e.target_store = pref_store
+                    db.add(e)
+
         name = e.item.canonical_name if e.item else (e.custom_item_name or "Item")
         cost = e.estimated_cost
         if cost is None or cost <= 0:
-            cat_lower = (e.category or (e.item.category if e.item else "") or "").lower()
             bench = 3.49
             for k, val in CATEGORY_BENCHMARKS.items():
                 if k in cat_lower:
