@@ -10,14 +10,18 @@ import {
   Edit2,
   Check,
   Clock,
-  ShoppingBag
+  ShoppingBag,
+  Trash2,
+  Loader2
 } from "lucide-react";
-import type { ItemDetails } from "../types";
+import type { ItemDetails, ItemPurchaseHistoryEntry } from "../types";
 import {
   fetchItemDetails,
   addAliasToItem,
   deleteItemAlias,
-  updateItemPrice
+  updateItemPrice,
+  updateItemName,
+  deletePurchaseItem
 } from "../api/client";
 
 interface ItemDetailsModalProps {
@@ -42,10 +46,18 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
   const [priceInput, setPriceInput] = useState("");
   const [savingPrice, setSavingPrice] = useState(false);
 
+  // Inline Canonical Name Editing State
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [savingName, setSavingName] = useState(false);
+
   // New alias input state
   const [newAlias, setNewAlias] = useState("");
   const [addingAlias, setAddingAlias] = useState(false);
   const [deletingAliasId, setDeletingAliasId] = useState<number | null>(null);
+
+  // Deleting purchase log state
+  const [deletingPurchaseId, setDeletingPurchaseId] = useState<number | null>(null);
 
   const loadDetails = async () => {
     if (!itemId) return;
@@ -54,6 +66,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
       setError(null);
       const data = await fetchItemDetails(itemId, householdId);
       setDetails(data);
+      setNameInput(data.item.canonical_name);
       if (data.item.default_unit_price != null) {
         setPriceInput(data.item.default_unit_price.toFixed(2));
       }
@@ -122,6 +135,29 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
     }
   };
 
+  const handleSaveName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!itemId) return;
+    const cleanName = nameInput.trim();
+    if (!cleanName) {
+      alert("Please enter a valid item name.");
+      return;
+    }
+
+    try {
+      setSavingName(true);
+      const updatedItem = await updateItemName(itemId, cleanName);
+      setDetails((prev) => (prev ? { ...prev, item: updatedItem } : prev));
+      setIsEditingName(false);
+      await loadDetails();
+      if (onItemUpdated) onItemUpdated();
+    } catch (err: any) {
+      alert(err.message || "Failed to rename item");
+    } finally {
+      setSavingName(false);
+    }
+  };
+
   const handleAddAlias = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!itemId || !newAlias.trim()) return;
@@ -164,6 +200,24 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
     }
   };
 
+  const handleDeletePurchaseEntry = async (entry: ItemPurchaseHistoryEntry) => {
+    const confirmMsg = `Delete purchase record from ${entry.store_name} on ${entry.purchase_date} (${entry.quantity} ${entry.unit})?\n\nThis will remove the entry and roll back corresponding active stock in your pantry if applicable.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      setDeletingPurchaseId(entry.id);
+      await deletePurchaseItem(entry.id);
+      await loadDetails();
+      if (onItemUpdated) {
+        onItemUpdated();
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to delete purchase record");
+    } finally {
+      setDeletingPurchaseId(null);
+    }
+  };
+
   if (!itemId) return null;
 
   return (
@@ -201,9 +255,77 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "18px", gap: "16px", flexWrap: "wrap" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#F3F4F6", margin: 0 }}>
-                {details?.item.canonical_name || "Item Details"}
-              </h2>
+              {isEditingName ? (
+                <form onSubmit={handleSaveName} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    required
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    className="input-field"
+                    style={{ fontSize: "1.1rem", fontWeight: 700, padding: "4px 8px", minWidth: "220px" }}
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    disabled={savingName || !nameInput.trim()}
+                    className="btn-success"
+                    style={{ padding: "5px 10px", fontSize: "0.75rem" }}
+                    title="Save item name"
+                  >
+                    {savingName ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={14} />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNameInput(details?.item.canonical_name || "");
+                      setIsEditingName(false);
+                    }}
+                    className="btn-secondary"
+                    style={{ padding: "5px 8px", fontSize: "0.75rem" }}
+                    title="Cancel"
+                  >
+                    <X size={14} />
+                  </button>
+                </form>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#F3F4F6", margin: 0 }}>
+                    {details?.item.canonical_name || "Item Details"}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setNameInput(details?.item.canonical_name || "");
+                      setIsEditingName(true);
+                    }}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid var(--border-subtle)",
+                      borderRadius: "6px",
+                      padding: "3px 8px",
+                      color: "#9CA3AF",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontSize: "0.75rem",
+                      transition: "all 0.15s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "#F3F4F6";
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#9CA3AF";
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                    }}
+                    title="Rename canonical item"
+                  >
+                    <Edit2 size={12} />
+                    <span>Rename</span>
+                  </button>
+                </div>
+              )}
               {details?.item.category && (
                 <span className="badge badge-emerald" style={{ fontSize: "0.75rem" }}>
                   {details.item.category}
@@ -460,6 +582,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                         <th style={{ padding: "10px 12px", textAlign: "right", color: "#9CA3AF" }}>Unit Rate</th>
                         <th style={{ padding: "10px 12px", textAlign: "right", color: "#9CA3AF" }}>Actual Price Paid</th>
                         <th style={{ padding: "10px 12px", textAlign: "left", color: "#9CA3AF" }}>Receipt Label</th>
+                        <th style={{ padding: "10px 12px", textAlign: "center", color: "#9CA3AF", width: "48px" }}>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -472,6 +595,8 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                             : displayPrice != null && displayPrice > 0
                             ? displayPrice * (p.quantity && p.quantity > 0 ? p.quantity : 1)
                             : null;
+
+                        const isDeleting = deletingPurchaseId === p.id;
 
                         return (
                           <tr key={p.id} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)" }}>
@@ -496,6 +621,44 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
                             </td>
                             <td style={{ padding: "10px 12px", color: "#6B7280", fontStyle: "italic", maxWidth: "160px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {p.raw_text || "-"}
+                            </td>
+                            <td style={{ padding: "10px 12px", textAlign: "center" }}>
+                              <button
+                                onClick={() => handleDeletePurchaseEntry(p)}
+                                disabled={isDeleting}
+                                title="Delete this purchase entry"
+                                style={{
+                                  background: "rgba(239, 68, 68, 0.1)",
+                                  border: "1px solid rgba(239, 68, 68, 0.25)",
+                                  color: "#EF4444",
+                                  borderRadius: "6px",
+                                  padding: "5px 8px",
+                                  cursor: isDeleting ? "not-allowed" : "pointer",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  transition: "all 0.15s ease",
+                                  opacity: isDeleting ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!isDeleting) {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!isDeleting) {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.25)";
+                                  }
+                                }}
+                              >
+                                {isDeleting ? (
+                                  <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} />
+                                ) : (
+                                  <Trash2 size={13} />
+                                )}
+                              </button>
                             </td>
                           </tr>
                         );

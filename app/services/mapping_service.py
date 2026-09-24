@@ -174,3 +174,32 @@ def seed_database_from_mappings(db: Session) -> Dict[str, int]:
     db.commit()
     logger.info(f"Seeded {items_created} generic items and {aliases_created} aliases from product_mappings.json.")
     return {"items_created": items_created, "aliases_created": aliases_created}
+
+
+def rename_generic_item_in_mappings(old_generic: str, new_generic: str) -> int:
+    """Update all entries in product_mappings.json where generic_name matches old_generic to new_generic."""
+    if not old_generic or not new_generic:
+        return 0
+
+    mappings = load_product_mappings()
+    if not mappings:
+        return 0
+
+    old_clean = old_generic.strip().lower()
+    new_title = new_generic.strip().title()
+
+    count = 0
+    for key, entry in mappings.items():
+        if entry.get("generic_name", "").strip().lower() == old_clean:
+            entry["generic_name"] = new_title
+            count += 1
+
+    if count > 0:
+        try:
+            with open(MAPPINGS_FILE_PATH, "w", encoding="utf-8") as f:
+                json.dump(mappings, f, indent=2, ensure_ascii=False)
+            logger.info(f"Updated {count} entries in product_mappings.json: '{old_generic}' -> '{new_title}'")
+        except Exception as e:
+            logger.error(f"Failed to update product_mappings.json during rename: {e}")
+
+    return count

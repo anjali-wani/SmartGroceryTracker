@@ -107,7 +107,7 @@ export const ItemsTab: React.FC<ItemsTabProps> = ({ householdId }) => {
 
   // Metrics (clean catalog metrics with no active/pantry stock counters)
   const metrics = useMemo(() => {
-    const checkIsNonGrocery = (it: ItemOut) => {
+    const checkIsNonGrocery = (it: CanonicalItem) => {
       return it.is_grocery === false || Boolean(it.category && it.category.toLowerCase().replace(/[\s_-]+/g, "") === "nongrocery");
     };
 

@@ -166,6 +166,7 @@ class HouseholdVelocityReport(BaseModel):
 # --- Phase 3 Schemas ---
 
 class ItemScheduleUpdate(BaseModel):
+    canonical_name: Optional[str] = None
     reorder_cadence_days: Optional[int] = None
     preferred_store: Optional[str] = None
     default_unit_price: Optional[float] = None

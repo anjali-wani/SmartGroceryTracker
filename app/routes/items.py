@@ -9,6 +9,7 @@ from app.database import get_db
 from app.models import Item, ItemAlias, Inventory, InventoryStatus, PurchaseLog
 from app.schemas import ItemOut, ItemCreate, ItemAliasOut, InventoryOut, ItemArchiveResponse, ItemScheduleUpdate, ItemDetailsOut, ItemPurchaseHistoryEntry, ItemConsumptionRhythm
 from app.normalizer import format_store_name, convert_quantity
+from app.services.mapping_service import rename_generic_item_in_mappings
 
 router = APIRouter(prefix="/items", tags=["Items & Inventory"])
 
@@ -222,16 +223,53 @@ def toggle_archive_item(
     )
 
 
+@router.patch("/{item_id}", response_model=ItemOut)
 @router.patch("/{item_id}/schedule", response_model=ItemOut)
 def update_item_schedule(
     item_id: int,
     payload: ItemScheduleUpdate,
     db: Session = Depends(get_db)
 ):
-    """Configure periodic purchase schedule (e.g. Cadence of 14 days for bi-weekly spinach) and preferred store."""
+    """Configure periodic purchase schedule, canonical name, pricing, category, and preferred store."""
     item = db.query(Item).filter(Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found.")
+
+    if payload.canonical_name is not None and payload.canonical_name.strip():
+        new_name = payload.canonical_name.strip()
+        old_name = item.canonical_name
+        if new_name.lower() != old_name.lower():
+            # Check for conflict with another item
+            conflict = db.query(Item).filter(
+                Item.canonical_name.ilike(new_name),
+                Item.id != item_id
+            ).first()
+            if conflict:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"An item named '{new_name}' already exists."
+                )
+
+            # Preserve previous canonical name as an alias so future receipts still resolve
+            old_alias_exists = db.query(ItemAlias).filter(
+                ItemAlias.canonical_item_id == item.id,
+                ItemAlias.raw_alias == old_name.lower()
+            ).first()
+            if not old_alias_exists:
+                db.add(ItemAlias(
+                    canonical_item_id=item.id,
+                    raw_alias=old_name.lower(),
+                    match_confidence=1.0,
+                    source="renamed_canonical"
+                ))
+
+            item.canonical_name = new_name
+
+            # Synchronize product_mappings.json cache
+            try:
+                rename_generic_item_in_mappings(old_name, new_name)
+            except Exception:
+                pass
 
     if payload.reorder_cadence_days is not None:
         item.reorder_cadence_days = payload.reorder_cadence_days

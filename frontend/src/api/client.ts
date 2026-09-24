@@ -333,3 +333,16 @@ export async function updateItemPrice(itemId: number, price: number): Promise<Ca
   if (!res.ok) throw new Error("Failed to update item price");
   return res.json();
 }
+
+export async function updateItemName(itemId: number, canonicalName: string): Promise<CanonicalItem> {
+  const res = await customFetch(`${API_BASE}/items/${itemId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ canonical_name: canonicalName })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Failed to rename item" }));
+    throw new Error(err.detail || "Failed to rename item");
+  }
+  return res.json();
+}

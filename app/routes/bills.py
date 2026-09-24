@@ -80,17 +80,33 @@ def delete_purchase_log_item(
             .filter(
                 Inventory.household_id == log.household_id,
                 Inventory.canonical_item_id == log.canonical_item_id,
-                Inventory.purchase_date == log.purchase_date,
+                Inventory.purchase_log_id == log.id,
                 Inventory.status == InventoryStatus.ACTIVE
             )
             .first()
         )
+        if not inv:
+            inv = (
+                db.query(Inventory)
+                .filter(
+                    Inventory.household_id == log.household_id,
+                    Inventory.canonical_item_id == log.canonical_item_id,
+                    Inventory.purchase_date == log.purchase_date,
+                    Inventory.status == InventoryStatus.ACTIVE
+                )
+                .first()
+            )
         if inv:
             if inv.current_quantity <= log.quantity:
                 inv.current_quantity = 0.0
                 inv.status = InventoryStatus.CONSUMED
             else:
                 inv.current_quantity -= log.quantity
+
+    if log.bill_id and log.bill:
+        log.bill.total_items = max(0, (log.bill.total_items or 1) - 1)
+        if log.price:
+            log.bill.total_amount = max(0.0, round((log.bill.total_amount or 0.0) - log.price, 2))
 
     item_name = log.item.canonical_name if log.item else log.raw_text
     db.delete(log)
